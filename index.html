@@ -133,7 +133,7 @@
   <header class="hero">
     <img class="mark" src="assets/kyon.png" alt="" width="96" height="96">
     <h1>Kyon</h1>
-    <p class="lede">A terminal that answers to nobody but you.</p>
+    <p class="lede">A terminal that answers to nobody but you — with the agents, the editor and the models all on your side of the wire.</p>
 
     <div class="cta">
       <a class="btn primary" href="https://github.com/kyon-sh/kyon/releases/latest">
@@ -150,7 +150,7 @@
       <span><span class="dollar">$ </span>brew install --cask kyon-sh/kyon/kyon</span>
       <button type="button" id="copy" data-cmd="brew install --cask kyon-sh/kyon/kyon">Copy</button>
     </div>
-    <p class="sub">macOS &middot; Linux &middot; Windows &nbsp;|&nbsp; free, and AGPL all the way down</p>
+    <p class="sub">macOS &middot; Linux &middot; Windows &middot; and a browser &nbsp;|&nbsp; free, and AGPL all the way down</p>
 
     <div class="mock" aria-hidden="true">
       <div class="bar">
@@ -178,31 +178,73 @@
   </header>
 
   <section>
-    <h2>What it is</h2>
+    <h2>What the fork adds</h2>
     <div class="grid">
       <div class="card">
-        <h3>Blocks, not scrollback</h3>
-        <p>Every command and its output is one addressable thing — filter it, search it, copy it, run it again.</p>
+        <h3>Any model, including the one on your desk</h3>
+        <p>Point Kyon at any OpenAI-compatible endpoint, with one-click presets for
+        <strong>Ollama</strong>, <strong>llama.cpp</strong>, <strong>LM&nbsp;Studio</strong> and <strong>vLLM</strong> —
+        or bring your own keys for the hosted models. Nothing is proxied through anyone.</p>
       </div>
       <div class="card">
-        <h3>An editor that came with it</h3>
-        <p>Open a file, search a codebase, read a diff. No second window, and no language server you had to install first.</p>
+        <h3>Agent sessions that survive</h3>
+        <p>Claude Code, Codex, Gemini, OpenCode and Pi run in sessions that outlive a dropped link
+        or a reboot, and resume the same conversation when you come back.</p>
       </div>
       <div class="card">
-        <h3>Remote over your own SSH</h3>
-        <p>Browse, edit and run on any host you can already reach. One small daemon rides the connection you already have.</p>
+        <h3>Remote work over your own SSH</h3>
+        <p>One small daemon rides the connection you already have. Browse, edit, search and run on the
+        far side — language servers included — with no service in the middle.</p>
       </div>
       <div class="card">
-        <h3>Agents that survive a disconnect</h3>
-        <p>Claude Code, Codex and friends keep running when the link drops, and come back to the same conversation.</p>
+        <h3>Omnigent, on your own backend</h3>
+        <p>Attach to an omnigent instance you run, and watch or join its agent sessions in a tab
+        beside your shells.</p>
       </div>
       <div class="card">
-        <h3>Your keys, your models</h3>
-        <p>AI runs against credentials you supply and endpoints you pick — including ones on hardware under your desk.</p>
+        <h3>Runs in a browser</h3>
+        <p>The same client compiles to WebAssembly, so a machine with nothing installed still gets
+        the terminal — pointed at a host you own.</p>
       </div>
       <div class="card">
         <h3>Nothing phones home</h3>
-        <p>No account to create, no telemetry to switch off, no round-trip between pressing enter and getting a shell.</p>
+        <p>No account to create, no telemetry to switch off, and no server round-trip between
+        pressing enter and getting a shell.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>And everything it inherits</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Blocks, not scrollback</h3>
+        <p>Every command and its output is one addressable thing — filter it, search it, copy it,
+        run it again.</p>
+      </div>
+      <div class="card">
+        <h3>File browser and editor</h3>
+        <p>A project tree and a real editor in the same window, so reading the file you just broke
+        does not need a second app.</p>
+      </div>
+      <div class="card">
+        <h3>Change tracking</h3>
+        <p>Review diffs, leave comments and follow what changed — including what an agent changed
+        while you watched.</p>
+      </div>
+      <div class="card">
+        <h3>Notebooks and workflows</h3>
+        <p>Runbooks and parameterised commands that live with you rather than in someone's wiki.</p>
+      </div>
+      <div class="card">
+        <h3>Command palette and search</h3>
+        <p>Everything reachable by name, and a find that searches output as readily as it searches
+        a file.</p>
+      </div>
+      <div class="card">
+        <h3>Themes and layouts</h3>
+        <p>Panes, tabs and saved configurations, themed to taste — the parts a terminal is judged on
+        before anything else.</p>
       </div>
     </div>
   </section>
@@ -232,7 +274,7 @@
       <tr><td><code>Kyon-x86_64.AppImage</code></td><td>Linux x86_64</td></tr>
       <tr><td><code>Kyon-windows-&lt;arch&gt;-setup.exe</code></td><td>Windows x64 / arm64, installer</td></tr>
       <tr><td><code>Kyon-windows-&lt;arch&gt;-portable.zip</code></td><td>Windows x64 / arm64, nothing to install</td></tr>
-      <tr><td><code>kyon-web-*.tar.gz</code></td><td>the browser client</td></tr>
+      <tr><td><code>kyon-web-*.tar.gz</code></td><td>the browser client (WebAssembly), served by <code>serve-wasm</code></td></tr>
       <tr><td><code>kyon-src-*.tar.gz</code></td><td>complete source for that build</td></tr>
     </table>
   </section>
