@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyon — a terminal that answers to nobody but you</title>
+<meta name="description" content="Kyon is a GPU-rendered, block-structured terminal with a built-in editor, code search, SSH-native remote work, and AI that runs on your own keys. No account, no telemetry.">
+<link rel="icon" href="assets/kyon.png">
+<meta property="og:title" content="Kyon">
+<meta property="og:description" content="A terminal that answers to nobody but you. No account, no telemetry, no server between you and your shell.">
+<meta property="og:image" content="https://kyon.sh/assets/kyon.png">
+<meta property="og:url" content="https://kyon.sh">
+<meta name="theme-color" content="#1b1b1b">
+<style>
+  :root {
+    --ink: #1b1b1b;
+    --paper: #faf9f6;
+    --flame: #fb6f15;
+    --muted: rgba(250, 249, 246, .62);
+    --line: rgba(250, 249, 246, .14);
+    --panel: rgba(250, 249, 246, .04);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font: 400 17px/1.6 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--flame); }
+
+  header { padding: 88px 0 64px; text-align: center; }
+  header img { width: 104px; height: 104px; border-radius: 24px; }
+  h1 {
+    margin: 26px 0 10px;
+    font-size: clamp(40px, 8vw, 60px);
+    letter-spacing: -.03em;
+    line-height: 1.05;
+  }
+  .tagline { margin: 0 auto; max-width: 30ch; font-size: clamp(18px, 3.4vw, 21px); color: var(--muted); }
+
+  .downloads {
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+    margin: 38px 0 12px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 22px; border-radius: 10px;
+    font-size: 16px; font-weight: 600; text-decoration: none;
+    border: 1px solid var(--line); color: var(--paper);
+    background: var(--panel);
+    transition: border-color .15s ease, background .15s ease, transform .15s ease;
+  }
+  .btn:hover { border-color: var(--flame); transform: translateY(-1px); }
+  .btn.primary { background: var(--flame); border-color: var(--flame); color: #1b1b1b; }
+  .btn.primary:hover { filter: brightness(1.07); }
+  .note { font-size: 14.5px; color: var(--muted); text-align: center; margin: 0; }
+  .note a { color: inherit; }
+
+  section { padding: 56px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 13px; letter-spacing: .13em; text-transform: uppercase; color: var(--muted); margin: 0 0 26px; font-weight: 600; }
+
+  .grid { display: grid; gap: 26px 34px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+  .grid h3 { margin: 0 0 6px; font-size: 17px; }
+  .grid p { margin: 0; color: var(--muted); font-size: 15.5px; }
+  .grid .mark { color: var(--flame); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+  td { padding: 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td:first-child { padding-right: 20px; white-space: nowrap; }
+  code {
+    font: 500 14px/1.5 ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--paper);
+  }
+  td:last-child { color: var(--muted); }
+
+  footer {
+    padding: 44px 0 70px; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 14.5px; text-align: center;
+  }
+  footer p { margin: 0 0 8px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <img src="assets/kyon.png" alt="">
+    <h1>Kyon</h1>
+    <p class="tagline">A terminal that answers to nobody but you.</p>
+
+    <div class="downloads">
+      <a class="btn primary" href="https://github.com/kyon-sh/kyon/releases/latest">Download</a>
+      <a class="btn" href="https://github.com/kyon-sh/kyon">Source &amp; issues</a>
+    </div>
+    <p class="note">macOS, Linux and Windows &middot; free and AGPL-licensed</p>
+  </header>
+
+  <section>
+    <h2>What it is</h2>
+    <div class="grid">
+      <div>
+        <h3><span class="mark">&rsaquo;</span> Blocks, not scrollback</h3>
+        <p>Every command and its output is one addressable thing you can filter, search, copy and re-run.</p>
+      </div>
+      <div>
+        <h3><span class="mark">&rsaquo;</span> An editor that came with it</h3>
+        <p>Open a file, search a codebase, read a diff — without leaving the terminal or waiting on a language server you had to install.</p>
+      </div>
+      <div>
+        <h3><span class="mark">&rsaquo;</span> Remote work over your own SSH</h3>
+        <p>Browse, edit and run on any host you can reach. One small daemon travels over the connection you already have.</p>
+      </div>
+      <div>
+        <h3><span class="mark">&rsaquo;</span> Agents that survive a disconnect</h3>
+        <p>Claude Code, Codex and friends keep running when the link drops, and pick up the same conversation when you come back.</p>
+      </div>
+      <div>
+        <h3><span class="mark">&rsaquo;</span> Your keys, your models</h3>
+        <p>AI runs against credentials you supply and endpoints you choose, including ones on your own hardware.</p>
+      </div>
+      <div>
+        <h3><span class="mark">&rsaquo;</span> Nothing phones home</h3>
+        <p>No account to make, no telemetry to opt out of, and no server round-trip between pressing enter and getting a shell.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Downloads</h2>
+    <table>
+      <tr><td><code>Kyon.dmg</code></td><td>macOS, Apple&nbsp;Silicon — signed and notarized</td></tr>
+      <tr><td><code>Kyon-x86_64.AppImage</code></td><td>Linux x86_64</td></tr>
+      <tr><td><code>Kyon-windows-&lt;arch&gt;-setup.exe</code></td><td>Windows x64 / arm64, installer</td></tr>
+      <tr><td><code>Kyon-windows-&lt;arch&gt;-portable.zip</code></td><td>Windows x64 / arm64, nothing to install</td></tr>
+      <tr><td><code>kyon-web-*.tar.gz</code></td><td>the browser client</td></tr>
+      <tr><td><code>kyon-src-*.tar.gz</code></td><td>complete source for that build</td></tr>
+    </table>
+    <p class="note" style="margin-top:22px">The Windows builds are unsigned, so SmartScreen warns on first run — “More info”, then “Run anyway”.</p>
+  </section>
+
+  <section>
+    <h2>Source</h2>
+    <p style="margin:0;color:var(--muted)">
+      Kyon is a fork of <a href="https://github.com/warpdotdev/warp">Warp</a>, licensed under the
+      <strong style="color:var(--paper);font-weight:600">GNU Affero General Public License v3.0</strong>.
+      The source of each build ships beside the binary that was made from it, so it travels with the
+      download rather than depending on a repository still being there.
+    </p>
+  </section>
+
+  <footer>
+    <p><a href="https://github.com/kyon-sh/kyon/releases/latest">Releases</a> &middot; <a href="https://github.com/kyon-sh/kyon/issues">Issues</a> &middot; <a href="https://github.com/kyon-sh/kyon/blob/main/LICENSE-AGPL">License</a></p>
+    <p>Not affiliated with Warp or Denver Technologies, Inc.</p>
+  </footer>
+
+</div>
+
+</body>
+</html>
