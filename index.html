@@ -4,134 +4,229 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kyon — a terminal that answers to nobody but you</title>
-<meta name="description" content="Kyon is a GPU-rendered, block-structured terminal with a built-in editor, code search, SSH-native remote work, and AI that runs on your own keys. No account, no telemetry.">
+<meta name="description" content="A GPU-rendered, block-structured terminal with a built-in editor, code search, SSH-native remote work, and AI that runs on your own keys. No account, no telemetry.">
 <link rel="icon" href="assets/kyon.png">
 <meta property="og:title" content="Kyon">
-<meta property="og:description" content="A terminal that answers to nobody but you. No account, no telemetry, no server between you and your shell.">
+<meta property="og:description" content="A terminal that answers to nobody but you. No account, no telemetry, nothing between you and your shell.">
 <meta property="og:image" content="https://kyon.sh/assets/kyon.png">
 <meta property="og:url" content="https://kyon.sh">
 <meta name="theme-color" content="#1b1b1b">
 <style>
-  :root {
-    --ink: #1b1b1b;
-    --paper: #faf9f6;
-    --flame: #fb6f15;
-    --muted: rgba(250, 249, 246, .62);
-    --line: rgba(250, 249, 246, .14);
-    --panel: rgba(250, 249, 246, .04);
+  :root{
+    --ink:#1b1b1b;
+    --ink-2:#161616;
+    --paper:#faf9f6;
+    --flame:#fb6f15;
+    --muted:rgba(250,249,246,.60);
+    --faint:rgba(250,249,246,.40);
+    --line:rgba(250,249,246,.12);
+    --panel:rgba(250,249,246,.035);
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
   }
-  * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
-  body {
-    margin: 0;
-    background: var(--ink);
-    color: var(--paper);
-    font: 400 17px/1.6 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--ink);color:var(--paper);
+    font:400 17px/1.65 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
   }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
-  a { color: var(--flame); }
+  a{color:var(--flame);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
 
-  header { padding: 88px 0 64px; text-align: center; }
-  header img { width: 104px; height: 104px; border-radius: 24px; }
-  h1 {
-    margin: 26px 0 10px;
-    font-size: clamp(40px, 8vw, 60px);
-    letter-spacing: -.03em;
-    line-height: 1.05;
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:96px 0 8px;text-align:center;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:-200px 0 auto;height:620px;pointer-events:none;
+    background:radial-gradient(58% 52% at 50% 42%, rgba(251,111,21,.16), transparent 70%);
   }
-  .tagline { margin: 0 auto; max-width: 30ch; font-size: clamp(18px, 3.4vw, 21px); color: var(--muted); }
+  .hero > *{position:relative}
+  .mark{width:96px;height:96px;border-radius:22px;box-shadow:0 18px 50px -18px rgba(251,111,21,.55)}
+  h1{margin:24px 0 12px;font-size:clamp(42px,8.5vw,68px);letter-spacing:-.035em;line-height:1.02}
+  .lede{margin:0 auto;max-width:34ch;font-size:clamp(18px,3.2vw,22px);color:var(--muted);line-height:1.5}
 
-  .downloads {
-    display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
-    margin: 38px 0 12px;
+  .cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:34px 0 14px}
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:11px;
+    font-size:16px;font-weight:600;border:1px solid var(--line);color:var(--paper);background:var(--panel);
+    transition:border-color .16s,background .16s,transform .16s;
   }
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 13px 22px; border-radius: 10px;
-    font-size: 16px; font-weight: 600; text-decoration: none;
-    border: 1px solid var(--line); color: var(--paper);
-    background: var(--panel);
-    transition: border-color .15s ease, background .15s ease, transform .15s ease;
+  .btn:hover{border-color:rgba(251,111,21,.55);transform:translateY(-1px);text-decoration:none}
+  .btn.primary{background:var(--flame);border-color:var(--flame);color:#171310}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .btn svg{width:17px;height:17px;flex:none}
+
+  .brew{
+    display:flex;align-items:center;gap:10px;justify-content:space-between;
+    margin:20px auto 0;max-width:520px;padding:11px 12px 11px 16px;
+    border:1px solid var(--line);border-radius:11px;background:var(--panel);
+    font:500 14.5px/1 var(--mono);color:var(--paper);text-align:left;
   }
-  .btn:hover { border-color: var(--flame); transform: translateY(-1px); }
-  .btn.primary { background: var(--flame); border-color: var(--flame); color: #1b1b1b; }
-  .btn.primary:hover { filter: brightness(1.07); }
-  .note { font-size: 14.5px; color: var(--muted); text-align: center; margin: 0; }
-  .note a { color: inherit; }
-
-  section { padding: 56px 0; border-top: 1px solid var(--line); }
-  h2 { font-size: 13px; letter-spacing: .13em; text-transform: uppercase; color: var(--muted); margin: 0 0 26px; font-weight: 600; }
-
-  .grid { display: grid; gap: 26px 34px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
-  .grid h3 { margin: 0 0 6px; font-size: 17px; }
-  .grid p { margin: 0; color: var(--muted); font-size: 15.5px; }
-  .grid .mark { color: var(--flame); }
-
-  table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
-  td { padding: 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-  td:first-child { padding-right: 20px; white-space: nowrap; }
-  code {
-    font: 500 14px/1.5 ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-    color: var(--paper);
+  .brew span{overflow:auto;white-space:nowrap;scrollbar-width:none}
+  .brew span::-webkit-scrollbar{display:none}
+  .brew .dollar{color:var(--faint);user-select:none}
+  .brew button{
+    flex:none;border:1px solid var(--line);background:transparent;color:var(--muted);
+    font:600 12px/1 inherit;font-family:inherit;padding:7px 10px;border-radius:7px;cursor:pointer;
+    transition:color .16s,border-color .16s;
   }
-  td:last-child { color: var(--muted); }
+  .brew button:hover{color:var(--paper);border-color:var(--faint)}
+  .sub{margin:14px 0 0;font-size:14.5px;color:var(--faint)}
 
-  footer {
-    padding: 44px 0 70px; border-top: 1px solid var(--line);
-    color: var(--muted); font-size: 14.5px; text-align: center;
+  /* ---------- terminal mock ---------- */
+  .mock{
+    margin:64px auto 0;max-width:880px;border:1px solid var(--line);border-radius:14px;
+    background:linear-gradient(180deg,#1f1f1f,#191919);overflow:hidden;text-align:left;
+    box-shadow:0 40px 90px -50px rgba(0,0,0,.9);
   }
-  footer p { margin: 0 0 8px; }
+  .bar{display:flex;align-items:center;gap:8px;padding:12px 15px;border-bottom:1px solid var(--line)}
+  .dot{width:11px;height:11px;border-radius:50%;background:rgba(250,249,246,.16)}
+  .bar .title{margin-left:8px;font:500 12.5px/1 var(--mono);color:var(--faint)}
+  .blocks{padding:8px 0 14px;font:400 13.5px/1.75 var(--mono)}
+  .block{padding:10px 18px;border-left:2px solid transparent}
+  .block + .block{margin-top:2px}
+  .block.ok{border-left-color:rgba(251,111,21,.75);background:rgba(251,111,21,.04)}
+  .block.agent{border-left-color:rgba(250,249,246,.28);background:rgba(250,249,246,.03)}
+  .cmd{color:var(--paper)}
+  .cmd .p{color:var(--flame);user-select:none}
+  .out{color:var(--muted);white-space:pre-wrap}
+  .tag{
+    display:inline-block;margin-left:8px;padding:1px 7px;border-radius:5px;
+    font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+    background:rgba(251,111,21,.14);color:var(--flame);vertical-align:1px;
+  }
+  .cursor{display:inline-block;width:8px;height:15px;background:var(--flame);vertical-align:-3px;animation:blink 1.15s steps(2) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* ---------- sections ---------- */
+  section{padding:74px 0;border-top:1px solid var(--line);margin-top:74px}
+  section:first-of-type{margin-top:0}
+  h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 30px;font-weight:600}
+  .grid{display:grid;gap:30px 36px;grid-template-columns:repeat(auto-fit,minmax(268px,1fr))}
+  .card h3{margin:0 0 7px;font-size:17.5px;letter-spacing:-.01em;display:flex;align-items:baseline;gap:9px}
+  .card h3::before{content:"\203A";color:var(--flame);font-weight:700}
+  .card p{margin:0;color:var(--muted);font-size:15.5px}
+
+  table{width:100%;border-collapse:collapse;font-size:15.5px}
+  td{padding:12px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  td:first-child{padding-right:22px;white-space:nowrap}
+  td:last-child{color:var(--muted)}
+  code{font:500 13.5px/1.5 var(--mono);color:var(--paper)}
+
+  .split{display:grid;gap:34px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));align-items:start}
+  .split p{margin:0 0 14px;color:var(--muted)}
+  .split strong{color:var(--paper);font-weight:600}
+
+  footer{padding:52px 0 76px;border-top:1px solid var(--line);margin-top:74px;color:var(--faint);font-size:14.5px;text-align:center}
+  footer nav{margin-bottom:10px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+  footer a{color:var(--muted)}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  }
 </style>
 </head>
 <body>
 
 <div class="wrap">
 
-  <header>
-    <img src="assets/kyon.png" alt="">
+  <header class="hero">
+    <img class="mark" src="assets/kyon.png" alt="" width="96" height="96">
     <h1>Kyon</h1>
-    <p class="tagline">A terminal that answers to nobody but you.</p>
+    <p class="lede">A terminal that answers to nobody but you.</p>
 
-    <div class="downloads">
-      <a class="btn primary" href="https://github.com/kyon-sh/kyon/releases/latest">Download</a>
-      <a class="btn" href="https://github.com/kyon-sh/kyon">Source &amp; issues</a>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/kyon-sh/kyon/releases/latest">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+        Download
+      </a>
+      <a class="btn" href="https://github.com/kyon-sh/kyon">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.7 2.7 1.2 3.4.9.1-.7.4-1.2.7-1.5-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.3 11.3 0 0 1 6 0C17.5 5 18.5 5.3 18.5 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg>
+        Source &amp; issues
+      </a>
     </div>
-    <p class="note">macOS, Linux and Windows &middot; free and AGPL-licensed</p>
+
+    <div class="brew">
+      <span><span class="dollar">$ </span>brew install --cask kyon-sh/kyon/kyon</span>
+      <button type="button" id="copy" data-cmd="brew install --cask kyon-sh/kyon/kyon">Copy</button>
+    </div>
+    <p class="sub">macOS &middot; Linux &middot; Windows &nbsp;|&nbsp; free, and AGPL all the way down</p>
+
+    <div class="mock" aria-hidden="true">
+      <div class="bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="title">~/src/kyon — zsh</span>
+      </div>
+      <div class="blocks">
+        <div class="block ok">
+          <div class="cmd"><span class="p">❯ </span>cargo test --workspace</div>
+          <div class="out">   Summary [ 81.9s ] 7958 tests run: 7958 passed</div>
+        </div>
+        <div class="block agent">
+          <div class="cmd"><span class="p">❯ </span>claude<span class="tag">resumed</span></div>
+          <div class="out">   picked up where the last session left off — 41 messages</div>
+        </div>
+        <div class="block ok">
+          <div class="cmd"><span class="p">❯ </span>ssh build-vm<span class="tag">remote</span></div>
+          <div class="out">   editing, searching and running as if it were local</div>
+        </div>
+        <div class="block">
+          <div class="cmd"><span class="p">❯ </span><span class="cursor"></span></div>
+        </div>
+      </div>
+    </div>
   </header>
 
   <section>
     <h2>What it is</h2>
     <div class="grid">
-      <div>
-        <h3><span class="mark">&rsaquo;</span> Blocks, not scrollback</h3>
-        <p>Every command and its output is one addressable thing you can filter, search, copy and re-run.</p>
+      <div class="card">
+        <h3>Blocks, not scrollback</h3>
+        <p>Every command and its output is one addressable thing — filter it, search it, copy it, run it again.</p>
       </div>
-      <div>
-        <h3><span class="mark">&rsaquo;</span> An editor that came with it</h3>
-        <p>Open a file, search a codebase, read a diff — without leaving the terminal or waiting on a language server you had to install.</p>
+      <div class="card">
+        <h3>An editor that came with it</h3>
+        <p>Open a file, search a codebase, read a diff. No second window, and no language server you had to install first.</p>
       </div>
-      <div>
-        <h3><span class="mark">&rsaquo;</span> Remote work over your own SSH</h3>
-        <p>Browse, edit and run on any host you can reach. One small daemon travels over the connection you already have.</p>
+      <div class="card">
+        <h3>Remote over your own SSH</h3>
+        <p>Browse, edit and run on any host you can already reach. One small daemon rides the connection you already have.</p>
       </div>
-      <div>
-        <h3><span class="mark">&rsaquo;</span> Agents that survive a disconnect</h3>
-        <p>Claude Code, Codex and friends keep running when the link drops, and pick up the same conversation when you come back.</p>
+      <div class="card">
+        <h3>Agents that survive a disconnect</h3>
+        <p>Claude Code, Codex and friends keep running when the link drops, and come back to the same conversation.</p>
       </div>
-      <div>
-        <h3><span class="mark">&rsaquo;</span> Your keys, your models</h3>
-        <p>AI runs against credentials you supply and endpoints you choose, including ones on your own hardware.</p>
+      <div class="card">
+        <h3>Your keys, your models</h3>
+        <p>AI runs against credentials you supply and endpoints you pick — including ones on hardware under your desk.</p>
       </div>
-      <div>
-        <h3><span class="mark">&rsaquo;</span> Nothing phones home</h3>
-        <p>No account to make, no telemetry to opt out of, and no server round-trip between pressing enter and getting a shell.</p>
+      <div class="card">
+        <h3>Nothing phones home</h3>
+        <p>No account to create, no telemetry to switch off, no round-trip between pressing enter and getting a shell.</p>
       </div>
     </div>
   </section>
 
   <section>
-    <h2>Downloads</h2>
+    <h2>Install</h2>
+    <div class="split">
+      <div>
+        <p><strong>macOS</strong> — signed and notarized, Apple Silicon. Homebrew is the short way:</p>
+        <div class="brew" style="margin:0 0 18px">
+          <span><span class="dollar">$ </span>brew install --cask kyon-sh/kyon/kyon</span>
+          <button type="button" class="copy" data-cmd="brew install --cask kyon-sh/kyon/kyon">Copy</button>
+        </div>
+        <p>Or take <code>Kyon.dmg</code> from the <a href="https://github.com/kyon-sh/kyon/releases/latest">latest release</a>.</p>
+      </div>
+      <div>
+        <p><strong>Linux</strong> — download <code>Kyon-x86_64.AppImage</code>, <code>chmod +x</code>, run it.</p>
+        <p><strong>Windows</strong> — the installer, or the portable zip if you would rather not install anything. Both builds are unsigned, so SmartScreen warns once: “More info”, then “Run anyway”.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Every release carries</h2>
     <table>
       <tr><td><code>Kyon.dmg</code></td><td>macOS, Apple&nbsp;Silicon — signed and notarized</td></tr>
       <tr><td><code>Kyon-x86_64.AppImage</code></td><td>Linux x86_64</td></tr>
@@ -140,25 +235,45 @@
       <tr><td><code>kyon-web-*.tar.gz</code></td><td>the browser client</td></tr>
       <tr><td><code>kyon-src-*.tar.gz</code></td><td>complete source for that build</td></tr>
     </table>
-    <p class="note" style="margin-top:22px">The Windows builds are unsigned, so SmartScreen warns on first run — “More info”, then “Run anyway”.</p>
   </section>
 
   <section>
     <h2>Source</h2>
-    <p style="margin:0;color:var(--muted)">
-      Kyon is a fork of <a href="https://github.com/warpdotdev/warp">Warp</a>, licensed under the
-      <strong style="color:var(--paper);font-weight:600">GNU Affero General Public License v3.0</strong>.
-      The source of each build ships beside the binary that was made from it, so it travels with the
-      download rather than depending on a repository still being there.
-    </p>
+    <div class="split">
+      <div>
+        <p>Kyon is a fork of <a href="https://github.com/warpdotdev/warp">Warp</a>, licensed under the
+        <strong>GNU Affero General Public License v3.0</strong>.</p>
+      </div>
+      <div>
+        <p>The source of each build ships beside the binary made from it, so it travels with the download
+        rather than depending on a repository still being there in five years.</p>
+      </div>
+    </div>
   </section>
 
   <footer>
-    <p><a href="https://github.com/kyon-sh/kyon/releases/latest">Releases</a> &middot; <a href="https://github.com/kyon-sh/kyon/issues">Issues</a> &middot; <a href="https://github.com/kyon-sh/kyon/blob/main/LICENSE-AGPL">License</a></p>
+    <nav>
+      <a href="https://github.com/kyon-sh/kyon/releases/latest">Releases</a>
+      <a href="https://github.com/kyon-sh/kyon/issues">Issues</a>
+      <a href="https://github.com/kyon-sh/homebrew-kyon">Tap</a>
+      <a href="https://github.com/kyon-sh/kyon/blob/main/LICENSE-AGPL">License</a>
+    </nav>
     <p>Not affiliated with Warp or Denver Technologies, Inc.</p>
   </footer>
 
 </div>
+
+<script>
+  document.querySelectorAll("#copy, .copy").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      navigator.clipboard.writeText(btn.dataset.cmd).then(function () {
+        var was = btn.textContent;
+        btn.textContent = "Copied";
+        setTimeout(function () { btn.textContent = was; }, 1400);
+      });
+    });
+  });
+</script>
 
 </body>
 </html>
