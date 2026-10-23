@@ -720,12 +720,13 @@ const REPO = "kyon-sh/kyon2";
 // What the newest release carries, used until (or unless) the release
 // list answers with the current one.
 const release = {
-  version: "0.0.44",
-  tag: "kyon2-v0.0.44",
+  version: "0.0.46",
+  tag: "kyon2-v0.0.46",
   assets: {},
 };
 const ASSET = {
-  dmg: (v) => `Kyon2-${v}.dmg`,
+  dmgarm: (v) => `Kyon2-${v}-macos-arm64.dmg`,
+  dmgx64: (v) => `Kyon2-${v}-macos-x86_64.dmg`,
   deb: (v) => `kyon2_${v}_amd64.deb`,
   tar: (v) => `Kyon2-${v}-linux-x86_64.tar.gz`,
   winx64: (v) => `Kyon2-${v}-windows-x64.zip`,
@@ -784,9 +785,10 @@ function instructions(os, arch) {
       way("With Homebrew", "Installs Kyon and keeps it up to date with <code>brew upgrade</code>.",
         command("cmd-brew", "brew install --cask kyon-sh/kyon/kyon2")),
       way("Or the disk image",
-        "Open it and drag Kyon to Applications. One universal build, native on Apple silicon and Intel, signed and notarised.",
+        "Open it and drag Kyon to Applications. Each image is built for its kind of Mac, signed and notarised.",
         el("div", { class: "downloads" },
-          download(asset("dmg"), "Download for macOS", `Kyon2-${v}.dmg`, false))),
+          download(asset("dmgarm"), "Download for Apple silicon", ASSET.dmgarm(v), arch === "arm"),
+          download(asset("dmgx64"), "Download for Intel", ASSET.dmgx64(v), arch !== "arm"))),
     ];
   }
   if (os === "linux" && arch === "x64") {
