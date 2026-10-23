@@ -519,7 +519,7 @@ footer {
         <p>Every command and its output is a block you can select, copy, rerun or hand to the agent. The input is a real editor, with completions, history, corrections and Vim keys if you want them. Secrets that appear on screen are hidden.</p>
       </article>
       <article class="cap">
-        <div class="cmd">⌘↵ new agent conversation</div>
+        <div class="cmd">⌘↵ ask the agent, right here</div>
         <h3>An agent that works where you work</h3>
         <p>Ask from the terminal or in a conversation of its own. It reads and edits files and runs commands, asking first as much as you want it to. It follows your rules files and uses the tools of any MCP server you run.</p>
       </article>
@@ -531,17 +531,17 @@ footer {
       <article class="cap">
         <div class="cmd">claude · codex · gemini · opencode</div>
         <h3>Your other coding agents, better</h3>
-        <p>Command-line coding agents run in a terminal as they always do, with a toolbar, a proper editor for writing to them, and a notification when they need you.</p>
+        <p>Command-line coding agents run in a terminal as they always do, with a toolbar, a proper editor for writing to them, and a desktop notification when they need you that takes you straight back to them.</p>
       </article>
       <article class="cap">
         <div class="cmd">src/limiter.rs:22</div>
         <h3>Code, review and documents</h3>
-        <p>An editor with language servers, a file explorer, workspace search, review over <code>git</code> with comments on any line, and Markdown with a live preview that draws Mermaid diagrams. All of it works offline.</p>
+        <p>An editor with language servers, a file explorer, workspace search, review over <code>git</code> with comments on any line, and Markdown you edit as it is rendered, Mermaid diagrams included. All of it works offline.</p>
       </article>
       <article class="cap">
         <div class="cmd">layout restored · 3 tabs</div>
         <h3>Yours to arrange</h3>
-        <p>Tabs, splits, vertical tabs, saved layouts, launch configurations and themes. Settings live on a page or in a plain file. After a restart, or a crash, the workspace comes back as you left it.</p>
+        <p>Tabs, splits, vertical tabs, saved layouts, launch configurations and themes, and tabs that colour themselves when you are root or on a production machine. Settings live on a page or in a plain file. After a restart, or a crash, the workspace comes back as you left it.</p>
       </article>
     </div>
   </div>
@@ -619,10 +619,10 @@ const scenes = [
     id: "docs",
     tab: "Documents",
     title: "Markdown, rendered as you write",
-    text: "Source and preview side by side, with tables and Mermaid diagrams drawn locally. No network needed.",
-    points: ["Live preview", "Mermaid diagrams, offline", "Source, split or preview"],
+    text: "Write in the rendered document itself, with tables and Mermaid diagrams drawn locally. No network needed.",
+    points: ["Edit it rendered", "Mermaid diagrams, offline", "Raw source when you want it"],
     image: "docs.webp",
-    alt: "A Markdown design note in source on the left and rendered on the right, including a flowchart",
+    alt: "A Markdown design note shown rendered and editable, with a formatting bar, a flowchart and a table",
   },
   {
     id: "palette",
@@ -720,8 +720,8 @@ const REPO = "kyon-sh/kyon2";
 // What the newest release carries, used until (or unless) the release
 // list answers with the current one.
 const release = {
-  version: "0.0.9",
-  tag: "kyon2-v0.0.9",
+  version: "0.0.44",
+  tag: "kyon2-v0.0.44",
   assets: {},
 };
 const ASSET = {
