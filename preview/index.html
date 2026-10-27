@@ -516,7 +516,7 @@ footer {
       <article class="cap">
         <div class="cmd">~/orbit <b>git:(main)</b></div>
         <h3>A terminal built around commands</h3>
-        <p>Every command and its output is a block you can select, copy, rerun or hand to the agent. The input is a real editor, with completions, history, corrections and Vim keys if you want them. Secrets that appear on screen are hidden.</p>
+        <p>Every command and its output is a block you can select, copy, rerun or hand to the agent. The input is a real editor, with completions, history, corrections and Vim keys if you want them. Secrets that appear on screen are hidden, and prompt themes' icons and box drawing come out crisp with no fonts to install.</p>
       </article>
       <article class="cap">
         <div class="cmd">⌘↵ ask the agent, right here</div>
@@ -531,7 +531,7 @@ footer {
       <article class="cap">
         <div class="cmd">claude · codex · gemini · opencode</div>
         <h3>Your other coding agents, better</h3>
-        <p>Command-line coding agents run in a terminal as they always do, with a toolbar, a proper editor for writing to them, and a desktop notification when they need you that takes you straight back to them.</p>
+        <p>Start Claude Code, Codex, Gemini, OpenCode or Pi from the new-session menu, here or on a server. They run in a terminal as they always do, with a toolbar and a proper editor for writing to them, pictures and files included. Each tab says whether its agent is working, done or waiting for you, and a desktop notification takes you straight to the one that needs you. After a restart they come back with their conversation.</p>
       </article>
       <article class="cap">
         <div class="cmd">src/limiter.rs:22</div>
@@ -541,7 +541,7 @@ footer {
       <article class="cap">
         <div class="cmd">layout restored · 3 tabs</div>
         <h3>Yours to arrange</h3>
-        <p>Tabs, splits, vertical tabs, saved layouts, launch configurations and themes, and tabs that colour themselves when you are root or on a production machine. Settings live on a page or in a plain file. After a restart, or a crash, the workspace comes back as you left it.</p>
+        <p>Tabs, splits, vertical tabs, saved layouts, launch configurations and themes. Tabs colour themselves by rules about the user, the machine, the folder or the command, so root and production stand out. Settings live on a page or in a plain file. Quitting asks first, and after a restart, or a crash, the workspace comes back as you left it.</p>
       </article>
     </div>
   </div>
@@ -552,11 +552,12 @@ footer {
     <div>
       <p class="eyebrow">Remote machines</p>
       <h2>Work on a server as if it were this machine</h2>
-      <p class="intro">Connect over SSH and the terminal, editor, file explorer, search and review all work on that machine. Sessions there keep running when you disconnect, and are waiting when you come back.</p>
+      <p class="intro">Connect over SSH and the terminal, editor, file explorer, search and review all work on that machine. Sessions there, coding agents included, keep running when you disconnect and are waiting when you come back. A dropped connection is made again by itself, and what you typed meanwhile goes through once it is back. Drop a file of any size on a terminal there and it is copied across.</p>
       <div class="facts">
         <span><span class="ok">✓</span> Nothing listens on a port</span>
         <span><span class="ok">✓</span> No password of ours: SSH is the only way in</span>
         <span><span class="ok">✓</span> Any Linux or macOS host, x86_64 or ARM64</span>
+        <span><span class="ok">✓</span> Reconnects by itself, without losing a keystroke</span>
         <span><span class="ok">✓</span> Fast over remote desktop, with or without a GPU</span>
       </div>
     </div>
@@ -620,7 +621,7 @@ const scenes = [
     tab: "Documents",
     title: "Markdown, rendered as you write",
     text: "Write in the rendered document itself, with tables and Mermaid diagrams drawn locally. No network needed.",
-    points: ["Edit it rendered", "Mermaid diagrams, offline", "Raw source when you want it"],
+    points: ["Edit it rendered, with a formatting bar", "Mermaid diagrams, offline", "Pictures, and links to files and headings"],
     image: "docs.webp",
     alt: "A Markdown design note shown rendered and editable, with a formatting bar, a flowchart and a table",
   },
