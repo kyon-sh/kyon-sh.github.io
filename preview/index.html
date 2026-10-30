@@ -474,7 +474,7 @@ footer {
     <p class="lede">Kyon is a terminal, code editor and AI agent workspace that is fast, local-first, and just as at home on a remote machine as on this one.</p>
     <div class="actions" id="hero-action">
       <div class="install">
-        <code><span class="prompt">$ </span><span id="brew">brew install --cask kyon-sh/kyon/kyon2</span></code>
+        <code><span class="prompt">$ </span><span id="brew">brew install --cask kyon-sh/kyon/kyon@preview</span></code>
         <button class="copy" data-copy="brew" type="button">Copy</button>
       </div>
       <a class="platforms" href="#install">macOS · Linux · Windows</a>
@@ -717,21 +717,21 @@ document.addEventListener("click", async (e) => {
 
 /* ── install: which system, which build ──────────────── */
 
-const REPO = "kyon-sh/kyon2";
+const REPO = "kyon-sh/kyon";
 // What the newest release carries, used until (or unless) the release
 // list answers with the current one.
 const release = {
-  version: "0.0.46",
-  tag: "kyon2-v0.0.46",
+  version: "0.0.78",
+  tag: "kyon-v0.0.78",
   assets: {},
 };
 const ASSET = {
-  dmgarm: (v) => `Kyon2-${v}-macos-arm64.dmg`,
-  dmgx64: (v) => `Kyon2-${v}-macos-x86_64.dmg`,
-  deb: (v) => `kyon2_${v}_amd64.deb`,
-  tar: (v) => `Kyon2-${v}-linux-x86_64.tar.gz`,
-  winx64: (v) => `Kyon2-${v}-windows-x64.zip`,
-  winarm64: (v) => `Kyon2-${v}-windows-arm64.zip`,
+  dmgarm: (v) => `Kyon-${v}-macos-arm64.dmg`,
+  dmgx64: (v) => `Kyon-${v}-macos-x86_64.dmg`,
+  deb: (v) => `kyon_${v}_amd64.deb`,
+  tar: (v) => `Kyon-${v}-linux-x86_64.tar.gz`,
+  winx64: (v) => `Kyon-${v}-windows-x64.zip`,
+  winarm64: (v) => `Kyon-${v}-windows-arm64.zip`,
 };
 function asset(kind) {
   const name = ASSET[kind](release.version);
@@ -747,9 +747,9 @@ const SYSTEMS = {
 
 const APT = [
   "sudo install -d -m 0755 /etc/apt/keyrings",
-  "curl -fsSL https://kyon.sh/kyon2/apt/kyon2.asc | sudo tee /etc/apt/keyrings/kyon2.asc >/dev/null",
-  'echo "deb [signed-by=/etc/apt/keyrings/kyon2.asc] https://kyon.sh/kyon2/apt stable main" | sudo tee /etc/apt/sources.list.d/kyon2.list',
-  "sudo apt update && sudo apt install kyon2",
+  "curl -fsSL https://kyon.sh/kyon/apt/kyon.asc | sudo tee /etc/apt/keyrings/kyon.asc >/dev/null",
+  'echo "deb [signed-by=/etc/apt/keyrings/kyon.asc] https://kyon.sh/kyon/apt preview main" | sudo tee /etc/apt/sources.list.d/kyon.list',
+  "sudo apt update && sudo apt install kyon",
 ].join("\n");
 
 function el(tag, attrs = {}, ...children) {
@@ -784,7 +784,7 @@ function instructions(os, arch) {
   if (os === "mac") {
     return [
       way("With Homebrew", "Installs Kyon and keeps it up to date with <code>brew upgrade</code>.",
-        command("cmd-brew", "brew install --cask kyon-sh/kyon/kyon2")),
+        command("cmd-brew", "brew install --cask kyon-sh/kyon/kyon@preview")),
       way("Or the disk image",
         "Open it and drag Kyon to Applications. Each image is built for its kind of Mac, signed and notarised.",
         el("div", { class: "downloads" },
@@ -797,9 +797,9 @@ function instructions(os, arch) {
       way("Debian and Ubuntu", "Adds Kyon's signed apt repository, so <code>apt upgrade</code> brings new releases.",
         command("cmd-apt", APT)),
       way("Or a single file",
-        "The package installs on its own with <code>sudo apt install ./kyon2_" + v + "_amd64.deb</code>. The tarball runs from wherever you unpack it: <code>Kyon2/bin/kyon</code>.",
+        "The package installs on its own with <code>sudo apt install ./kyon_" + v + "_amd64.deb</code>. The tarball runs from wherever you unpack it: <code>Kyon/bin/kyon</code>.",
         el("div", { class: "downloads" },
-          download(asset("deb"), "Debian package", `kyon2_${v}_amd64.deb`, false),
+          download(asset("deb"), "Debian package", `kyon_${v}_amd64.deb`, false),
           download(asset("tar"), "Tarball", `linux-x86_64.tar.gz`, false))),
     ];
   }
@@ -813,7 +813,7 @@ function instructions(os, arch) {
   const label = arch === "arm" ? "ARM64" : "x64";
   return [
     way("Download the zip",
-      "Unpack it anywhere and run <code>Kyon2\\kyon.exe</code>. Nothing is installed elsewhere, so removing the folder removes Kyon.",
+      "Unpack it anywhere and run <code>Kyon\\kyon.exe</code>. Nothing is installed elsewhere, so removing the folder removes Kyon.",
       el("div", { class: "downloads" },
         download(asset(kind), `Download for Windows ${label}`, ASSET[kind](v), true))),
   ];
@@ -826,7 +826,7 @@ function heroAction(os, arch) {
   if (os === "mac") {
     box.replaceChildren(el("div", { class: "install" },
       el("code", {}, el("span", { class: "prompt" }, "$ "),
-        el("span", { id: "brew" }, "brew install --cask kyon-sh/kyon/kyon2")),
+        el("span", { id: "brew" }, "brew install --cask kyon-sh/kyon/kyon@preview")),
       el("button", { class: "copy", type: "button", "data-copy": "brew" }, "Copy")), link);
   } else if (os === "linux" && arch === "x64") {
     box.replaceChildren(download(asset("deb"), "Download for Linux", "Debian package · x64", true), link);
@@ -930,14 +930,16 @@ function macGraphics() {
 // The newest release's own file links, so the page never lags a release.
 async function latest() {
   try {
-    const response = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+    // The newest build published, whether or not it has been promoted.
+    const response = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=20`, {
       headers: { Accept: "application/vnd.github+json" },
     });
     if (!response.ok) return;
-    const data = await response.json();
-    if (!data.tag_name || !data.tag_name.startsWith("kyon2-v")) return;
+    const data = (await response.json()).find((r) => !r.draft && (r.tag_name || "").startsWith("kyon-v"));
+    if (!data) return;
+    if (!data.tag_name || !data.tag_name.startsWith("kyon-v")) return;
     release.tag = data.tag_name;
-    release.version = data.tag_name.slice("kyon2-v".length);
+    release.version = data.tag_name.slice("kyon-v".length);
     release.assets = Object.fromEntries((data.assets || []).map((a) => [a.name, a.browser_download_url]));
   } catch (e) {}
 }
