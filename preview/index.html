@@ -2,9 +2,9 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Kyon is a terminal, code editor and AI agent workspace: fast, local-first, and as at home on a remote machine as on this one.">
+<meta name="description" content="Kyon is an AIDE, an AI development environment: your terminal, your editor and every coding agent you use, in one window, on this machine or any server.">
 <link rel="icon" href="../assets/kyon.png">
-<title>Kyon</title>
+<title>Kyon · the AIDE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -470,8 +470,8 @@ footer {
   </header>
 
   <div class="hero">
-    <h1>The terminal, the code and the agent. <em>One window.</em></h1>
-    <p class="lede">Kyon is a terminal, code editor and AI agent workspace that is fast, local-first, and just as at home on a remote machine as on this one.</p>
+    <h1>You and your coding agents, <em>in one AIDE.</em></h1>
+    <p class="lede">Kyon is an AIDE, an AI development environment. The terminal you live in, an editor beside it and the agents you already use, from Claude Code to Codex, work together in one window. Run several at once, see which one needs you, review what it changed, and keep them all working on a server while your laptop is closed.</p>
     <div class="actions" id="hero-action">
       <div class="install">
         <code><span class="prompt">$ </span><span id="brew">brew install --cask kyon-sh/kyon/kyon@preview</span></code>
@@ -510,38 +510,38 @@ footer {
 
 <section id="capabilities" style="padding-top:0">
   <div class="wrap">
-    <p class="eyebrow">What it does</p>
-    <h2>Built around the way you already work</h2>
+    <p class="eyebrow">Why an AIDE</p>
+    <h2>An IDE is built around files. Kyon is built around you and your agents.</h2>
     <div class="caps">
       <article class="cap">
-        <div class="cmd">~/orbit <b>git:(main)</b></div>
-        <h3>A terminal built around commands</h3>
-        <p>Every command and its output is a block you can select, copy, rerun or hand to the agent. The input is a real editor, with completions, history, corrections and Vim keys if you want them. Secrets that appear on screen are hidden, and prompt themes' icons and box drawing come out crisp with no fonts to install.</p>
+        <div class="cmd">claude · codex · gemini · opencode · pi</div>
+        <h3>A whole team of agents, at a glance</h3>
+        <p>Start Claude Code, Codex, Gemini, OpenCode or Pi side by side, each in its own tab. A tab whose agent is asking you something, or has finished, carries a blue dot; one key takes you to the next agent waiting, and the Dock counts them. You spend your time answering, not hunting for the window that stopped.</p>
       </article>
       <article class="cap">
-        <div class="cmd">⌘↵ find the five largest files here</div>
-        <h3>Say what you want, ask on the side</h3>
-        <p>Write what you want in the terminal and ⌘↵ turns it into the command, ready to read and run. Ask questions in a pane beside a coding agent without interrupting it. Kyon's own agent reads and edits files and runs commands, asking first as much as you want it to, and follows your rules files and MCP servers.</p>
+        <div class="cmd">review · 3 files · +42 −7</div>
+        <h3>Review the agent's work, then tell it</h3>
+        <p>See exactly what an agent's last turn changed, comment on any line and send the comments straight back to it. Hand it a selection, a file or a command's output in one move, and give every agent Kyon's own tools over MCP. You stay the one who decides what goes in.</p>
       </article>
       <article class="cap">
-        <div class="cmd">ask with: codex · private: ~/clients</div>
-        <h3>Your model, and private stays private</h3>
-        <p>Answer with the coding agent you already use, with nothing to set up, or any OpenAI- or Anthropic-compatible endpoint. Mark a folder private and only a model on your own machine reads it; your coding agent can ask that private model and gets an answer, not the data, once you let it go.</p>
+        <div class="cmd">build-01 · 4 agents still working</div>
+        <h3>Agents that keep going when you leave</h3>
+        <p>Run your agents on a server and close the laptop: they keep working, and are there with their conversation when you come back, from this computer or another. After a restart, every tab, split and agent returns where it was.</p>
       </article>
       <article class="cap">
-        <div class="cmd">claude · codex · gemini · opencode</div>
-        <h3>Your other coding agents, better</h3>
-        <p>Start Claude Code, Codex, Gemini, OpenCode or Pi, here or on a server. One list shows every agent in every window, the ones waiting for you first, and the Dock counts them. Send a selection, a file or a command's output to the agent working on it, review exactly what its last turn changed and send your comments back, and give every agent Kyon's own tools over MCP. After a restart they come back with their conversation.</p>
+        <div class="cmd">~/orbit <b>git:(main)</b> ⌘↵ largest files here</div>
+        <h3>A terminal that understands you</h3>
+        <p>Every command and its output is a block you can rerun, copy or hand to an agent. Say what you want in plain words and ⌘↵ turns it into the command, ready to read and run. Ask a question in a pane beside a busy agent without interrupting it.</p>
       </article>
       <article class="cap">
         <div class="cmd">src/limiter.rs:22</div>
-        <h3>Code, review and documents</h3>
-        <p>An editor with language servers, a file explorer, workspace search, review over <code>git</code> with comments on any line, and Markdown you edit as it is rendered, Mermaid diagrams included. All of it works offline.</p>
+        <h3>The code right beside the conversation</h3>
+        <p>Open a file and it sits next to the session working on it: an editor with language servers, a file explorer, workspace search, <code>git</code> review, and Markdown you edit as it is rendered, Mermaid diagrams included. No switching between a terminal app and an IDE.</p>
       </article>
       <article class="cap">
-        <div class="cmd">layout restored · 3 tabs</div>
-        <h3>Yours to arrange</h3>
-        <p>Tabs, splits, vertical tabs, saved layouts, launch configurations and themes. Tabs colour themselves by rules about the user, the machine, the folder or the command, so root and production stand out. Settings live on a page or in a plain file. Quitting asks first, and after a restart, or a crash, the workspace comes back as you left it.</p>
+        <div class="cmd">ask with: claude · private: ~/clients</div>
+        <h3>Your models, your data</h3>
+        <p>Use the coding agent you already pay for, with nothing to set up, or any OpenAI- or Anthropic-compatible endpoint. Mark a folder private and only a model on your own machine reads it; other agents can ask that model a question and get an answer, never the files.</p>
       </article>
     </div>
   </div>
@@ -551,14 +551,13 @@ footer {
   <div class="wrap remote">
     <div>
       <p class="eyebrow">Remote machines</p>
-      <h2>Work on a server as if it were this machine</h2>
-      <p class="intro">Connect over SSH and the terminal, editor, file explorer, search and review all work on that machine. Sessions there, coding agents included, keep running when you disconnect and are waiting when you come back. A dropped connection is made again by itself, and what you typed meanwhile goes through once it is back. Drop a file of any size on a terminal there and it is copied across.</p>
+      <h2>A server feels like this machine</h2>
+      <p class="intro">Connect over SSH and everything comes with you: terminal, editor, file explorer, search, review and your agents, all working on that machine. Put the agents next to the code and the build, where they run fastest, and drive them from wherever you are. Drag a file onto a terminal there and it is copied across.</p>
       <div class="facts">
-        <span><span class="ok">✓</span> Nothing listens on a port</span>
-        <span><span class="ok">✓</span> No password of ours: SSH is the only way in</span>
+        <span><span class="ok">✓</span> Uses the SSH keys and config you already have</span>
         <span><span class="ok">✓</span> Any Linux or macOS host, x86_64 or ARM64</span>
-        <span><span class="ok">✓</span> Reconnects by itself, without losing a keystroke</span>
-        <span><span class="ok">✓</span> Fast over remote desktop, with or without a GPU</span>
+        <span><span class="ok">✓</span> Sessions and agents keep running while you are away</span>
+        <span><span class="ok">✓</span> Picks up a dropped connection, keystrokes and all</span>
       </div>
     </div>
     <div class="route" aria-label="How a remote session is reached">
@@ -721,8 +720,8 @@ const REPO = "kyon-sh/kyon";
 // What the newest release carries, used until (or unless) the release
 // list answers with the current one.
 const release = {
-  version: "0.0.80",
-  tag: "kyon-v0.0.80",
+  version: "0.0.81",
+  tag: "kyon-v0.0.81",
   assets: {},
 };
 const ASSET = {
@@ -786,7 +785,7 @@ function instructions(os, arch) {
       way("With Homebrew", "Installs Kyon and keeps it up to date with <code>brew upgrade</code>.",
         command("cmd-brew", "brew install --cask kyon-sh/kyon/kyon@preview")),
       way("Or the disk image",
-        "Open it and drag Kyon to Applications. Each image is built for its kind of Mac, signed and notarised.",
+        "Open it and drag Kyon to Applications.",
         el("div", { class: "downloads" },
           download(asset("dmgarm"), "Download for Apple silicon", ASSET.dmgarm(v), arch === "arm"),
           download(asset("dmgx64"), "Download for Intel", ASSET.dmgx64(v), arch !== "arm"))),
@@ -794,7 +793,7 @@ function instructions(os, arch) {
   }
   if (os === "linux" && arch === "x64") {
     return [
-      way("Debian and Ubuntu", "Adds Kyon's signed apt repository, so <code>apt upgrade</code> brings new releases.",
+      way("Debian and Ubuntu", "Adds Kyon's apt repository, so <code>apt upgrade</code> brings new releases.",
         command("cmd-apt", APT)),
       way("Or a single file",
         "The package installs on its own with <code>sudo apt install ./kyon_" + v + "_amd64.deb</code>. The tarball runs from wherever you unpack it: <code>Kyon/bin/kyon</code>.",
@@ -813,7 +812,7 @@ function instructions(os, arch) {
   const label = arch === "arm" ? "ARM64" : "x64";
   return [
     way("Download the zip",
-      "Unpack it anywhere and run <code>Kyon\\kyon.exe</code>. Nothing is installed elsewhere, so removing the folder removes Kyon.",
+      "Unpack it anywhere and run <code>Kyon\\kyon.exe</code>.",
       el("div", { class: "downloads" },
         download(asset(kind), `Download for Windows ${label}`, ASSET[kind](v), true))),
   ];
