@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Open and edit files with language servers, search the workspace, write Markdown in place, and review, comment on, commit and hand off your git changes.">
+<link rel="icon" href="../assets/kyon.png">
+<title>Code, review and documents · Kyon docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* The docs: kyon.sh's colours and type, laid out for reading. A contents
+   column, the chapter at a readable measure, and the sections of the page
+   beside it on a wide screen. */
+:root {
+  --ground: #f3f5f7;
+  --raised: #ffffff;
+  --ink: #12161b;
+  --muted: #56606b;
+  --rule: #d9dee4;
+  --accent: #1f7fc4;
+  --accent-soft: rgba(31, 127, 196, .09);
+  --frame: #0b0d10;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  --measure: 70ch;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #08090b;
+    --raised: #111317;
+    --ink: #e8ecf0;
+    --muted: #8d97a3;
+    --rule: #22262c;
+    --accent: #47a6ea;
+    --accent-soft: rgba(71, 166, 234, .12);
+    --frame: #000000;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #08090b;
+  --raised: #111317;
+  --ink: #e8ecf0;
+  --muted: #8d97a3;
+  --rule: #22262c;
+  --accent: #47a6ea;
+  --accent-soft: rgba(71, 166, 234, .12);
+  --frame: #000000;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 16px; top: 12px; background: var(--raised); padding: 6px 10px; z-index: 2; }
+
+/* ── top ───────────────────────────────────────────── */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 1.3rem/1 var(--display);
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.glyph {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--frame);
+  border: 1px solid var(--rule);
+  display: grid;
+  place-items: center;
+  font: 600 .8rem/1 var(--mono);
+  color: #47a6ea;
+}
+.links { display: flex; gap: 20px; font-weight: 600; }
+.links a { color: var(--muted); text-decoration: none; }
+.links a:hover, .links a[aria-current="page"] { color: var(--ink); }
+
+/* ── columns ───────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 210px;
+  gap: 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.side, .toc {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 40px;
+  font-size: .95rem;
+}
+.side summary { display: none; }
+.side ul, .toc ul { list-style: none; margin: 0 0 18px; padding: 0; }
+.side li a, .toc li a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  line-height: 1.35;
+}
+.side li a:hover, .toc li a:hover { color: var(--ink); background: var(--accent-soft); }
+.side li a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); font-weight: 600; }
+.group {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.toc li a { padding: 3px 10px; font-size: .9rem; }
+
+main { min-width: 0; padding: 36px 0 64px; }
+.head { margin-bottom: 28px; }
+h1, h2, h3 {
+  font-family: var(--display);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin: 0 0 10px; }
+.summary { margin: 0; font-size: 1.2rem; color: var(--muted); max-width: var(--measure); }
+
+/* ── prose ─────────────────────────────────────────── */
+.prose { max-width: var(--measure); }
+.prose section { padding-top: 8px; }
+.prose h2 {
+  font-size: 1.6rem;
+  margin: 36px 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.prose section:first-child h2 { border-top: 0; padding-top: 0; margin-top: 8px; }
+.prose h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+.prose p, .prose ul, .prose ol { margin: 0 0 14px; }
+.prose li { margin: 4px 0; }
+.prose li > ul, .prose li > ol { margin: 4px 0; }
+code {
+  font: 400 .88em var(--mono);
+  background: var(--accent-soft);
+  padding: .1em .35em;
+  border-radius: 4px;
+}
+kbd {
+  display: inline-block;
+  font: 600 .82em/1.5 var(--mono);
+  padding: 0 .45em;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--raised);
+  white-space: nowrap;
+}
+aside.note {
+  margin: 18px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+}
+aside.note p:last-child { margin-bottom: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 20px;
+  font-size: .97rem;
+}
+th, td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); }
+/* A path or a key name in a cell breaks rather than widening the page. */
+.prose td, .prose th { overflow-wrap: anywhere; }
+thead th {
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tbody th { font-weight: 600; }
+table.settings tbody th { width: 34%; }
+table.keys tbody th { font-weight: 400; }
+table.keys td { white-space: nowrap; width: 22%; }
+.detail { display: block; margin-top: 4px; color: var(--muted); font-size: .92rem; }
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font: 600 .68rem/1.6 var(--mono);
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  vertical-align: 2px;
+}
+.none { color: var(--muted); }
+.filter { display: flex; flex-direction: column; gap: 6px; max-width: 420px; }
+.filter label { font-weight: 600; }
+.filter input {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--raised);
+  color: var(--ink);
+}
+
+ul.cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+ul.cards li { margin: 0; }
+ul.cards a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--raised);
+  color: var(--ink);
+  text-decoration: none;
+}
+ul.cards a:hover { border-color: var(--accent); }
+ul.cards strong { font: 700 1.08rem/1.25 var(--display); }
+ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
+
+/* ── foot ──────────────────────────────────────────── */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--measure);
+  margin-top: 48px;
+}
+.pager a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+.pager a span { font: 600 .72rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.pager .next { margin-left: auto; text-align: right; }
+.foot {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  max-width: var(--measure);
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* ── narrower ──────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .shell { grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+  .toc { display: none; }
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .side {
+    position: static;
+    max-height: none;
+    padding: 14px 0 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .side summary {
+    display: block;
+    cursor: pointer;
+    padding: 6px 0 12px;
+    font-weight: 600;
+  }
+  main { padding-top: 24px; }
+  table.settings tbody th { width: auto; }
+  table.settings tr, table.settings th, table.settings td { display: block; padding-right: 0; }
+  table.settings th { border-bottom: 0; padding-bottom: 0; }
+  table.keys td { white-space: normal; }
+}
+
+</style>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<header class="top">
+  <a class="mark" href="../"><span class="glyph" aria-hidden="true">&gt;_</span>Kyon</a>
+  <nav class="links" aria-label="Site">
+    <a href="./" aria-current="false">Docs</a>
+    <a href="../#install">Download</a>
+  </nav>
+</header>
+<div class="shell">
+  <details class="side" open>
+    <summary>Contents</summary>
+    <nav aria-label="Documentation"><p class="group">Start</p><ul><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting started</a></li></ul><p class="group">Guide</p><ul><li><a href="workspace.html">Tabs, panes and windows</a></li><li><a href="terminal.html">The terminal</a></li><li><a href="coding-agents.html">Coding agents</a></li><li><a href="kyon-agent.html">Kyon&#x27;s agent, models and privacy</a></li><li><a href="code.html" aria-current="page">Code, review and documents</a></li><li><a href="remote.html">Working on a server</a></li><li><a href="troubleshooting.html">Updates and troubleshooting</a></li><li><a href="feedback.html">Feedback</a></li></ul><p class="group">Reference</p><ul><li><a href="settings.html">Every setting</a></li><li><a href="shortcuts.html">Commands and shortcuts</a></li></ul></nav>
+  </details>
+  <main id="main">
+    <header class="head">
+      <h1>Code, review and documents</h1>
+      <p class="summary">Open and edit files with language servers, search the workspace, write Markdown in place, and review, comment on, commit and hand off your git changes.</p>
+    </header>
+    <article class="prose">
+<section id="open-files">
+<h2>Open files</h2>
+<p>You can reach any file in the project from the keyboard, by part of its name or by its path.</p>
+<ul>
+<li>Press <kbd>⌘O</kbd> (<strong>Open a file</strong>) or <kbd>⌘E</kbd> (<strong>Browse files</strong>). With nothing typed you see the project's tree; type and it searches the whole tree. Choose a file to open it.</li>
+<li>Type a path starting with <code>/</code> or <code>~</code> to open that exact file. Add <code>:line</code>, as in <code>main.rs:120</code>, to land on that line.</li>
+<li>If nothing matches, <strong>Create a file named …</strong> opens a new file at the top of the project.</li>
+</ul>
+<p>In an open file, <kbd>⌘L</kbd> (<strong>Go to line</strong>) moves the caret to a line number. Files open in a split at the right of the tab unless you change it on <a href="#settings">Settings › Code › Editor and Code Review</a>.</p>
+</section>
+
+<section id="editor">
+<h2>The editor</h2>
+<p>The editor handles everyday editing, and adds language intelligence where a language server runs.</p>
+<ul>
+<li><strong>Several carets:</strong> <kbd>⌥</kbd>-click to add one, or <kbd>⌃⌥↑</kbd> / <kbd>⌃⌥↓</kbd> to add one above or below. <strong>Select this, then the next one like it</strong> (Edit › Carets) adds the next match. <kbd>Esc</kbd> returns to one caret.</li>
+<li><kbd>⌘/</kbd> comments or uncomments lines. <kbd>⌘⌥-</kbd> folds or opens a block, <kbd>⌘⌥⇧-</kbd> opens every fold, and <kbd>⌘⌥Z</kbd> switches line wrapping.</li>
+<li><strong>Find:</strong> <kbd>⌘F</kbd> opens the find bar with the selection in it. <kbd>↩</kbd> / <kbd>⇧↩</kbd> (or <kbd>⌘G</kbd> / <kbd>⌘⇧G</kbd>) step through matches; <strong>.*</strong> and <strong>Aa</strong> switch on regular expressions and matching case; <strong>Select all</strong> puts a caret on every match. The chevron at the bar's left shows <strong>Replace</strong> and <strong>Replace all</strong>.</li>
+<li><strong>Save:</strong> <kbd>⌘S</kbd>. With a language server running, the file is formatted first. If the file changes on disk under unsaved edits, a strip above the code offers <strong>Overwrite</strong> or <strong>Discard this version</strong>.</li>
+</ul>
+</section>
+
+<section id="language-servers">
+<h2>Language servers</h2>
+<p>A language server gives you completions, definitions, references, renames and problems marked as you type.</p>
+<p>Kyon can install rust-analyzer, gopls, pyright, typescript-language-server and clangd. Open a file in one of those languages and the bar along the bottom of the file offers to <strong>Enable</strong> the server for the project, or to <strong>Install</strong> it, on the machine the file is on. Once enabled, it starts whenever you work in that project. The bar's dot is green when ready, yellow when busy and red when failed; the lightning icon opens a menu to view logs, restart, stop or start it.</p>
+<table>
+<thead><tr><th>Command</th><th>Key</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>Finish this word</strong></td><td><kbd>⌃Space</kbd></td><td>Completions also appear after two letters or a <code>.</code>; <kbd>⇥</kbd> or <kbd>↩</kbd> takes one.</td></tr>
+<tr><td><strong>Go to definition</strong></td><td><kbd>⌘⇧J</kbd></td><td>Or <kbd>⌘</kbd>-click the symbol.</td></tr>
+<tr><td><strong>Find references to the symbol at the caret</strong></td><td></td><td>Lists every use; also on the right-click menu.</td></tr>
+<tr><td><strong>Rename this symbol everywhere</strong></td><td><kbd>F2</kbd></td><td>Open files get an unsaved edit you can undo; other files are written.</td></tr>
+<tr><td><strong>What this file declares</strong></td><td><kbd>⌘⇧S</kbd></td><td>The file's symbols. <kbd>⌘⌥B</kbd> docks this outline.</td></tr>
+<tr><td><strong>What is this?</strong></td><td><kbd>⌘⇧H</kbd></td><td>Describes the symbol; resting the pointer on a word does too.</td></tr>
+<tr><td><strong>Format this file</strong></td><td><kbd>⌘⌥F</kbd></td><td>Formats with the server.</td></tr>
+</tbody>
+</table>
+<p><strong>Settings › Code › Indexing and projects</strong> lists each project with its index and its servers, their state, and buttons to <strong>View logs</strong>, <strong>Restart server</strong>, <strong>Start</strong> or <strong>Disable</strong>; <strong>+</strong> installs or enables one not yet in use. To add a server of your own, use the <strong>Language servers</strong> setting in the settings file (see <a href="settings.html">the settings reference</a>).</p>
+</section>
+
+<section id="explorer">
+<h2>The file explorer</h2>
+<p>The project explorer keeps the tree beside your panes, on this Mac or a host.</p>
+<p>Press <kbd>⌃1</kbd> (<strong>Left Panel: Project explorer</strong>) or <kbd>⌘⇧B</kbd> (<strong>Dock the file tree beside the panes</strong>). Type in the field above the tree to filter it: letters in order match, ignoring case, so <code>vw</code> finds <code>view.rs</code>, and <code>uni/tes</code> matches along a path. When you pause, Kyon searches the whole tree and opens the first matches into it. The buttons beside the field switch to a regular expression, show a flat list, refresh and clear.</p>
+<p><strong>Look through a path</strong>, at the bottom of the panel, adds another folder, such as <code>~</code> or <code>../other-repo</code>, until you remove it with the cross on its row.</p>
+</section>
+
+<section id="search">
+<h2>Search the workspace</h2>
+<p>Workspace search finds text in the folders the tab is working in, and keeps the results beside your panes.</p>
+<p>Press <kbd>⌘⇧F</kbd> (<strong>Search the workspace</strong>) or <kbd>⌃3</kbd>. The search runs when you pause typing; the <strong>regex</strong> and <strong>case</strong> toggles change how it reads the query. <kbd>⇥</kbd> moves to the folders field, a comma-separated list such as <code>src, *.md, !vendor</code>. Results are grouped by folder and file; <kbd>↓</kbd> moves into them and <kbd>↩</kbd> or a click opens a match at its line. Each tab keeps its own search.</p>
+</section>
+
+<section id="markdown">
+<h2>Markdown documents</h2>
+<p>Markdown files open rendered, and you write in the rendered page.</p>
+<p>The block holding the caret shows its source, with the marks faintly visible, while the rest stays rendered. <kbd>⌘⇧E</kbd> (<strong>Markdown: switch between rendered and source</strong>) switches to the raw source and back.</p>
+<p>A formatting bar above the document inserts headings, bold, italic, code, lists, task lists, quotes, links, pictures and tables. <strong>Link</strong> and <strong>Picture</strong> ask for the address in the bar, suggesting files beside the document (<kbd>⇥</kbd> takes one) and, after <code>#</code>, headings in this or another document. <strong>Choose a file</strong> picks one instead.</p>
+<ul>
+<li>Pictures beside the document, embedded in it or on the web are shown in the page.</li>
+<li>A <code>mermaid</code> code block is drawn as a diagram, offline.</li>
+<li>Clicking a link to a heading opens its document at that heading.</li>
+</ul>
+</section>
+
+<section id="review">
+<h2>Review changes</h2>
+<p>The review takes you from reading your changes to a commit, a push and a pull request.</p>
+<h3>Open a review</h3>
+<p>In a git repository, the review control at the window's top right shows the lines added and removed across the whole branch, committed or not, against the branch it grew from. Click it or press <kbd>⌘⇧=</kbd> (<strong>Toggle code review</strong>) to open the review in a panel at the right; each tab keeps its own. <kbd>⌘R</kbd> (<strong>Review changes</strong>) opens one in its own tab.</p>
+<h3>Read and compare</h3>
+<p>Press <kbd>n</kbd> / <kbd>p</kbd> for the next or previous change and <kbd>]</kbd> / <kbd>[</kbd> for the next or previous file; <kbd>⌘⌥E</kbd> shows more above a change and <kbd>⌘⌥S</kbd> switches to what is staged. The review starts with uncommitted changes. Press <kbd>c</kbd> or <kbd>⌘⌥⇧R</kbd> (<strong>Review a branch, a commit or a pull request</strong>) to compare against another branch (likely parent first), a recent commit or an open pull request; <kbd>⇥</kbd> sets whether uncommitted changes are included.</p>
+<h3>Comment, discard, commit</h3>
+<ul>
+<li>Hover at the left edge of a line and click the button that appears to comment. The tray at the bottom counts comments; <strong>Send to Agent</strong> pastes them into the coding agent in this tab, and <strong>Cancel</strong> discards them all.</li>
+<li><kbd>⌘⌥⌫</kbd> (<strong>Discard the changes to the file being reviewed</strong>), pressed twice, throws away the file's changes.</li>
+<li>The header's button offers the next step: <strong>Commit</strong>, <strong>Publish</strong>, <strong>Push</strong>, <strong>Create PR</strong>, or the open pull request. The commit dialog lets you choose <strong>Commit</strong>, <strong>Commit and push</strong> or <strong>Commit and create PR</strong> with <kbd>↑</kbd> / <kbd>↓</kbd>. Pull requests need the GitHub CLI, <code>gh</code>, signed in.</li>
+<li>The panel's <strong>⋮</strong> menu offers <strong>Delegate fixes to agent</strong> and <strong>Review with agent</strong>, which adds the agent's findings as comments. It uses the coding agent chosen in <strong>Ask with</strong> (Settings › Agent › Agent), or Claude Code. For reviewing an agent's last turn, see <a href="coding-agents.html">Coding agents</a>.</li>
+</ul>
+</section>
+
+<section id="notes">
+<h2>Notes on lines</h2>
+<p>Notes let you mark lines while you read and hand them to an agent later. They are the same comments the review shows, kept per repository.</p>
+<ul>
+<li>In the editor, hover a line and click the button by its number, then <strong>Comment</strong>. The bar under the code has <strong>Send to agent</strong>.</li>
+<li><strong>Leave a note on this line</strong> notes the caret's line; <strong>Notes on this tree</strong> lists every note; <strong>Hand the notes to the assistant</strong> types them into the focused prompt. All three are in File › Notes.</li>
+</ul>
+</section>
+
+<section id="settings">
+<h2>Editor and Code Review settings</h2>
+<p><strong>Settings › Code › Editor and Code Review</strong> (<kbd>⌘,</kbd>) sets which editor opens file links and files from Kyon's panels, whether files open as a split or a new tab, whether Markdown opens rendered, whether the review button and its line counts show and the review opens on an agent's first change, the explorer and search limits, <strong>Format on save</strong>, <strong>Tab width</strong> and <strong>Wrap long lines</strong>. See <a href="settings.html">the settings reference</a> and <a href="shortcuts.html">the shortcuts reference</a>.</p>
+</section>
+
+<section id="limits">
+<h2>Limits</h2>
+<aside class="note"><p><strong>Project explorer:</strong> one tree per window, the window's, with one filter per window, focused by clicking its field. A folder added with Look through a path is searched only among what it has listed. On a host, it reaches its starting folder, home and temporary folders.</p></aside>
+<aside class="note"><p><strong>Workspace search:</strong> it searches one machine at a time, does not say a host is still connecting (an unreachable one reports failure), shows no full-path tooltip, and a host's results arrive at the end, capped at 20,000 lines.</p></aside>
+<aside class="note"><p><strong>Commits and pull requests:</strong> the commit message starts empty and a pull request is filled from its commits; no model writes them.</p></aside>
+<aside class="note"><p><strong>Handing a review to an agent</strong> runs a coding agent's command line where the repository is; a configured orchestration backend is not used. Codebase indexing is this Mac's only.</p></aside>
+</section>
+
+    </article>
+    <nav class="pager" aria-label="Chapters"><a class="prev" href="kyon-agent.html"><span>Previous</span>Kyon&#x27;s agent, models and privacy</a><a class="next" href="remote.html"><span>Next</span>Working on a server</a></nav>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.0.82</span></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#open-files">Open files</a></li><li><a href="#editor">The editor</a></li><li><a href="#language-servers">Language servers</a></li><li><a href="#explorer">The file explorer</a></li><li><a href="#search">Search the workspace</a></li><li><a href="#markdown">Markdown documents</a></li><li><a href="#review">Review changes</a></li><li><a href="#notes">Notes on lines</a></li><li><a href="#settings">Editor and Code Review settings</a></li><li><a href="#limits">Limits</a></li></ul></nav>
+</div>
+<script>
+// The contents start folded on a narrow screen, open on a wide one.
+const side = document.querySelector(".side");
+const narrow = window.matchMedia("(max-width: 900px)");
+const fold = () => { side.open = !narrow.matches; };
+fold();
+narrow.addEventListener("change", fold);
+</script>
+</body>
+</html>

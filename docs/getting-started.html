@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Install Kyon, answer the first-run introduction, find your way around the window and start your first coding agent.">
+<link rel="icon" href="../assets/kyon.png">
+<title>Getting started · Kyon docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* The docs: kyon.sh's colours and type, laid out for reading. A contents
+   column, the chapter at a readable measure, and the sections of the page
+   beside it on a wide screen. */
+:root {
+  --ground: #f3f5f7;
+  --raised: #ffffff;
+  --ink: #12161b;
+  --muted: #56606b;
+  --rule: #d9dee4;
+  --accent: #1f7fc4;
+  --accent-soft: rgba(31, 127, 196, .09);
+  --frame: #0b0d10;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  --measure: 70ch;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #08090b;
+    --raised: #111317;
+    --ink: #e8ecf0;
+    --muted: #8d97a3;
+    --rule: #22262c;
+    --accent: #47a6ea;
+    --accent-soft: rgba(71, 166, 234, .12);
+    --frame: #000000;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #08090b;
+  --raised: #111317;
+  --ink: #e8ecf0;
+  --muted: #8d97a3;
+  --rule: #22262c;
+  --accent: #47a6ea;
+  --accent-soft: rgba(71, 166, 234, .12);
+  --frame: #000000;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 16px; top: 12px; background: var(--raised); padding: 6px 10px; z-index: 2; }
+
+/* ── top ───────────────────────────────────────────── */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 1.3rem/1 var(--display);
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.glyph {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--frame);
+  border: 1px solid var(--rule);
+  display: grid;
+  place-items: center;
+  font: 600 .8rem/1 var(--mono);
+  color: #47a6ea;
+}
+.links { display: flex; gap: 20px; font-weight: 600; }
+.links a { color: var(--muted); text-decoration: none; }
+.links a:hover, .links a[aria-current="page"] { color: var(--ink); }
+
+/* ── columns ───────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 210px;
+  gap: 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.side, .toc {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 40px;
+  font-size: .95rem;
+}
+.side summary { display: none; }
+.side ul, .toc ul { list-style: none; margin: 0 0 18px; padding: 0; }
+.side li a, .toc li a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  line-height: 1.35;
+}
+.side li a:hover, .toc li a:hover { color: var(--ink); background: var(--accent-soft); }
+.side li a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); font-weight: 600; }
+.group {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.toc li a { padding: 3px 10px; font-size: .9rem; }
+
+main { min-width: 0; padding: 36px 0 64px; }
+.head { margin-bottom: 28px; }
+h1, h2, h3 {
+  font-family: var(--display);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin: 0 0 10px; }
+.summary { margin: 0; font-size: 1.2rem; color: var(--muted); max-width: var(--measure); }
+
+/* ── prose ─────────────────────────────────────────── */
+.prose { max-width: var(--measure); }
+.prose section { padding-top: 8px; }
+.prose h2 {
+  font-size: 1.6rem;
+  margin: 36px 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.prose section:first-child h2 { border-top: 0; padding-top: 0; margin-top: 8px; }
+.prose h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+.prose p, .prose ul, .prose ol { margin: 0 0 14px; }
+.prose li { margin: 4px 0; }
+.prose li > ul, .prose li > ol { margin: 4px 0; }
+code {
+  font: 400 .88em var(--mono);
+  background: var(--accent-soft);
+  padding: .1em .35em;
+  border-radius: 4px;
+}
+kbd {
+  display: inline-block;
+  font: 600 .82em/1.5 var(--mono);
+  padding: 0 .45em;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--raised);
+  white-space: nowrap;
+}
+aside.note {
+  margin: 18px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+}
+aside.note p:last-child { margin-bottom: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 20px;
+  font-size: .97rem;
+}
+th, td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); }
+/* A path or a key name in a cell breaks rather than widening the page. */
+.prose td, .prose th { overflow-wrap: anywhere; }
+thead th {
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tbody th { font-weight: 600; }
+table.settings tbody th { width: 34%; }
+table.keys tbody th { font-weight: 400; }
+table.keys td { white-space: nowrap; width: 22%; }
+.detail { display: block; margin-top: 4px; color: var(--muted); font-size: .92rem; }
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font: 600 .68rem/1.6 var(--mono);
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  vertical-align: 2px;
+}
+.none { color: var(--muted); }
+.filter { display: flex; flex-direction: column; gap: 6px; max-width: 420px; }
+.filter label { font-weight: 600; }
+.filter input {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--raised);
+  color: var(--ink);
+}
+
+ul.cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+ul.cards li { margin: 0; }
+ul.cards a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--raised);
+  color: var(--ink);
+  text-decoration: none;
+}
+ul.cards a:hover { border-color: var(--accent); }
+ul.cards strong { font: 700 1.08rem/1.25 var(--display); }
+ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
+
+/* ── foot ──────────────────────────────────────────── */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--measure);
+  margin-top: 48px;
+}
+.pager a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+.pager a span { font: 600 .72rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.pager .next { margin-left: auto; text-align: right; }
+.foot {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  max-width: var(--measure);
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* ── narrower ──────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .shell { grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+  .toc { display: none; }
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .side {
+    position: static;
+    max-height: none;
+    padding: 14px 0 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .side summary {
+    display: block;
+    cursor: pointer;
+    padding: 6px 0 12px;
+    font-weight: 600;
+  }
+  main { padding-top: 24px; }
+  table.settings tbody th { width: auto; }
+  table.settings tr, table.settings th, table.settings td { display: block; padding-right: 0; }
+  table.settings th { border-bottom: 0; padding-bottom: 0; }
+  table.keys td { white-space: normal; }
+}
+
+</style>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<header class="top">
+  <a class="mark" href="../"><span class="glyph" aria-hidden="true">&gt;_</span>Kyon</a>
+  <nav class="links" aria-label="Site">
+    <a href="./" aria-current="false">Docs</a>
+    <a href="../#install">Download</a>
+  </nav>
+</header>
+<div class="shell">
+  <details class="side" open>
+    <summary>Contents</summary>
+    <nav aria-label="Documentation"><p class="group">Start</p><ul><li><a href="index.html">Overview</a></li><li><a href="getting-started.html" aria-current="page">Getting started</a></li></ul><p class="group">Guide</p><ul><li><a href="workspace.html">Tabs, panes and windows</a></li><li><a href="terminal.html">The terminal</a></li><li><a href="coding-agents.html">Coding agents</a></li><li><a href="kyon-agent.html">Kyon&#x27;s agent, models and privacy</a></li><li><a href="code.html">Code, review and documents</a></li><li><a href="remote.html">Working on a server</a></li><li><a href="troubleshooting.html">Updates and troubleshooting</a></li><li><a href="feedback.html">Feedback</a></li></ul><p class="group">Reference</p><ul><li><a href="settings.html">Every setting</a></li><li><a href="shortcuts.html">Commands and shortcuts</a></li></ul></nav>
+  </details>
+  <main id="main">
+    <header class="head">
+      <h1>Getting started</h1>
+      <p class="summary">Install Kyon, answer the first-run introduction, find your way around the window and start your first coding agent.</p>
+    </header>
+    <article class="prose">
+<section id="install">
+<h2>Install Kyon</h2>
+<p>Kyon installs as an ordinary Mac application, so it updates and uninstalls like any other.</p>
+<ul>
+<li><strong>With Homebrew:</strong> run <code>brew install --cask kyon-sh/kyon/kyon</code>. The cask installs <code>Kyon.app</code> and replaces an earlier Kyon if you had one.</li>
+<li><strong>By download:</strong> get the latest build from <a href="../#install">kyon.sh</a> and move <code>Kyon.app</code> to your Applications folder.</li>
+</ul>
+<p>To check for a newer build later, choose <strong>Check for updates</strong> from the Kyon menu or the command palette (<kbd>⌘P</kbd>). The answer appears on the About page, which says how the check stands and offers to install the build it found. <strong>About Kyon</strong>, in the Kyon menu, shows the version and update channel you are on.</p>
+</section>
+
+<section id="introduction">
+<h2>The first-run introduction</h2>
+<p>The first time a window opens, a short introduction sets Kyon up around the tools you already use. Each screen is a list: choose a row with the arrow keys and <kbd>↩</kbd>, or click it. <strong>Continue</strong> moves on and <strong>Back</strong> returns to the previous screen. Nothing in it asks for an account.</p>
+<ol>
+<li><strong>A terminal for your coding agents.</strong> What Kyon is for.</li>
+<li><strong>Which coding agent do you use?</strong> Choose Claude Code, Codex, Gemini, OpenCode or Pi, or <strong>None of these</strong>. Kyon is built around these agents, and your answer decides what the next questions offer.</li>
+<li><strong>Pick a theme.</strong> Every theme Kyon has, including any of your own.</li>
+<li><strong>How should Kyon's own agent answer?</strong> Kyon has its own agent for questions on the side. It can answer:
+<ul>
+<li><strong>With</strong> the coding agent you chose, <strong>nothing to set up</strong>: Kyon runs that agent once for each question. Offered for Claude Code, Codex, Gemini and OpenCode.</li>
+<li><strong>I have an API key</strong>: the key is stored in your keychain, never in the settings file.</li>
+<li><strong>A command mints a token</strong>: for endpoints that hand out short-lived tokens.</li>
+<li><strong>A local server that needs no key</strong>.</li>
+<li><strong>No model for now</strong>: the terminal and the coding agents work the same either way.</li>
+</ul></li>
+<li><strong>Where is it?</strong> Shown only when you chose a key, a token command or a local server. Give the endpoint's URL and model name, whether it speaks <code>openai</code> or <code>anthropic</code>, the key or token command, and optionally a name. <strong>Continue</strong> stays greyed, with the reason beside it, until the URL and model are filled in.</li>
+<li><strong>What may it do on its own?</strong> Also only with an endpoint: <strong>Ask before it changes anything</strong> (reads files freely, asks to write or run), <strong>Ask before everything, reading included</strong>, or <strong>Never ask</strong>.</li>
+<li><strong>Where do you work?</strong> A folder for new tabs, under <strong>Start new tabs in</strong>.</li>
+<li><strong>A few preferences.</strong> Text size, an opaque or slightly see-through window, whether to bring your windows back next time, and whether to be told on the desktop when an agent needs you.</li>
+<li><strong>Ready.</strong> A summary of your choices. Choose <strong>Finish</strong> to save them.</li>
+</ol>
+<p>Your answers are written to your settings file, and the window says where it saved them. If you turned on desktop notifications, macOS asks for permission straight away.</p>
+<aside class="note"><p>Choosing a folder there sets <strong>New terminals start in</strong> (Settings › Terminal › General) to start every new terminal in it. Leave it empty and a new terminal opens where the one in front is working.</p></aside>
+<p>If you press <kbd>Esc</kbd> or click outside the list before the end, the introduction closes, nothing you were choosing is applied, and it does not open again by itself. To see it again, choose <strong>Show the introduction again</strong> from the Kyon menu or the command palette. It opens with your current theme already chosen.</p>
+<h3>Hints</h3>
+<p>After the introduction, Kyon shows a short hint now and then, at most one a day, about splitting panes, the command palette, agent conversations and restoring your windows. Each hint goes away on its own once you have had time to read it, and is not shown again. <strong>Show the hints again</strong> brings them all back.</p>
+</section>
+
+<section id="tour">
+<h2>A tour of the window</h2>
+<p>Everything in a Kyon window is a tab made of panes, so the same few gestures work for terminals, agents, files and settings.</p>
+<h3>The title bar</h3>
+<p>Tabs run along the top by default, in the title bar. Buttons sit on either side:</p>
+<ul>
+<li><strong>Left:</strong> one button shows or hides the vertical tab list, and another opens <strong>Go to session</strong> (<kbd>⌘⇧O</kbd>), a list of your tabs to filter by name. With the vertical tab list showing, a third button docks the file tree beside your panes, and the middle of the bar becomes a search field, <em>Search sessions, agents, files...</em>, that opens the command palette.</li>
+<li><strong>Right:</strong> the round button at the far right is your menu. It holds <strong>Check for updates</strong>, <strong>What's new</strong>, <strong>Settings</strong>, <strong>Keyboard shortcuts</strong>, <strong>Documentation</strong>, <strong>Feedback</strong>, <strong>View Kyon logs</strong> and <strong>About Kyon</strong>. Beside it is the inbox, which lists what the window has told you. A globe appears when you have remote targets set up, and while the tab in front is in a Git repository a review button appears, with the lines added and removed on the branch.</li>
+</ul>
+<h3>Tabs</h3>
+<p>Each tab holds one or more panes. <kbd>⌘T</kbd> opens a new terminal tab, and <kbd>⌘1</kbd> to <kbd>⌘8</kbd> go to a tab by position. A tab with an agent waiting for you carries a blue dot. If you prefer tabs down the side, where each pane gets its own row, run <strong>Toggle vertical tabs</strong>. <a href="workspace.html">Tabs, panes and windows</a> covers all of this in full.</p>
+<h3>Panes</h3>
+<p>Split the pane you are in with <kbd>⌘D</kbd> (right) or <kbd>⌘⇧D</kbd> (down), and move between panes with <kbd>⌘]</kbd> and <kbd>⌘[</kbd>. The pane with the keyboard focus is marked at its corner. Right-click a pane to see what you can do there.</p>
+<h3>The command palette</h3>
+<p>Press <kbd>⌘P</kbd> to open the command palette. It lists every command with its shortcut, and every on/off setting with its current value. Type to narrow it. Once you type, it also finds open sessions and files in the session in front.</p>
+<h3>The side panel</h3>
+<p>A panel can sit beside your panes. It has three views, each on its own key:</p>
+<table>
+<thead><tr><th>View</th><th>Shortcut</th></tr></thead>
+<tbody>
+<tr><td>Left Panel: Project explorer</td><td><kbd>⌃1</kbd></td></tr>
+<tr><td>Left Panel: Agent conversations</td><td><kbd>⌃2</kbd></td></tr>
+<tr><td>Left Panel: Global search</td><td><kbd>⌃3</kbd></td></tr>
+</tbody>
+</table>
+<p>Pressing a view's key while it is showing puts the panel away. You can also dock the file tree with <kbd>⌘⇧B</kbd>, the outline of the file in front with <kbd>⌘⌥B</kbd>, or every agent with <strong>Dock the agents beside the panes</strong>. <strong>Docked panel</strong> in Settings › Appearance › Layout picks the panel a new window opens with.</p>
+<h3>The menu bar</h3>
+<p>The menu bar holds the commands you reach for most: File, Edit, Code, View, Tab, Session and Window. The Kyon menu holds settings, updates, help and the introduction. Every command, including those left out of the menus, is in the command palette.</p>
+</section>
+
+<section id="first-agent">
+<h2>Open your first agent</h2>
+<p>A coding agent runs in a terminal tab of its own, where Kyon can show what it is doing and tell you when it needs you.</p>
+<ol>
+<li>Press <kbd>⌃⌘T</kbd> to open the new-session menu. With the vertical tab list showing, its new-tab button opens the same menu.</li>
+<li>Choose your agent: Claude Code, Codex, Gemini, OpenCode or Pi.</li>
+<li>A panel beside the menu asks where it runs. Choose <strong>Local</strong> for this Mac, one of your remote targets, or <strong>Manage targets…</strong> to add one.</li>
+<li>Kyon asks which folder to start in. The first row, <strong>Launch</strong> followed by the agent and folder, starts it where a new tab would start. Type a path to go elsewhere: the folders inside it are offered as you type, and <kbd>Tab</kbd> goes into the first one; folders you used before are listed, and on this Mac <strong>Browse…</strong> opens the folder chooser.</li>
+</ol>
+<p>You can also start an agent the usual way, by typing its command (such as <code>claude</code>) in any terminal. Kyon recognises it however it was started.</p>
+<p>When you run an agent Kyon can connect to, Kyon offers to install that agent's Kyon plugin, once on each machine. Accept it so the agent can report each turn and question to Kyon. To start a conversation with Kyon's own agent instead, press <kbd>⌘I</kbd> (<strong>New agent conversation</strong>).</p>
+<p>Once agents are running, <kbd>⌘J</kbd> takes you to the next one waiting for you, and <kbd>⌘⌥A</kbd> shows every agent in every window, with the ones waiting for you first.</p>
+</section>
+
+<section id="next">
+<h2>Where to go next</h2>
+<ul>
+<li><a href="workspace.html">Tabs, panes and windows</a>: arranging your work, layouts, themes, settings and restoring after a restart.</li>
+<li><a href="terminal.html">The terminal</a>: command blocks, the input editor, completions and history.</li>
+<li><a href="coding-agents.html">Coding agents</a>: working with Claude Code, Codex and the others, and reviewing what each turn changed.</li>
+<li><a href="kyon-agent.html">Kyon's agent</a>: models, side questions and private folders.</li>
+<li><a href="code.html">Code</a>: the editor, the project explorer, search and review.</li>
+<li><a href="remote.html">Remote hosts</a>: working on a server over SSH.</li>
+<li><a href="settings.html">Settings</a> and <a href="shortcuts.html">Shortcuts</a>: the full references.</li>
+<li><a href="troubleshooting.html">Troubleshooting</a>, when something does not behave.</li>
+</ul>
+</section>
+
+<section id="limits">
+<h2>Limits</h2>
+<aside class="note"><p>A screen reader can read the Kyon window, but cannot yet move the focus or activate anything in it. The project explorer shows one root for the whole window, the window's own, rather than one for each folder your panes are in, and keeps one filter for the window rather than one for each tab.</p></aside>
+</section>
+
+    </article>
+    <nav class="pager" aria-label="Chapters"><a class="prev" href="index.html"><span>Previous</span>Overview</a><a class="next" href="workspace.html"><span>Next</span>Tabs, panes and windows</a></nav>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.0.82</span></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#install">Install Kyon</a></li><li><a href="#introduction">The first-run introduction</a></li><li><a href="#tour">A tour of the window</a></li><li><a href="#first-agent">Open your first agent</a></li><li><a href="#next">Where to go next</a></li><li><a href="#limits">Limits</a></li></ul></nav>
+</div>
+<script>
+// The contents start folded on a narrow screen, open on a wide one.
+const side = document.querySelector(".side");
+const narrow = window.matchMedia("(max-width: 900px)");
+const fold = () => { side.open = !narrow.matches; };
+fold();
+narrow.addEventListener("change", fold);
+</script>
+</body>
+</html>

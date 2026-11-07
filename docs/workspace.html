@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Arrange your work in tabs, panes and windows, save layouts, change how Kyon looks, edit settings, and get everything back after a restart.">
+<link rel="icon" href="../assets/kyon.png">
+<title>Tabs, panes and windows · Kyon docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* The docs: kyon.sh's colours and type, laid out for reading. A contents
+   column, the chapter at a readable measure, and the sections of the page
+   beside it on a wide screen. */
+:root {
+  --ground: #f3f5f7;
+  --raised: #ffffff;
+  --ink: #12161b;
+  --muted: #56606b;
+  --rule: #d9dee4;
+  --accent: #1f7fc4;
+  --accent-soft: rgba(31, 127, 196, .09);
+  --frame: #0b0d10;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  --measure: 70ch;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #08090b;
+    --raised: #111317;
+    --ink: #e8ecf0;
+    --muted: #8d97a3;
+    --rule: #22262c;
+    --accent: #47a6ea;
+    --accent-soft: rgba(71, 166, 234, .12);
+    --frame: #000000;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #08090b;
+  --raised: #111317;
+  --ink: #e8ecf0;
+  --muted: #8d97a3;
+  --rule: #22262c;
+  --accent: #47a6ea;
+  --accent-soft: rgba(71, 166, 234, .12);
+  --frame: #000000;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 16px; top: 12px; background: var(--raised); padding: 6px 10px; z-index: 2; }
+
+/* ── top ───────────────────────────────────────────── */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 1.3rem/1 var(--display);
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.glyph {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--frame);
+  border: 1px solid var(--rule);
+  display: grid;
+  place-items: center;
+  font: 600 .8rem/1 var(--mono);
+  color: #47a6ea;
+}
+.links { display: flex; gap: 20px; font-weight: 600; }
+.links a { color: var(--muted); text-decoration: none; }
+.links a:hover, .links a[aria-current="page"] { color: var(--ink); }
+
+/* ── columns ───────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 210px;
+  gap: 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.side, .toc {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 40px;
+  font-size: .95rem;
+}
+.side summary { display: none; }
+.side ul, .toc ul { list-style: none; margin: 0 0 18px; padding: 0; }
+.side li a, .toc li a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  line-height: 1.35;
+}
+.side li a:hover, .toc li a:hover { color: var(--ink); background: var(--accent-soft); }
+.side li a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); font-weight: 600; }
+.group {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.toc li a { padding: 3px 10px; font-size: .9rem; }
+
+main { min-width: 0; padding: 36px 0 64px; }
+.head { margin-bottom: 28px; }
+h1, h2, h3 {
+  font-family: var(--display);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin: 0 0 10px; }
+.summary { margin: 0; font-size: 1.2rem; color: var(--muted); max-width: var(--measure); }
+
+/* ── prose ─────────────────────────────────────────── */
+.prose { max-width: var(--measure); }
+.prose section { padding-top: 8px; }
+.prose h2 {
+  font-size: 1.6rem;
+  margin: 36px 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.prose section:first-child h2 { border-top: 0; padding-top: 0; margin-top: 8px; }
+.prose h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+.prose p, .prose ul, .prose ol { margin: 0 0 14px; }
+.prose li { margin: 4px 0; }
+.prose li > ul, .prose li > ol { margin: 4px 0; }
+code {
+  font: 400 .88em var(--mono);
+  background: var(--accent-soft);
+  padding: .1em .35em;
+  border-radius: 4px;
+}
+kbd {
+  display: inline-block;
+  font: 600 .82em/1.5 var(--mono);
+  padding: 0 .45em;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--raised);
+  white-space: nowrap;
+}
+aside.note {
+  margin: 18px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+}
+aside.note p:last-child { margin-bottom: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 20px;
+  font-size: .97rem;
+}
+th, td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); }
+/* A path or a key name in a cell breaks rather than widening the page. */
+.prose td, .prose th { overflow-wrap: anywhere; }
+thead th {
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tbody th { font-weight: 600; }
+table.settings tbody th { width: 34%; }
+table.keys tbody th { font-weight: 400; }
+table.keys td { white-space: nowrap; width: 22%; }
+.detail { display: block; margin-top: 4px; color: var(--muted); font-size: .92rem; }
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font: 600 .68rem/1.6 var(--mono);
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  vertical-align: 2px;
+}
+.none { color: var(--muted); }
+.filter { display: flex; flex-direction: column; gap: 6px; max-width: 420px; }
+.filter label { font-weight: 600; }
+.filter input {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--raised);
+  color: var(--ink);
+}
+
+ul.cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+ul.cards li { margin: 0; }
+ul.cards a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--raised);
+  color: var(--ink);
+  text-decoration: none;
+}
+ul.cards a:hover { border-color: var(--accent); }
+ul.cards strong { font: 700 1.08rem/1.25 var(--display); }
+ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
+
+/* ── foot ──────────────────────────────────────────── */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--measure);
+  margin-top: 48px;
+}
+.pager a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+.pager a span { font: 600 .72rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.pager .next { margin-left: auto; text-align: right; }
+.foot {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  max-width: var(--measure);
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* ── narrower ──────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .shell { grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+  .toc { display: none; }
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .side {
+    position: static;
+    max-height: none;
+    padding: 14px 0 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .side summary {
+    display: block;
+    cursor: pointer;
+    padding: 6px 0 12px;
+    font-weight: 600;
+  }
+  main { padding-top: 24px; }
+  table.settings tbody th { width: auto; }
+  table.settings tr, table.settings th, table.settings td { display: block; padding-right: 0; }
+  table.settings th { border-bottom: 0; padding-bottom: 0; }
+  table.keys td { white-space: normal; }
+}
+
+</style>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<header class="top">
+  <a class="mark" href="../"><span class="glyph" aria-hidden="true">&gt;_</span>Kyon</a>
+  <nav class="links" aria-label="Site">
+    <a href="./" aria-current="false">Docs</a>
+    <a href="../#install">Download</a>
+  </nav>
+</header>
+<div class="shell">
+  <details class="side" open>
+    <summary>Contents</summary>
+    <nav aria-label="Documentation"><p class="group">Start</p><ul><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting started</a></li></ul><p class="group">Guide</p><ul><li><a href="workspace.html" aria-current="page">Tabs, panes and windows</a></li><li><a href="terminal.html">The terminal</a></li><li><a href="coding-agents.html">Coding agents</a></li><li><a href="kyon-agent.html">Kyon&#x27;s agent, models and privacy</a></li><li><a href="code.html">Code, review and documents</a></li><li><a href="remote.html">Working on a server</a></li><li><a href="troubleshooting.html">Updates and troubleshooting</a></li><li><a href="feedback.html">Feedback</a></li></ul><p class="group">Reference</p><ul><li><a href="settings.html">Every setting</a></li><li><a href="shortcuts.html">Commands and shortcuts</a></li></ul></nav>
+  </details>
+  <main id="main">
+    <header class="head">
+      <h1>Tabs, panes and windows</h1>
+      <p class="summary">Arrange your work in tabs, panes and windows, save layouts, change how Kyon looks, edit settings, and get everything back after a restart.</p>
+    </header>
+    <article class="prose">
+<section id="tabs">
+<h2>Tabs</h2>
+<p>Tabs keep each piece of work, whether a shell, an agent, a file or the settings, one keystroke away.</p>
+<table>
+<thead><tr><th>Command</th><th>Shortcut</th></tr></thead>
+<tbody>
+<tr><td>New tab</td><td><kbd>⌘T</kbd></td></tr>
+<tr><td>New session menu</td><td><kbd>⌃⌘T</kbd></td></tr>
+<tr><td>Close tab</td><td><kbd>⌘⇧W</kbd></td></tr>
+<tr><td>Next tab / Previous tab</td><td><kbd>⌘⇧]</kbd> / <kbd>⌘⇧[</kbd></td></tr>
+<tr><td>Go to tab 1–8 / Go to last tab</td><td><kbd>⌘1</kbd>–<kbd>⌘8</kbd> / <kbd>⌘9</kbd></td></tr>
+<tr><td>Move tab left / Move tab right</td><td><kbd>⌘⇧,</kbd> / <kbd>⌘⇧.</kbd></td></tr>
+<tr><td>Rename tab</td><td><kbd>⌘⇧R</kbd></td></tr>
+<tr><td>Pin or unpin tab</td><td><kbd>⌘⇧P</kbd></td></tr>
+</tbody>
+</table>
+<p><strong>New tab</strong> opens a terminal, or the tab configuration named in <strong>New tabs use</strong> (Settings › Terminal › General). <strong>Open new tabs</strong> (Settings › Terminal › Behavior) places new tabs at the end or after the current one. Drag a tab to reorder it. Pinned tabs stay together at the front.</p>
+<h3>The new-session menu</h3>
+<p>The new-session menu starts any kind of session in one place. Open it with <kbd>⌃⌘T</kbd>, or with the vertical tab list's new-tab button (along the top, that button opens a plain new tab). It offers <strong>Agent</strong> for Kyon's own agent, each coding agent (Claude Code, Codex, Gemini, OpenCode and Pi), <strong>Terminal</strong>, your saved tab configurations, and <strong>Reopen closed session</strong>. A coding agent or terminal first asks where it runs: <strong>Local</strong>, a remote target, or <strong>Manage targets…</strong>. A coding agent then asks which folder to start in; <a href="coding-agents.html">Coding agents</a> covers this step.</p>
+<h3>Tabs along the top, or down the side</h3>
+<p>Tabs run along the top of the window by default, in the title bar. Run <strong>Toggle vertical tabs</strong>, or use the button at the left of the title bar, to list them down the side instead. There, each pane gets its own row with its branch or folder beneath, and a search field finds a tab. The tab settings, including <strong>Vertical tabs</strong> and <strong>Show the tab bar</strong>, are in Settings › Appearance › Layout.</p>
+<p>When more tabs are open along the top than fit at a readable width, the rest are counted at the end as <strong>+N</strong>. Click the count to find one by name.</p>
+<h3>Knowing which tab needs you</h3>
+<p>A tab that is waiting for you carries a blue dot, along the top and in the vertical list alike. A tab waits when an agent in it is asking something, when an agent's answer has not been read yet, or when it rang the bell. <strong>Sort tabs by agent status</strong> keeps tabs whose agent needs you first.</p>
+<p>Hover a tab to see its card: what its agent is doing, its title, branch and folder, what kind of session it is, and the lines changed there.</p>
+<h3>Names and colours</h3>
+<p>Tabs take their title from the shell until you use <strong>Rename tab</strong>. <strong>Reset tab name</strong> undoes a rename.</p>
+<p>Right-click a tab for its menu. Along with renaming, closing, copying the branch or working directory, and saving the tab as a configuration, it has a row of colours. With several panes in a tab, opening the menu from a pane's row colours that pane. <strong>Cycle tab colour</strong> steps through the colours from the keyboard.</p>
+<h3>Colouring tabs by rule</h3>
+<p>Rules let a tab change colour by what it is doing, such as turning red while it is on a production machine. Write them in your settings file: <strong>Tab color rules</strong> in Settings › Appearance › Layout has an <strong>Edit in settings file</strong> link.</p>
+<p>Each rule is a <code>[[tabs.colour_rules]]</code> table naming any of <code>user</code>, <code>host</code>, <code>path</code> and <code>command</code> as <code>*</code> and <code>?</code> patterns, and a <code>colour</code>. The first rule that fits wins. A table with <code>host = "prod-*"</code> and <code>colour = "red"</code> turns a tab red while it works on any host whose name starts with <code>prod-</code>. While <code>sudo</code>, <code>su</code> or <code>ssh</code> runs, the tab counts as the user or host it reached. To colour by folder alone, list folders under <code>[tabs.directory_colours]</code>, such as <code>"~/src/website" = "blue"</code>.</p>
+<p>The colours are <code>red</code>, <code>orange</code>, <code>yellow</code>, <code>green</code>, <code>blue</code>, <code>purple</code>, <code>grey</code> and <code>none</code>. Rules are tried before directory colours, and a colour you set on a tab by hand always wins over both.</p>
+</section>
+
+<section id="panes">
+<h2>Panes</h2>
+<p>Panes keep related work side by side, such as an agent beside the shell it is changing.</p>
+<table>
+<thead><tr><th>Command</th><th>Shortcut</th></tr></thead>
+<tbody>
+<tr><td>Split pane right / down</td><td><kbd>⌘D</kbd> / <kbd>⌘⇧D</kbd></td></tr>
+<tr><td>Split pane left / up</td><td><kbd>⌘⌥D</kbd> / <kbd>⌘⌥⇧D</kbd></td></tr>
+<tr><td>Focus next pane / previous pane</td><td><kbd>⌘]</kbd> / <kbd>⌘[</kbd></td></tr>
+<tr><td>Focus pane left, right, up, down</td><td><kbd>⌘⌥←</kbd> <kbd>⌘⌥→</kbd> <kbd>⌘⌥↑</kbd> <kbd>⌘⌥↓</kbd></td></tr>
+<tr><td>Make pane wider, narrower, shorter, taller</td><td><kbd>⌘⌥⇧→</kbd> <kbd>⌘⌥⇧←</kbd> <kbd>⌘⌥⇧↑</kbd> <kbd>⌘⌥⇧↓</kbd></td></tr>
+<tr><td>Toggle maximise pane</td><td><kbd>⌘⇧↩</kbd></td></tr>
+<tr><td>Close pane</td><td><kbd>⌘W</kbd></td></tr>
+<tr><td>Rename pane</td><td><kbd>⌘⌥R</kbd></td></tr>
+<tr><td>Move pane to a new tab</td><td><kbd>⌘⌥T</kbd></td></tr>
+</tbody>
+</table>
+<p>Right-click inside a pane for what it offers there, along with splitting and, in a tab of several panes, maximising and closing. The focused pane is marked at its corner. <strong>Show pane headers</strong> names each pane above it, by default only when a tab has several. Closing a pane while a command runs in it asks first.</p>
+<p>To type into several shells at once, run <strong>Synchronise input in this tab</strong> (<kbd>⌘⇧I</kbd>) or <strong>Synchronise input across this window</strong>, and <strong>Stop synchronising input</strong> when you are done.</p>
+</section>
+
+<section id="windows">
+<h2>Windows</h2>
+<p>Separate windows keep separate projects apart.</p>
+<ul>
+<li><strong>New window</strong> (<kbd>⌘N</kbd>) opens a window with a terminal tab. <strong>Move tab to the next window</strong> sends the tab in front there.</li>
+<li><strong>Hide all windows</strong> (<kbd>⌘H</kbd>) and <strong>Show all windows</strong> (<kbd>⌘⇧N</kbd>) put every window away and bring them back.</li>
+<li><strong>Fill the screen</strong> (<kbd>⌃⌘F</kbd>) makes the window full screen.</li>
+<li><strong>Global hotkey window</strong> (Settings › Terminal › Input) sets a shortcut that shows and hides a window from anywhere.</li>
+</ul>
+</section>
+
+<section id="configurations">
+<h2>Layouts and launch configurations</h2>
+<p>Configurations open a tab, or a window's worth of tabs, ready-made in the right folders.</p>
+<p>A <strong>tab configuration</strong> describes one tab. Run <strong>Save this tab as a configuration</strong> to save the tab in front under a name. It records each pane's folder, the tab's colour and any title you gave it, but not what the panes were running or their sizes. Open one with <strong>Open tab configuration</strong> or from the new-session menu.</p>
+<p>A <strong>launch configuration</strong> is a set of tabs. <strong>Open launch configuration</strong> opens its tabs in the current window, and <strong>Save this window as a launch configuration</strong> saves one with an entry for each tab in the window. Both commands are under Window › Launch Configuration.</p>
+<p>Configurations are TOML files you can edit by hand, in the <code>tabs</code> and <code>launch</code> folders beside your settings file. The file name is the configuration's name. A tab configuration can set:</p>
+<ul>
+<li><code>title</code>: the tab's name, such as <code>title = "API"</code>.</li>
+<li><code>colour</code>: one of the tab colours, such as <code>colour = "green"</code>.</li>
+<li>One <code>[[pane]]</code> table for each pane, with <code>cwd</code> for the folder it starts in and <code>command</code> for what it runs instead of the shell, such as <code>command = "npm run dev"</code>.</li>
+</ul>
+<p>Each <code>[[pane]]</code> after the first is split from the one before it, <code>right</code> or <code>down</code>. A launch configuration is one or more <code>[[tab]]</code> tables in the same form, with any panes written as <code>[[tab.pane]]</code>.</p>
+</section>
+
+<section id="palette">
+<h2>The command palette</h2>
+<p>Everything Kyon can do is in the command palette, even what is not in a menu or bound to a key.</p>
+<p>Press <kbd>⌘P</kbd>. The palette lists every command with its shortcut, and every on/off setting with its current value, which you can choose to flip. Type to narrow the list. Once you type, it also finds open sessions and files in the session in front. To search one kind only, start with <code>actions:</code>, <code>sessions:</code> or <code>files:</code>.</p>
+<p><strong>Keyboard shortcuts</strong> lists every command with its keys, including commands with none. To change a binding, use Settings › Terminal › Keyboard shortcuts, or <strong>Open keybindings file</strong>.</p>
+</section>
+
+<section id="appearance">
+<h2>Themes and appearance</h2>
+<p>A theme and text size that suit you make long sessions easier on the eyes.</p>
+<ul>
+<li><strong>Choose theme</strong> lists every theme. In Settings › Appearance, the <strong>Theme</strong> row opens a chooser beside your panes that shows each theme by example and redraws the window in the one you select.</li>
+<li><strong>Follow system appearance</strong> switches between a <strong>Light theme</strong> and a <strong>Dark theme</strong> with macOS.</li>
+<li>Your own themes are TOML files in the <code>themes</code> folder beside your settings file. Run <strong>Reload themes</strong> after editing one.</li>
+<li><strong>Zoom in</strong> (<kbd>⌘=</kbd>), <strong>Zoom out</strong> (<kbd>⌘-</kbd>) and <strong>Reset zoom</strong> (<kbd>⌘0</kbd>) change the size of the text.</li>
+<li><strong>Window Opacity</strong> and <strong>Interface scale</strong> are in Settings › Appearance › Layout, and fonts in Settings › Appearance.</li>
+</ul>
+</section>
+
+<section id="settings">
+<h2>Settings and the settings file</h2>
+<p>Change Kyon in the Settings tab or in a plain text file, whichever suits you.</p>
+<h3>The Settings tab</h3>
+<p>Press <kbd>⌘,</kbd> (<strong>Open settings</strong>) to open Settings in a tab, or switch to it if it is already open. Its search field finds a setting by name. A change takes effect at once and is saved to your settings file. <a href="settings.html">Settings</a> lists every setting.</p>
+<h3>The settings file</h3>
+<p>Settings are stored in <code>settings.toml</code>. The Kyon menu's <strong>Settings Files</strong> submenu has the commands for it:</p>
+<ul>
+<li><strong>Open settings file</strong> (<kbd>⌘⌥,</kbd>) opens it in Kyon's editor.</li>
+<li><strong>Open keybindings file</strong> opens <code>keybindings.toml</code>.</li>
+<li><strong>Re-read the settings file</strong> reads both files again.</li>
+<li><strong>Show the settings folder</strong> opens the folder in Finder.</li>
+</ul>
+<p>Kyon notices when either file changes and applies it within about a second. A change made in the Settings tab replaces only that value in the file and keeps your comments.</p>
+<h3>When the file has a mistake</h3>
+<p>If the settings file has a mistake, a band across the top of the window says <em>Your settings file contains an error.</em> and names each problem. A value that cannot be used falls back to its default. If the file cannot be read at all, every setting uses its default and nothing is saved to it until it is fixed. The band offers <strong>Open file</strong> and, while AI is on, <strong>Fix with Kyon</strong>, which asks an agent in a new tab to put the file right. Once you close the band, the same warning appears at the foot of the Settings tab's page list until the file is fixed.</p>
+</section>
+
+<section id="restore">
+<h2>Restoring after a restart or a crash</h2>
+<p>Your windows, tabs and panes come back when you start Kyon again, even if it stopped unexpectedly.</p>
+<p>With <strong>Restore the last session</strong> on (the default, in Settings › Terminal › General), Kyon reopens every window where it was, with its tabs and panes. The layout is saved whenever it changes, so a crash loses little. A restored terminal shows its last blocks of output, read-only. <strong>Restored history</strong> sets how many.</p>
+<p>With <strong>Keep shells running</strong> on (the default), terminals run in a separate session host. After a crash, a shell and what it was doing go on, and the pane comes back to it. When you quit, the shells end unless you choose to keep them, and the tabs come back with new shells in the same places.</p>
+<p>If Kyon fails to start twice in a row, the next launch begins with an empty window rather than opening the saved session again.</p>
+</section>
+
+<section id="quitting">
+<h2>Quitting and closing</h2>
+<p>Kyon asks before a quit would end shells you may still need.</p>
+<p><strong>Quit Kyon</strong> (<kbd>⌘Q</kbd>) with tabs open asks <em>Quit Kyon?</em> and offers <strong>Quit</strong> or <strong>Keep Shells and Quit</strong>. Keeping them lets the tabs come back to the shells as they were. Tick <strong>Don't ask again</strong> to make your choice the default; change it later with <strong>Ask before quitting</strong> and <strong>Keep shells running after quitting</strong> in Settings › Terminal › General. Running <strong>Close window</strong> on a window with more than one tab asks <em>Close this window?</em> first.</p>
+<h3>Undo close</h3>
+<p>Closed something by mistake? <strong>Reopen closed tab</strong> (<kbd>⌘⇧T</kbd>) brings back the most recently closed window, tab or pane. Each closed item can be reopened for 60 seconds by default. Change this with <strong>Undo close window</strong> (Settings › Terminal › General), or set it to 0 to turn reopening off. A change applies after Kyon restarts.</p>
+</section>
+
+    </article>
+    <nav class="pager" aria-label="Chapters"><a class="prev" href="getting-started.html"><span>Previous</span>Getting started</a><a class="next" href="terminal.html"><span>Next</span>The terminal</a></nav>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.0.82</span></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#tabs">Tabs</a></li><li><a href="#panes">Panes</a></li><li><a href="#windows">Windows</a></li><li><a href="#configurations">Layouts and launch configurations</a></li><li><a href="#palette">The command palette</a></li><li><a href="#appearance">Themes and appearance</a></li><li><a href="#settings">Settings and the settings file</a></li><li><a href="#restore">Restoring after a restart or a crash</a></li><li><a href="#quitting">Quitting and closing</a></li></ul></nav>
+</div>
+<script>
+// The contents start folded on a narrow screen, open on a wide one.
+const side = document.querySelector(".side");
+const narrow = window.matchMedia("(max-width: 900px)");
+const fold = () => { side.open = !narrow.matches; };
+fold();
+narrow.addEventListener("change", fold);
+</script>
+</body>
+</html>

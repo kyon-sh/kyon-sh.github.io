@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Every setting in Kyon, page by page as the Settings window shows them, with what it does and its default.">
+<link rel="icon" href="../assets/kyon.png">
+<title>Every setting · Kyon docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* The docs: kyon.sh's colours and type, laid out for reading. A contents
+   column, the chapter at a readable measure, and the sections of the page
+   beside it on a wide screen. */
+:root {
+  --ground: #f3f5f7;
+  --raised: #ffffff;
+  --ink: #12161b;
+  --muted: #56606b;
+  --rule: #d9dee4;
+  --accent: #1f7fc4;
+  --accent-soft: rgba(31, 127, 196, .09);
+  --frame: #0b0d10;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  --measure: 70ch;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #08090b;
+    --raised: #111317;
+    --ink: #e8ecf0;
+    --muted: #8d97a3;
+    --rule: #22262c;
+    --accent: #47a6ea;
+    --accent-soft: rgba(71, 166, 234, .12);
+    --frame: #000000;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #08090b;
+  --raised: #111317;
+  --ink: #e8ecf0;
+  --muted: #8d97a3;
+  --rule: #22262c;
+  --accent: #47a6ea;
+  --accent-soft: rgba(71, 166, 234, .12);
+  --frame: #000000;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 16px; top: 12px; background: var(--raised); padding: 6px 10px; z-index: 2; }
+
+/* ── top ───────────────────────────────────────────── */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 1.3rem/1 var(--display);
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.glyph {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--frame);
+  border: 1px solid var(--rule);
+  display: grid;
+  place-items: center;
+  font: 600 .8rem/1 var(--mono);
+  color: #47a6ea;
+}
+.links { display: flex; gap: 20px; font-weight: 600; }
+.links a { color: var(--muted); text-decoration: none; }
+.links a:hover, .links a[aria-current="page"] { color: var(--ink); }
+
+/* ── columns ───────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 210px;
+  gap: 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.side, .toc {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 40px;
+  font-size: .95rem;
+}
+.side summary { display: none; }
+.side ul, .toc ul { list-style: none; margin: 0 0 18px; padding: 0; }
+.side li a, .toc li a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  line-height: 1.35;
+}
+.side li a:hover, .toc li a:hover { color: var(--ink); background: var(--accent-soft); }
+.side li a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); font-weight: 600; }
+.group {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.toc li a { padding: 3px 10px; font-size: .9rem; }
+
+main { min-width: 0; padding: 36px 0 64px; }
+.head { margin-bottom: 28px; }
+h1, h2, h3 {
+  font-family: var(--display);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin: 0 0 10px; }
+.summary { margin: 0; font-size: 1.2rem; color: var(--muted); max-width: var(--measure); }
+
+/* ── prose ─────────────────────────────────────────── */
+.prose { max-width: var(--measure); }
+.prose section { padding-top: 8px; }
+.prose h2 {
+  font-size: 1.6rem;
+  margin: 36px 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.prose section:first-child h2 { border-top: 0; padding-top: 0; margin-top: 8px; }
+.prose h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+.prose p, .prose ul, .prose ol { margin: 0 0 14px; }
+.prose li { margin: 4px 0; }
+.prose li > ul, .prose li > ol { margin: 4px 0; }
+code {
+  font: 400 .88em var(--mono);
+  background: var(--accent-soft);
+  padding: .1em .35em;
+  border-radius: 4px;
+}
+kbd {
+  display: inline-block;
+  font: 600 .82em/1.5 var(--mono);
+  padding: 0 .45em;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--raised);
+  white-space: nowrap;
+}
+aside.note {
+  margin: 18px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+}
+aside.note p:last-child { margin-bottom: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 20px;
+  font-size: .97rem;
+}
+th, td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); }
+/* A path or a key name in a cell breaks rather than widening the page. */
+.prose td, .prose th { overflow-wrap: anywhere; }
+thead th {
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tbody th { font-weight: 600; }
+table.settings tbody th { width: 34%; }
+table.keys tbody th { font-weight: 400; }
+table.keys td { white-space: nowrap; width: 22%; }
+.detail { display: block; margin-top: 4px; color: var(--muted); font-size: .92rem; }
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font: 600 .68rem/1.6 var(--mono);
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  vertical-align: 2px;
+}
+.none { color: var(--muted); }
+.filter { display: flex; flex-direction: column; gap: 6px; max-width: 420px; }
+.filter label { font-weight: 600; }
+.filter input {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--raised);
+  color: var(--ink);
+}
+
+ul.cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+ul.cards li { margin: 0; }
+ul.cards a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--raised);
+  color: var(--ink);
+  text-decoration: none;
+}
+ul.cards a:hover { border-color: var(--accent); }
+ul.cards strong { font: 700 1.08rem/1.25 var(--display); }
+ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
+
+/* ── foot ──────────────────────────────────────────── */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--measure);
+  margin-top: 48px;
+}
+.pager a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+.pager a span { font: 600 .72rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.pager .next { margin-left: auto; text-align: right; }
+.foot {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  max-width: var(--measure);
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* ── narrower ──────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .shell { grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+  .toc { display: none; }
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .side {
+    position: static;
+    max-height: none;
+    padding: 14px 0 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .side summary {
+    display: block;
+    cursor: pointer;
+    padding: 6px 0 12px;
+    font-weight: 600;
+  }
+  main { padding-top: 24px; }
+  table.settings tbody th { width: auto; }
+  table.settings tr, table.settings th, table.settings td { display: block; padding-right: 0; }
+  table.settings th { border-bottom: 0; padding-bottom: 0; }
+  table.keys td { white-space: normal; }
+}
+
+</style>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<header class="top">
+  <a class="mark" href="../"><span class="glyph" aria-hidden="true">&gt;_</span>Kyon</a>
+  <nav class="links" aria-label="Site">
+    <a href="./" aria-current="false">Docs</a>
+    <a href="../#install">Download</a>
+  </nav>
+</header>
+<div class="shell">
+  <details class="side" open>
+    <summary>Contents</summary>
+    <nav aria-label="Documentation"><p class="group">Start</p><ul><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting started</a></li></ul><p class="group">Guide</p><ul><li><a href="workspace.html">Tabs, panes and windows</a></li><li><a href="terminal.html">The terminal</a></li><li><a href="coding-agents.html">Coding agents</a></li><li><a href="kyon-agent.html">Kyon&#x27;s agent, models and privacy</a></li><li><a href="code.html">Code, review and documents</a></li><li><a href="remote.html">Working on a server</a></li><li><a href="troubleshooting.html">Updates and troubleshooting</a></li><li><a href="feedback.html">Feedback</a></li></ul><p class="group">Reference</p><ul><li><a href="settings.html" aria-current="page">Every setting</a></li><li><a href="shortcuts.html">Commands and shortcuts</a></li></ul></nav>
+  </details>
+  <main id="main">
+    <header class="head">
+      <h1>Every setting</h1>
+      <p class="summary">Every setting in Kyon, page by page as the Settings window shows them, with what it does and its default.</p>
+    </header>
+    <article class="prose">
+<section id="how">
+<h2>How settings work</h2>
+<p>Open Settings with <kbd>⌘,</kbd>, or from the menu behind the button at the right of the title bar. The window lists the same pages as this reference, and its search field finds a setting by any word of its name or description.</p>
+<p>Every setting is also kept in a plain settings file you can edit by hand: run <strong>Open settings file</strong> (<kbd>⌥⌘,</kbd>) from the command palette. Kyon notices within a second when the file changes and applies it. If something in the file is wrong, the window says what, keeps the rest of your settings, and offers to open the file.</p>
+<p>Some settings only appear while another is on, the way the window shows them. A setting marked <em>after a restart</em> takes effect the next time Kyon starts.</p>
+</section>
+<section id="appearance-appearance"><h2>Appearance</h2><h3>Themes</h3><table class="settings"><tbody><tr><th scope="row">Follow system appearance</th><td>Switch between the light and dark themes with the operating system.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Theme</th><td>The colour theme, by name. Custom themes in the data directory are available here too.<span class="detail">Default: system.</span></td></tr><tr><th scope="row">Light theme</th><td>Used when the system is in light appearance.<span class="detail">Default: day.</span></td></tr><tr><th scope="row">Dark theme</th><td>Used when the system is in dark appearance.<span class="detail">Default: phenomenon.</span></td></tr></tbody></table><h3>Icon</h3><table class="settings"><tbody><tr><th scope="row">Customize your app icon<span class="tag">macOS only</span></th><td>The icon the Dock and the app switcher show.<span class="detail">One of: Default, Blue, Indigo, Violet, Magenta, Rose, Crimson, Amber, Gold, Emerald, Teal, Cyan, Slate. Default: Default.</span></td></tr><tr><th scope="row">Show Kyon in Dock<span class="tag">macOS only</span></th><td>Keep the application&#x27;s icon in the Dock while it runs. Off, its windows are reached by their own shortcut.<span class="detail">Default: On.</span></td></tr></tbody></table><h3>Text</h3><table class="settings"><tbody><tr><th scope="row">Font</th><td>The terminal font, by name. Empty uses whatever the system calls its monospace.<span class="detail"></span></td></tr><tr><th scope="row">Font weight</th><td>The weight of the terminal&#x27;s text.<span class="detail">One of: Normal, Bold. Default: Normal.</span></td></tr><tr><th scope="row">Font size</th><td>Terminal font size in points.<span class="detail">From 6 to 72. Default: 16.</span></td></tr><tr><th scope="row">Agent font</th><td>The typeface of what agents say. Empty uses the interface&#x27;s.<span class="detail"></span></td></tr><tr><th scope="row">Match terminal</th><td>Use the terminal&#x27;s typeface for what agents say, following it when it changes.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Use thin strokes<span class="tag">macOS only</span></th><td>When text is drawn with lighter strokes.<span class="detail">One of: Never, Low dpi, High dpi, Always. Default: High dpi.</span></td></tr><tr><th scope="row">Enforce minimum contrast</th><td>When text colours are adjusted to stay readable against their background.<span class="detail">One of: Always, Named colors, Never. Default: Named colors.</span></td></tr><tr><th scope="row">Show ligatures in terminal</th><td>Join character pairs the font draws as one glyph. Can slow rendering.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Interface font</th><td>The font the application&#x27;s own text is drawn in — tabs, menus, labels, the command palette. Empty uses the one this system uses for every other application. This is not the terminal font: changing one does not change the other.<span class="detail"></span></td></tr></tbody></table><h3>Cursor</h3><table class="settings"><tbody><tr><th scope="row">Cursor type</th><td>The shape of the terminal cursor.<span class="detail">One of: Bar, Block, Underline. Default: Bar.</span></td></tr><tr><th scope="row">Blink the cursor</th><td>Blink the cursor when the terminal has focus.<span class="detail">Default: On.</span></td></tr></tbody></table></section>
+<section id="appearance-layout"><h2>Appearance › Layout</h2><h3>Window</h3><table class="settings"><tbody><tr><th scope="row">Open new windows with custom size</th><td>Open new windows at the columns and rows below rather than the default size.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">New window width</th><td>How many columns a new window opens with.<span class="detail">From 20 to 500. Default: 120.</span></td></tr><tr><th scope="row">New window height</th><td>How many rows a new window opens with.<span class="detail">From 5 to 300. Default: 34.</span></td></tr><tr><th scope="row">Window Opacity</th><td>How opaque the window is. 1 is fully opaque.<span class="detail">From 0.2 to 1.0. Default: 1.0.</span></td></tr><tr><th scope="row">Blur behind the window<span class="tag">macOS and Windows only</span></th><td>Blur what is behind a transparent window.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Use Window Blur (Acrylic texture)<span class="tag">Windows only</span></th><td>Blur what is behind the window with the system&#x27;s acrylic material.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Interface scale</th><td>Scales the whole interface, independently of the terminal font size.<span class="detail">From 0.5 to 3.0. Default: 1.0.</span></td></tr><tr><th scope="row">Tools panel visibility is consistent across tabs</th><td>Showing or hiding the tools panel applies to every tab. Off, each tab keeps its own.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Window title length</th><td>Truncate the window title beyond this many characters.<span class="detail">From 10 to 400. Default: 80.</span></td></tr></tbody></table><h3>Panes</h3><table class="settings"><tbody><tr><th scope="row">Dim inactive panes</th><td>Fade panes that do not have focus.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Focus panes on hover</th><td>Move focus to the pane under the pointer without clicking.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Mark the focused pane</th><td>Mark the corner of the pane that has focus.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show pane headers</th><td>Name each pane above it, with somewhere to aim the pointer.<span class="detail">One of: Always, Multiple panes, Never. Default: Multiple panes.</span></td></tr><tr><th scope="row">Docked panel</th><td>Which panel sits beside the panes when a window opens.<span class="detail">One of: None, Files, Outline. Default: None.</span></td></tr><tr><th scope="row">Docked panel width</th><td>How wide the docked panel is, in pixels.<span class="detail">From 120 to 800. Default: 260.</span></td></tr></tbody></table><h3>Blocks</h3><table class="settings"><tbody><tr><th scope="row">Compact mode</th><td>Less space around each command and its output.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Show Jump to Bottom of Block button</th><td>Offer a button that scrolls to the end of a long block.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show block dividers</th><td>Draw a rule between one command&#x27;s block and the next.<span class="detail">Default: On.</span></td></tr></tbody></table><h3>Tabs</h3><table class="settings"><tbody><tr><th scope="row">Show tab indicators</th><td>Mark a tab whose command finished or failed while it was out of sight.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show the tab bar</th><td>When the tab bar is shown.<span class="detail">One of: Always, Multiple tabs, Never. Default: Always.</span></td></tr><tr><th scope="row">Tab close button position</th><td>Which end of a tab its close button sits at.<span class="detail">One of: Right, Left. Default: Right.</span></td></tr><tr><th scope="row">Preserve active tab color for new tabs</th><td>A new tab takes the colour of the tab it was opened from.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Tint panes with their colour</th><td>A coloured tab or pane shows a little of its colour behind its text, on light and dark themes alike.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Vertical tabs</th><td>Show tabs in a side panel instead of a bar across the top.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Show vertical tabs panel in restored windows</th><td>Restored windows open with the vertical tab list showing.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Hide search bar in vertical tab layout</th><td>Leave the search field out of the vertical tab list.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Use latest user prompt as conversation title in tab names</th><td>Name an agent tab after the last thing asked in it.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Show how long an agent has been in its state</th><td>Beside an agent&#x27;s status, how long since it last changed: now, 4m, 2h.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Sort tabs by agent status</th><td>Keep tabs whose agent needs you first, then finished ones, then those at work.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Tab color rules</th><td>Colour a tab by who it works as, on which host, where and at what: each rule names any of user, host, path and command as * and ? patterns, and a colour; the first that fits wins. A command like sudo, su or ssh counts as the user or host it reaches while it runs.<span class="detail"></span></td></tr><tr><th scope="row">Directory tab colors</th><td>Colour a tab by the directory it works in: each directory names red, orange, yellow, green, blue, purple, grey, or none.<span class="detail"></span></td></tr></tbody></table><h3>Full-screen Apps</h3><table class="settings"><tbody><tr><th scope="row">Use custom padding in alt-screen</th><td>Full-screen programs get their own padding rather than the blocks&#x27;.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Uniform padding (px)</th><td>The padding around full-screen programs.<span class="detail">From 0 to 200. Default: 0.</span></td></tr></tbody></table></section>
+<section id="terminal-input"><h2>Terminal › Input</h2><h3>Input type</h3><table class="settings"><tbody><tr><th scope="row">Keep the shell&#x27;s own prompt<span class="tag">after a restart</span></th><td>Show the shell&#x27;s prompt above the input instead of replacing it with the directory, branch and environment.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Input position</th><td>Where the input sits and which way output grows from it.<span class="detail">One of: Pin to the bottom, Start at the top, Pin to the top. Default: Pin to the bottom.</span></td></tr></tbody></table><h3>Text Editing</h3><table class="settings"><tbody><tr><th scope="row">Autocomplete quotes, parentheses, and brackets</th><td>Typing an opening quote or bracket adds its closing partner.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Code editor line numbers:</th><td>How the editor numbers its lines.<span class="detail">One of: Absolute, Relative. Default: Absolute.</span></td></tr><tr><th scope="row">Edit code and commands with Vim keybindings</th><td>Modal editing in the terminal&#x27;s input.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Set unnamed register as system clipboard</th><td>Vim&#x27;s default register is the system clipboard.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Show Vim status bar</th><td>Show the current Vim mode in the input&#x27;s corner.<span class="detail">Default: On.</span></td></tr></tbody></table><h3>Terminal Input</h3><table class="settings"><tbody><tr><th scope="row">Suggest commands from history as you type</th><td>The rest of a command run before, greyed after the cursor; the right arrow or End takes it. Never a line that looks like it carries a password or token.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Error underlining for commands</th><td>Underline a command that will not run as typed.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Syntax highlighting for commands</th><td>Colour commands as they are typed.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Open completions menu as you type</th><td>Offer completions without waiting for Tab.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Suggest corrected commands</th><td>Offer a correction when a command is mistyped.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Expand aliases as you type</th><td>Replace an alias with what it stands for as it is typed.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Middle-click to paste<span class="tag">macOS and Windows only</span></th><td>A middle click pastes into the input.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show autosuggestion keybinding hint</th><td>Say which key accepts the suggestion beside it.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show autosuggestion ignore button</th><td>Offer a button that dismisses a suggestion.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Enable &#x27;@&#x27; context menu in terminal mode</th><td>Typing @ at the start of a word offers the files and folders here to name.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Enable slash commands in terminal mode</th><td>Typing / at the start of the input offers commands.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Outline codebase symbols for &#x27;@&#x27; context menu</th><td>Include the codebase&#x27;s symbols in what @ offers.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show terminal input message line</th><td>Show a line of hints under the input.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Tab key behavior</th><td>What Tab does in the input.<span class="detail">One of: Open completions, Accept suggestion. Default: Open completions.</span></td></tr><tr><th scope="row">Preserve input focus on block selection</th><td>Selecting a block leaves the keyboard in the input.<span class="detail">Default: Off.</span></td></tr></tbody></table><h3>Keys</h3><table class="settings"><tbody><tr><th scope="row">Left Option key is Meta</th><td>The left Option key sends Meta to terminal programs.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Right Option key is Meta</th><td>The right Option key sends Meta to terminal programs.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Ctrl-Tab order</th><td>Whether Ctrl-Tab walks tabs in order or by how recently they were used.<span class="detail">One of: In order, Recently used. Default: In order.</span></td></tr><tr><th scope="row">Global hotkey window</th><td>A chord that shows and hides a window from anywhere. Empty disables it.<span class="detail"></span></td></tr><tr><th scope="row">Synchronized input</th><td>Send what you type to every pane in the tab at once.<span class="detail">Default: Off.</span></td></tr></tbody></table><h3>Agent input</h3><table class="settings"><tbody><tr><th scope="row">Autodetect agent prompts in terminal input</th><td>Notice when what is typed in the terminal is a request for the agent.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Autodetect terminal commands in agent input</th><td>Notice when what is typed for the agent is a command.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Natural language denylist</th><td>Commands that never count as a request for the agent.<span class="detail"></span></td></tr><tr><th scope="row">Show input hint text</th><td>Show a hint in the empty input.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show agent tips</th><td>Show tips about the agent in its input.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Include agent-executed commands in history</th><td>Commands the agent ran are in the shell history too.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Default prompt submission mode</th><td>What a new prompt does while the agent is answering.<span class="detail">One of: Interrupt, Queue. Default: Interrupt.</span></td></tr><tr><th scope="row">Default long-running command submission mode</th><td>What a prompt does while the agent is driving a long-running command.<span class="detail">One of: Send, Queue. Default: Queue.</span></td></tr></tbody></table></section>
+<section id="terminal-keyboard-shortcuts"><h2>Terminal › Keyboard shortcuts</h2><h3>Shortcuts</h3><table class="settings"><tbody><tr><th scope="row">Warn about conflicting shortcuts</th><td>Report when two bindings claim the same chord.<span class="detail">Default: On.</span></td></tr></tbody></table></section>
+<section id="terminal-general"><h2>Terminal › General</h2><h3>General</h3><table class="settings"><tbody><tr><th scope="row">New tabs use</th><td>The tab configuration a plain new tab opens with. Empty means a shell.<span class="detail"></span></td></tr><tr><th scope="row">Restore the last session</th><td>Reopen the windows, tabs and panes from when you last quit.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show sticky command header</th><td>Keep a long block&#x27;s command in view as its output scrolls.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show tooltip on click on links</th><td>Clicking a link shows where it goes before following it.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Ask before quitting</th><td>Confirm when quitting with tabs open, offering to keep their shells running.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show changelog toast after updates</th><td>Say once, in the first window after an update, that Kyon was updated, with a link to what changed. View latest changelog in the palette opens it at any time.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Lines scrolled by mouse wheel interval</th><td>How many lines one step of the wheel scrolls.<span class="detail">From 1.0 to 20.0. Default: 3.0.</span></td></tr><tr><th scope="row">Which releases to offer</th><td>Stable is what most people should be on. Beta and nightly are less finished, and choosing one is not undone by choosing it back: a newer build stays installed.<span class="detail">One of: Stable, Beta, Nightly. Default: Stable.</span></td></tr></tbody></table><h3>Session</h3><table class="settings"><tbody><tr><th scope="row">Keep shells running</th><td>Terminals run in a session host, so a shell and what it was doing go on when the app crashes, or quits keeping them, and the pane comes back to it. Off starts a fresh shell each launch.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Keep shells running after quitting</th><td>Quitting leaves the shells running, for the tabs to come back to as they were. Off ends them, and the tabs come back with new shells where the old ones were.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Reconnect dropped sessions</th><td>When the connection to a host drops, a terminal opens its session again — waiting a little longer between each try — instead of ending. The shell kept running there.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">End sessions left alone for</th><td>Days a kept shell may go with no pane attached before it is ended, here and on every host. 0 keeps them until they are closed.<span class="detail">From 0 to 365. Default: 7.</span></td></tr><tr><th scope="row">Scrollback</th><td>How many lines of history each terminal keeps. 0 keeps none.<span class="detail">From 0 to 1. Default: 10_000.</span></td></tr><tr><th scope="row">Shell<span class="tag">after a restart</span></th><td>The program new terminals run. Empty uses the login shell.<span class="detail"></span></td></tr><tr><th scope="row">Startup shell<span class="tag">after a restart</span></th><td>Overrides the shell for the terminals opened at launch only.<span class="detail"></span></td></tr><tr><th scope="row">New terminals start in</th><td>Where a new tab or pane begins.<span class="detail">One of: Home, Previous, Configured. Default: Previous.</span></td></tr><tr><th scope="row">Configured directory</th><td>Where new terminals start when the setting above says `configured`.<span class="detail"></span></td></tr><tr><th scope="row">Undo close window</th><td>How long a closed tab or pane can be reopened. 0 disables it.<span class="detail">From 0 to 600. Default: 60.</span></td></tr><tr><th scope="row">Restored history<span class="tag">after a restart</span></th><td>How many blocks of output a restored terminal shows, read-only.<span class="detail">From 0 to 1. Default: 100.</span></td></tr></tbody></table></section>
+<section id="terminal-behavior"><h2>Terminal › Behavior</h2><h3>Terminal</h3><table class="settings"><tbody><tr><th scope="row">Enable Mouse Reporting</th><td>Programs that ask for the mouse receive clicks and movement.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Enable Scroll Reporting</th><td>Programs that ask for the mouse receive the wheel too.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Enable Focus Reporting</th><td>Programs that ask are told when the pane gains or loses focus.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Use Audible Bell</th><td>Sound the bell when a program rings it.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Show help block in new sessions</th><td>Show a block of tips in a new session.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Double-click smart selection</th><td>Double-clicking selects a whole path, address or similar.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Characters considered part of a word</th><td>With smart selection off, what a double-click takes as part of a word besides letters and digits.<span class="detail">Default: -_./~.</span></td></tr><tr><th scope="row">Copy on select</th><td>Selected text goes to the clipboard.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Ask before pasting commands</th><td>When a paste would run as commands in a program that cannot tell a paste from typing, ask first.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Clipboard access</th><td>Whether programs in the terminal may read or write the clipboard. Ask: the pane asks each time one reads, and the first time one sets it, whether it may.<span class="detail">One of: Ask, Deny, Write, Read write. Default: Ask.</span></td></tr><tr><th scope="row">Open new tabs</th><td>Where a newly opened tab is placed in the tab bar.<span class="detail">One of: After current, At end. Default: At end.</span></td></tr><tr><th scope="row">Let the shell set tab titles</th><td>Use the title the shell reports, until you rename the tab yourself.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Ask before closing a running command</th><td>Closing a pane while a command is running in it asks first.<span class="detail">Default: On.</span></td></tr></tbody></table></section>
+<section id="code-indexing-and-projects"><h2>Code › Indexing and projects</h2><h3>Codebase Indexing</h3><table class="settings"><tbody><tr><th scope="row">Codebase indexing</th><td>Index repositories so agents find their way around them quickly. Code never leaves this machine. To keep files out of an index, name them in a .kyonindexingignore file in the repository, as in a .gitignore; agents can still read them.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Index new folders by default</th><td>Index a repository as soon as a terminal moves into it, rather than only when you ask with /index or Index new folder.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">How searching reads the tree<span class="tag">after a restart</span></th><td>Keep a list of every path for instant filtering, or hold nothing and run ripgrep for each question. Holding nothing suits a very large checkout, or a machine with memory to spare for other things.<span class="detail">One of: Indexed, Ripgrep. Default: Indexed.</span></td></tr></tbody></table></section>
+<section id="code-editor-and-code-review"><h2>Code › Editor and Code Review</h2><h3>Code Editor and Review</h3><table class="settings"><tbody><tr><th scope="row">Choose an editor to open file links</th><td>Where a file link opens.<span class="detail">One of: Default app, Kyon, Env editor. Default: Default app.</span></td></tr><tr><th scope="row">Choose an editor to open files from the code review panel, project explorer, and global search</th><td>Where files from Kyon&#x27;s own panels open.<span class="detail">One of: Default app, Kyon, Env editor. Default: Kyon.</span></td></tr><tr><th scope="row">Show open files as tabs beside sessions</th><td>Each open file gets its own tab and shows in the editor at the right, beside whichever session is chosen. Off, the editor keeps its files as tabs of its own, and they belong to the session they were opened in.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Choose a layout to open files in Kyon</th><td>Split Pane: at the right of the tab. New Tab: a tab of its own.<span class="detail">One of: Split pane, New tab. Default: Split pane.</span></td></tr><tr><th scope="row">Group files into single editor pane</th><td>When this setting is on, any files opened in the same tab will be automatically grouped into a single editor pane.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Open Markdown files in Kyon&#x27;s Markdown Viewer by default</th><td>Markdown opens rendered rather than as text.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Auto open code review panel</th><td>Open the review panel on a conversation&#x27;s first accepted change.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Show code review button</th><td>A button at the window&#x27;s top right opens the review of what has changed.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show diff stats on code review button</th><td>Show lines added and removed on that button.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Project explorer</th><td>A file tree in the left tools panel.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Global file search</th><td>File search in the left tools panel.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Global search result limit</th><td>Matches shown before results are marked partial.<span class="detail">From 1 to 10000000. Default: 20000.</span></td></tr><tr><th scope="row">Project explorer filter match limit</th><td>The most files and folders the filter looks for in each root.<span class="detail">From 1 to 1000000. Default: 200.</span></td></tr><tr><th scope="row">Project explorer folders opened per filter</th><td>How many matches the filter opens into the tree; the rest stay in the list. Each one costs a listing per unopened folder on a host.<span class="detail">From 0 to 100000. Default: 25.</span></td></tr><tr><th scope="row">Show hidden files in project explorer</th><td>List files whose names start with a dot.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Format on save (requires an active language server)</th><td>Only applies when a language server is active for the file. Automatically formats the file with the language server on save; other LSP features (hover, go-to-definition, references, diagnostics) are unaffected.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Tab width</th><td>How many columns one level of indentation is.<span class="detail">From 1 to 16. Default: 4.</span></td></tr><tr><th scope="row">Wrap long lines</th><td>Whether a line wider than the pane continues on the next row. Off lets lines run off the side, which suits a wide table or a generated file and needs the view to be moved sideways to read.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Language servers</th><td>Which language server runs for which files. Each entry needs a command and the extensions it handles. Add `install`, a shell command, and the server is offered for installing where it is missing, on this machine or the one the files are on; it runs in a directory of its own, named by `KYON_LSP_HOME`, and the program is then looked for in its `bin` and on the PATH. `markers` names the files that mark a project&#x27;s top directory, where the server is started.<span class="detail"></span></td></tr></tbody></table></section>
+<section id="agent-agent"><h2>Agent</h2><table class="settings"><tbody><tr><th scope="row">AI features</th><td>Turn every AI feature on or off at once.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Ask with</th><td>What Kyon&#x27;s own agent answers with, in the terminal and in its panes: a model set up under Models, on this machine or a provider&#x27;s, or a coding agent you already use, run once for each question, so nothing needs setting up in Kyon. Reviews handed to an agent go to the coding agent chosen here, or to Claude Code.<span class="detail">One of: Models, Claude Code, Codex, Gemini, OpenCode. Default: Models.</span></td></tr></tbody></table><h3>Private</h3><table class="settings"><tbody><tr><th scope="row">Private places</th><td>Folders, on this machine or a host, whose contents only a model marked private may read: Kyon&#x27;s own agent working in one uses a private model, and says so. Each is a path, HOST:path on a host, or HOST: for all of one. Session &gt; Every Agent &gt; Mark this folder private adds the one in front.<span class="detail"></span></td></tr><tr><th scope="row">Ask before a private answer goes to a coding agent</th><td>When a coding agent asks Kyon&#x27;s private agent something, show the answer and ask before it is sent: send it, allow that agent for its session, or not. Off, every answer is sent as it comes.<span class="detail">Default: On.</span></td></tr></tbody></table><h3>Other</h3><table class="settings"><tbody><tr><th scope="row">Show Kyon changelog in new conversation view</th><td>List what is new in this build in an empty agent conversation, under a heading that opens and closes.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show &quot;Use Agent&quot; footer</th><td>Under a command you ran that is still running, offer to bring the agent in: it can read what the program shows and type into it, asking first. Command-Shift-Enter on macOS, or Control-Shift-Enter elsewhere, brings it in, whether this is on or not.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Show conversation history in tools panel</th><td>List past agent conversations, kept as each turn ends, to open again from Session &gt; Past agent conversations or the palette.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Preferred layout when opening existing agent conversations</th><td>How a past conversation is placed when opened.<span class="detail">One of: New tab, Split pane. Default: New tab.</span></td></tr></tbody></table></section>
+<section id="agent-models"><h2>Agent › Models</h2><h3>Omnigent backend</h3><table class="settings"><tbody><tr><th scope="row">Omnigent command</th><td>The program that starts an omnigent agent. Empty means `omnigent`.<span class="detail"></span></td></tr><tr><th scope="row">Omnigent works in</th><td>Where a launched omnigent agent starts. Empty means the current tab&#x27;s directory.<span class="detail"></span></td></tr><tr><th scope="row">Omnigent server</th><td>The omnigent server agents picked as Omnigent · Claude or Codex run on. Empty means the one KYON_OMNIGENT_URL names, else one on this machine at http://localhost:6767. Nothing is sent until such an agent is asked something or the connection is tested. A conversation runs on the omnigent host on the machine its code is on, this one or the remote host it was started from, and offers to start one there when there is none.<span class="detail"></span></td></tr></tbody></table></section>
+<section id="agent-suggestions"><h2>Agent › Suggestions</h2><h3>Active AI</h3><table class="settings"><tbody><tr><th scope="row">Active AI</th><td>Suggestions the agent makes on its own as you work. Off turns off every suggestion below.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Next Command</th><td>Offer the next command to run in the empty input once one finishes: from what usually followed it in your history, or, where that cannot say, from the model, shown your recent commands and their output.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Prompt Suggestions</th><td>Once a command finishes, offer something to ask the agent about it beside the input, thought of by the model from your recent commands and their output. Control-Enter on macOS, or Alt-Shift-Enter elsewhere, asks it; Enter sets it aside.<span class="detail">Default: On.</span></td></tr></tbody></table></section>
+<section id="agent-profiles"><h2>Agent › Profiles</h2><h3>Profiles</h3><table class="settings"><tbody><tr><th scope="row">Model</th><td>The endpoint and model a new conversation uses, written `endpoint/model`.<span class="detail"></span></td></tr><tr><th scope="row">What the assistant may do on its own</th><td>`ask_changes` lets it read freely and asks before it changes a file or runs a command. `ask_everything` asks before every one. `freely` asks about nothing, which is a decision to trust it with this machine.<span class="detail">One of: Ask changes, Ask everything, Freely. Default: Ask changes.</span></td></tr></tbody></table></section>
+<section id="agent-mcp-servers"><h2>Agent › MCP servers</h2><table class="settings"><tbody><tr><th scope="row">Auto-spawn servers from third-party agents</th><td>Start the MCP servers other agents&#x27; configuration files in your home directory describe, such as ~/.claude.json, ~/.codex/config.toml and ~/.agents/.mcp.json. Servers in ~/.kyon/.mcp.json always start. Servers found inside a repository never start on their own: start each from its card below.<span class="detail">Default: Off.</span></td></tr></tbody></table></section>
+<section id="agent-knowledge"><h2>Agent › Knowledge</h2><h3>Knowledge</h3><table class="settings"><tbody><tr><th scope="row">Rules</th><td>Rules help the agent follow your conventions, for a codebase or a way of working. A new conversation follows ~/.agents/AGENTS.md on this machine, then the KYON.md or AGENTS.md of each folder from the repository&#x27;s root down to where it works, KYON.md first where a folder has both.<span class="detail">Default: On.</span></td></tr></tbody></table></section>
+<section id="agent-third-party-cli-agents"><h2>Agent › Third party CLI agents</h2><table class="settings"><tbody><tr><th scope="row">Review each turn&#x27;s changes</th><td>When a coding agent finishes a turn that changed files, open the review of what that turn changed beside it. Comments sent from it go back to that agent. Session &gt; Every Agent &gt; Review the agent&#x27;s last turn opens it by hand.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Show coding agent toolbar</th><td>A toolbar of quick actions while a coding agent runs.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Auto show/hide Rich Input based on agent status</th><td>Requires the Kyon plugin for your coding agent.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Auto open Rich Input when a coding agent session starts</th><td><span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Auto dismiss Rich Input after prompt submission</th><td><span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Submit Rich Input with Ctrl+Enter</th><td>Enter inserts a newline instead.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Commands that enable the toolbar</th><td>Patterns of commands that show the toolbar, each with the agent it is.<span class="detail"></span></td></tr></tbody></table><h3>Launching on this machine</h3><table class="settings"><tbody><tr><th scope="row">Launch Claude Code with</th><td>A program and the arguments it always takes, typed into the shell with Claude Code&#x27;s own after them. Empty means `claude`.<span class="detail"></span></td></tr><tr><th scope="row">Launch Codex with</th><td>A program and the arguments it always takes, typed into the shell with Codex&#x27;s own after them. Empty means `codex`.<span class="detail"></span></td></tr><tr><th scope="row">Launch Gemini with</th><td>A program and the arguments it always takes, typed into the shell with Gemini&#x27;s own after them. Empty means `gemini`.<span class="detail"></span></td></tr><tr><th scope="row">Launch OpenCode with</th><td>A program and the arguments it always takes, typed into the shell with OpenCode&#x27;s own after them. Empty means `opencode`.<span class="detail"></span></td></tr><tr><th scope="row">Launch Pi with</th><td>A program and the arguments it always takes, typed into the shell with Pi&#x27;s own after them. Empty means `pi`.<span class="detail"></span></td></tr></tbody></table></section>
+<section id="system-system"><h2>System</h2><h3>Notifications</h3><table class="settings"><tbody><tr><th scope="row">Receive desktop notifications from Kyon</th><td>Notify the system when something needs you while Kyon is not in front.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Notify when an agent completes a task</th><td><span class="detail">Default: On.</span></td></tr><tr><th scope="row">When a command takes longer than the time below to complete</th><td><span class="detail">Default: On.</span></td></tr><tr><th scope="row">Seconds</th><td>How long a command runs before its finishing is worth a notification.<span class="detail">From 1 to 86400. Default: 30.</span></td></tr><tr><th scope="row">Notify when a command or agent needs your attention to continue</th><td><span class="detail">Default: On.</span></td></tr><tr><th scope="row">Play notification sounds<span class="tag">macOS only</span></th><td><span class="detail">Default: On.</span></td></tr><tr><th scope="row">Show in-app agent notifications</th><td>Show a notice in the window when an agent finishes or needs you.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Toast notifications stay visible for</th><td>Seconds an in-app notice stays before it goes.<span class="detail">From 1 to 600. Default: 8.</span></td></tr></tbody></table><h3>Application</h3><table class="settings"><tbody><tr><th scope="row">Quit when all windows are closed<span class="tag">macOS only</span></th><td>Closing the last window quits the application.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Start when I log in<span class="tag">after a restart</span></th><td>Open Kyon automatically after signing in to this computer.<span class="detail">Default: Off.</span></td></tr></tbody></table><h3>System</h3><table class="settings"><tbody><tr><th scope="row">Honor linux selection clipboard<span class="tag">Linux only</span></th><td>Selecting text sets the primary selection, and middle-click pastes it.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Frame rate while sharing the screen</th><td>Most frames a second while someone views this screen remotely, so their view keeps up. 0 draws at the display&#x27;s rate.<span class="detail">From 0 to 120. Default: 15.</span></td></tr><tr><th scope="row">Prefer rendering new windows with integrated GPU (low power)</th><td>Changes apply to new windows.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Use Wayland for window management<span class="tag">Linux only</span><span class="tag">after a restart</span></th><td>Without it, fractional scaling may blur text.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Preferred graphics backend<span class="tag">Windows only</span></th><td>Changes apply to new windows.<span class="detail">One of: Default, Dx12, Vulkan, Opengl. Default: Default.</span></td></tr></tbody></table></section>
+<section id="system-kyonify"><h2>System › Kyonify</h2><h3>Subshells</h3><table class="settings"><tbody><tr><th scope="row">Added commands</th><td>Further commands to treat as subshells.<span class="detail"></span></td></tr><tr><th scope="row">Denylisted commands</th><td>Commands that never prompt to be Kyonified.<span class="detail"></span></td></tr></tbody></table><h3>SSH</h3><table class="settings"><tbody><tr><th scope="row">Kyonify SSH Sessions</th><td>Bring blocks and the input to shells on remote targets. Applies to shells opened from now on.<span class="detail">Default: On.</span></td></tr><tr><th scope="row">Install SSH extension</th><td>What happens when a remote host lacks the extension.<span class="detail">One of: Ask, Always, Never. Default: Ask.</span></td></tr><tr><th scope="row">Ask connect commands for a ControlMaster</th><td>A connect command other than plain ssh is asked for a shared connection, so further panes need no second login. Applies to new tabs.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Reuse existing SSH ControlMaster</th><td>Attach to a shared connection you configured rather than making one. Applies to new tabs.<span class="detail">Default: Off.</span></td></tr></tbody></table><h3>Remote targets</h3><table class="settings"><tbody><tr><th scope="row">How to reach a host<span class="tag">after a restart</span></th><td>The command that opens a connection. Empty means `ssh`. Set it for a wrapper, a client somewhere unusual, or a provider&#x27;s own helper.<span class="detail"></span></td></tr><tr><th scope="row">Remote hosts</th><td>Machines this workspace can read from. Each entry needs an ssh destination and the directory to work in. Authentication is ssh&#x27;s, so no password or key belongs here.<span class="detail"></span></td></tr></tbody></table></section>
+<section id="general-privacy"><h2>General › Privacy</h2><h3>Secret redaction</h3><table class="settings"><tbody><tr><th scope="row">Secret redaction</th><td>Likely secrets in blocks and prompts are neither saved nor sent anywhere.<span class="detail">Default: Off.</span></td></tr><tr><th scope="row">Secret visual redaction mode</th><td>How secrets look among the blocks. Only changes how they are shown.<span class="detail">One of: Asterisks, Strikethrough, Show. Default: Strikethrough.</span></td></tr><tr><th scope="row">Custom secret redaction</th><td>Further secrets, by regular expression.<span class="detail"></span></td></tr></tbody></table></section>
+    </article>
+    <nav class="pager" aria-label="Chapters"><a class="prev" href="feedback.html"><span>Previous</span>Feedback</a><a class="next" href="shortcuts.html"><span>Next</span>Commands and shortcuts</a></nav>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.0.82</span></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#how">How settings work</a></li><li><a href="#appearance-appearance">Appearance</a></li><li><a href="#appearance-layout">Appearance › Layout</a></li><li><a href="#terminal-input">Terminal › Input</a></li><li><a href="#terminal-keyboard-shortcuts">Terminal › Keyboard shortcuts</a></li><li><a href="#terminal-general">Terminal › General</a></li><li><a href="#terminal-behavior">Terminal › Behavior</a></li><li><a href="#code-indexing-and-projects">Code › Indexing and projects</a></li><li><a href="#code-editor-and-code-review">Code › Editor and Code Review</a></li><li><a href="#agent-agent">Agent</a></li><li><a href="#agent-models">Agent › Models</a></li><li><a href="#agent-suggestions">Agent › Suggestions</a></li><li><a href="#agent-profiles">Agent › Profiles</a></li><li><a href="#agent-mcp-servers">Agent › MCP servers</a></li><li><a href="#agent-knowledge">Agent › Knowledge</a></li><li><a href="#agent-third-party-cli-agents">Agent › Third party CLI agents</a></li><li><a href="#system-system">System</a></li><li><a href="#system-kyonify">System › Kyonify</a></li><li><a href="#general-privacy">General › Privacy</a></li></ul></nav>
+</div>
+<script>
+// The contents start folded on a narrow screen, open on a wide one.
+const side = document.querySelector(".side");
+const narrow = window.matchMedia("(max-width: 900px)");
+const fold = () => { side.open = !narrow.matches; };
+fold();
+narrow.addEventListener("change", fold);
+</script>
+</body>
+</html>

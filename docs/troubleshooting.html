@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Keeping Kyon up to date, where it keeps your settings and logs, and what to do when something looks wrong.">
+<link rel="icon" href="../assets/kyon.png">
+<title>Updates and troubleshooting · Kyon docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* The docs: kyon.sh's colours and type, laid out for reading. A contents
+   column, the chapter at a readable measure, and the sections of the page
+   beside it on a wide screen. */
+:root {
+  --ground: #f3f5f7;
+  --raised: #ffffff;
+  --ink: #12161b;
+  --muted: #56606b;
+  --rule: #d9dee4;
+  --accent: #1f7fc4;
+  --accent-soft: rgba(31, 127, 196, .09);
+  --frame: #0b0d10;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  --measure: 70ch;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #08090b;
+    --raised: #111317;
+    --ink: #e8ecf0;
+    --muted: #8d97a3;
+    --rule: #22262c;
+    --accent: #47a6ea;
+    --accent-soft: rgba(71, 166, 234, .12);
+    --frame: #000000;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #08090b;
+  --raised: #111317;
+  --ink: #e8ecf0;
+  --muted: #8d97a3;
+  --rule: #22262c;
+  --accent: #47a6ea;
+  --accent-soft: rgba(71, 166, 234, .12);
+  --frame: #000000;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 16px; top: 12px; background: var(--raised); padding: 6px 10px; z-index: 2; }
+
+/* ── top ───────────────────────────────────────────── */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 1.3rem/1 var(--display);
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.glyph {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--frame);
+  border: 1px solid var(--rule);
+  display: grid;
+  place-items: center;
+  font: 600 .8rem/1 var(--mono);
+  color: #47a6ea;
+}
+.links { display: flex; gap: 20px; font-weight: 600; }
+.links a { color: var(--muted); text-decoration: none; }
+.links a:hover, .links a[aria-current="page"] { color: var(--ink); }
+
+/* ── columns ───────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 210px;
+  gap: 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.side, .toc {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 40px;
+  font-size: .95rem;
+}
+.side summary { display: none; }
+.side ul, .toc ul { list-style: none; margin: 0 0 18px; padding: 0; }
+.side li a, .toc li a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  line-height: 1.35;
+}
+.side li a:hover, .toc li a:hover { color: var(--ink); background: var(--accent-soft); }
+.side li a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); font-weight: 600; }
+.group {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.toc li a { padding: 3px 10px; font-size: .9rem; }
+
+main { min-width: 0; padding: 36px 0 64px; }
+.head { margin-bottom: 28px; }
+h1, h2, h3 {
+  font-family: var(--display);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin: 0 0 10px; }
+.summary { margin: 0; font-size: 1.2rem; color: var(--muted); max-width: var(--measure); }
+
+/* ── prose ─────────────────────────────────────────── */
+.prose { max-width: var(--measure); }
+.prose section { padding-top: 8px; }
+.prose h2 {
+  font-size: 1.6rem;
+  margin: 36px 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.prose section:first-child h2 { border-top: 0; padding-top: 0; margin-top: 8px; }
+.prose h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+.prose p, .prose ul, .prose ol { margin: 0 0 14px; }
+.prose li { margin: 4px 0; }
+.prose li > ul, .prose li > ol { margin: 4px 0; }
+code {
+  font: 400 .88em var(--mono);
+  background: var(--accent-soft);
+  padding: .1em .35em;
+  border-radius: 4px;
+}
+kbd {
+  display: inline-block;
+  font: 600 .82em/1.5 var(--mono);
+  padding: 0 .45em;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--raised);
+  white-space: nowrap;
+}
+aside.note {
+  margin: 18px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+}
+aside.note p:last-child { margin-bottom: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 20px;
+  font-size: .97rem;
+}
+th, td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); }
+/* A path or a key name in a cell breaks rather than widening the page. */
+.prose td, .prose th { overflow-wrap: anywhere; }
+thead th {
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tbody th { font-weight: 600; }
+table.settings tbody th { width: 34%; }
+table.keys tbody th { font-weight: 400; }
+table.keys td { white-space: nowrap; width: 22%; }
+.detail { display: block; margin-top: 4px; color: var(--muted); font-size: .92rem; }
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font: 600 .68rem/1.6 var(--mono);
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  vertical-align: 2px;
+}
+.none { color: var(--muted); }
+.filter { display: flex; flex-direction: column; gap: 6px; max-width: 420px; }
+.filter label { font-weight: 600; }
+.filter input {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--raised);
+  color: var(--ink);
+}
+
+ul.cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+ul.cards li { margin: 0; }
+ul.cards a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--raised);
+  color: var(--ink);
+  text-decoration: none;
+}
+ul.cards a:hover { border-color: var(--accent); }
+ul.cards strong { font: 700 1.08rem/1.25 var(--display); }
+ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
+
+/* ── foot ──────────────────────────────────────────── */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--measure);
+  margin-top: 48px;
+}
+.pager a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+.pager a span { font: 600 .72rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.pager .next { margin-left: auto; text-align: right; }
+.foot {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  max-width: var(--measure);
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* ── narrower ──────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .shell { grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+  .toc { display: none; }
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .side {
+    position: static;
+    max-height: none;
+    padding: 14px 0 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .side summary {
+    display: block;
+    cursor: pointer;
+    padding: 6px 0 12px;
+    font-weight: 600;
+  }
+  main { padding-top: 24px; }
+  table.settings tbody th { width: auto; }
+  table.settings tr, table.settings th, table.settings td { display: block; padding-right: 0; }
+  table.settings th { border-bottom: 0; padding-bottom: 0; }
+  table.keys td { white-space: normal; }
+}
+
+</style>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<header class="top">
+  <a class="mark" href="../"><span class="glyph" aria-hidden="true">&gt;_</span>Kyon</a>
+  <nav class="links" aria-label="Site">
+    <a href="./" aria-current="false">Docs</a>
+    <a href="../#install">Download</a>
+  </nav>
+</header>
+<div class="shell">
+  <details class="side" open>
+    <summary>Contents</summary>
+    <nav aria-label="Documentation"><p class="group">Start</p><ul><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting started</a></li></ul><p class="group">Guide</p><ul><li><a href="workspace.html">Tabs, panes and windows</a></li><li><a href="terminal.html">The terminal</a></li><li><a href="coding-agents.html">Coding agents</a></li><li><a href="kyon-agent.html">Kyon&#x27;s agent, models and privacy</a></li><li><a href="code.html">Code, review and documents</a></li><li><a href="remote.html">Working on a server</a></li><li><a href="troubleshooting.html" aria-current="page">Updates and troubleshooting</a></li><li><a href="feedback.html">Feedback</a></li></ul><p class="group">Reference</p><ul><li><a href="settings.html">Every setting</a></li><li><a href="shortcuts.html">Commands and shortcuts</a></li></ul></nav>
+  </details>
+  <main id="main">
+    <header class="head">
+      <h1>Updates and troubleshooting</h1>
+      <p class="summary">Keeping Kyon up to date, where it keeps your settings and logs, and what to do when something looks wrong.</p>
+    </header>
+    <article class="prose">
+<section id="updates">
+<h2>Keeping Kyon up to date</h2>
+<p>Kyon looks for a new release only when you ask, so it never contacts the release server on its own schedule.</p>
+<ol>
+<li>Run <strong>Check for updates</strong> from the command palette (<kbd>⌘P</kbd>) or the Kyon menu. Settings opens on the About page, which shows your version and update channel.</li>
+<li>The About page says how the check is going. If there is a newer release, Kyon downloads it and checks it against the published checksum before offering it.</li>
+<li>Press <strong>Install</strong> with the new version number. Kyon verifies the build's signature, puts it in place, and tells you to restart to run it.</li>
+</ol>
+<p>If you installed Kyon with Homebrew, <code>brew upgrade --cask kyon</code> updates it too.</p>
+<h3>Release channels</h3>
+<p><strong>Settings › General › About</strong> shows which channel you are on, and <strong>Which releases to offer</strong> in Settings › Terminal › General chooses it: <em>stable</em>, <em>beta</em> or <em>nightly</em>. Stable is what most people should use. Moving back from beta or nightly to stable does not undo a newer build already installed; you go back to stable releases from the next one that is newer.</p>
+<h3>What changed</h3>
+<p>After an update, the first window says once that Kyon was updated, with a link to what changed. <strong>View latest changelog</strong> (<kbd>⌥⇧⌘O</kbd>) opens it at any time, as does <strong>What's new</strong> on the About page. To stop the notice, turn off <strong>Show changelog toast after updates</strong> in the same place.</p>
+</section>
+<section id="files">
+<h2>Where Kyon keeps your files</h2>
+<p>On a Mac everything is under your Library folder:</p>
+<table>
+<thead><tr><th scope="col">What</th><th scope="col">Where</th></tr></thead>
+<tbody>
+<tr><th scope="row">Settings, key bindings, saved commands, launch configurations, restored sessions</th><td><code>~/Library/Application Support/com.ryowave.kyon</code></td></tr>
+<tr><th scope="row">Logs</th><td><code>~/Library/Logs/com.ryowave.kyon</code></td></tr>
+<tr><th scope="row">Caches</th><td><code>~/Library/Caches/com.ryowave.kyon</code></td></tr>
+</tbody>
+</table>
+<p>The settings are in <code>settings.toml</code> and the key bindings in <code>keybindings.toml</code>. Run <strong>Open settings file</strong> (<kbd>⌥⌘,</kbd>), <strong>Open keybindings file</strong> or <strong>Show the settings folder</strong> from the palette to reach them, and <strong>View Kyon logs</strong> to open the folder of logs.</p>
+<aside class="note"><p>Beta and nightly builds keep their files in folders of their own, named with the channel after them (for example <code>com.ryowave.kyon-beta</code>), so trying one never touches your stable setup.</p></aside>
+</section>
+<section id="settings-file">
+<h2>When the settings file has a mistake</h2>
+<p>Kyon re-reads the settings file within a second of it changing. If a value in it cannot be used, Kyon sets that value aside, keeps the rest, and says so in a band at the top of the window and at the foot of the Settings window. From there you can open the file, or, with AI on, ask an agent to fix it. <strong>Re-read the settings file</strong> applies the file again after you have edited it elsewhere.</p>
+</section>
+<section id="something-wrong">
+<h2>When something looks wrong</h2>
+<ul>
+<li><strong>A message went by too fast.</strong> <strong>What this window has said</strong> lists the window's recent notices.</li>
+<li><strong>A hint you dismissed is gone.</strong> <strong>Show the hints again</strong> brings them back, and <strong>Show the introduction again</strong> runs the first-run introduction once more.</li>
+<li><strong>An agent is not recognised in a terminal.</strong> See <a href="coding-agents.html">Coding agents</a> for how Kyon recognises one, and install Kyon's plugin for it when offered.</li>
+<li><strong>A server can't be reached.</strong> See <a href="remote.html">Working on a server</a>. Kyon connects with your own SSH configuration, so check that <code>ssh</code> to the host works in a terminal first.</li>
+<li><strong>Kyon quit unexpectedly.</strong> Start it again: your tabs, splits and sessions come back as they were.</li>
+</ul>
+</section>
+<section id="feedback">
+<h2>Telling us about it</h2>
+<p>Run <strong>Feedback</strong> from the palette or the menu behind the button at the right of the title bar; <a href="feedback.html">Feedback</a> says where reports go and what makes one easy to act on. The version on the About page (its copy button copies it) and the log from <strong>View Kyon logs</strong> help most.</p>
+</section>
+<section id="uninstall">
+<h2>Removing Kyon</h2>
+<p>With Homebrew, run <code>brew uninstall --cask kyon</code>; otherwise move Kyon from Applications to the Bin. Your settings and sessions stay in the folders above, so a later install picks up where you left off. Delete those folders as well to remove everything.</p>
+</section>
+
+    </article>
+    <nav class="pager" aria-label="Chapters"><a class="prev" href="remote.html"><span>Previous</span>Working on a server</a><a class="next" href="feedback.html"><span>Next</span>Feedback</a></nav>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.0.82</span></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#updates">Keeping Kyon up to date</a></li><li><a href="#files">Where Kyon keeps your files</a></li><li><a href="#settings-file">When the settings file has a mistake</a></li><li><a href="#something-wrong">When something looks wrong</a></li><li><a href="#feedback">Telling us about it</a></li><li><a href="#uninstall">Removing Kyon</a></li></ul></nav>
+</div>
+<script>
+// The contents start folded on a narrow screen, open on a wide one.
+const side = document.querySelector(".side");
+const narrow = window.matchMedia("(max-width: 900px)");
+const fold = () => { side.open = !narrow.matches; };
+fold();
+narrow.addEventListener("change", fold);
+</script>
+</body>
+</html>

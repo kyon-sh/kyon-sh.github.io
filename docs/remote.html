@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Add a host as a target, then open terminals, coding agents, files, search and review on it, with sessions that keep running there when you disconnect.">
+<link rel="icon" href="../assets/kyon.png">
+<title>Working on a server · Kyon docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* The docs: kyon.sh's colours and type, laid out for reading. A contents
+   column, the chapter at a readable measure, and the sections of the page
+   beside it on a wide screen. */
+:root {
+  --ground: #f3f5f7;
+  --raised: #ffffff;
+  --ink: #12161b;
+  --muted: #56606b;
+  --rule: #d9dee4;
+  --accent: #1f7fc4;
+  --accent-soft: rgba(31, 127, 196, .09);
+  --frame: #0b0d10;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  --measure: 70ch;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #08090b;
+    --raised: #111317;
+    --ink: #e8ecf0;
+    --muted: #8d97a3;
+    --rule: #22262c;
+    --accent: #47a6ea;
+    --accent-soft: rgba(71, 166, 234, .12);
+    --frame: #000000;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #08090b;
+  --raised: #111317;
+  --ink: #e8ecf0;
+  --muted: #8d97a3;
+  --rule: #22262c;
+  --accent: #47a6ea;
+  --accent-soft: rgba(71, 166, 234, .12);
+  --frame: #000000;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 16px; top: 12px; background: var(--raised); padding: 6px 10px; z-index: 2; }
+
+/* ── top ───────────────────────────────────────────── */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 1.3rem/1 var(--display);
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.glyph {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--frame);
+  border: 1px solid var(--rule);
+  display: grid;
+  place-items: center;
+  font: 600 .8rem/1 var(--mono);
+  color: #47a6ea;
+}
+.links { display: flex; gap: 20px; font-weight: 600; }
+.links a { color: var(--muted); text-decoration: none; }
+.links a:hover, .links a[aria-current="page"] { color: var(--ink); }
+
+/* ── columns ───────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 210px;
+  gap: 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.side, .toc {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 40px;
+  font-size: .95rem;
+}
+.side summary { display: none; }
+.side ul, .toc ul { list-style: none; margin: 0 0 18px; padding: 0; }
+.side li a, .toc li a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  line-height: 1.35;
+}
+.side li a:hover, .toc li a:hover { color: var(--ink); background: var(--accent-soft); }
+.side li a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); font-weight: 600; }
+.group {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.toc li a { padding: 3px 10px; font-size: .9rem; }
+
+main { min-width: 0; padding: 36px 0 64px; }
+.head { margin-bottom: 28px; }
+h1, h2, h3 {
+  font-family: var(--display);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin: 0 0 10px; }
+.summary { margin: 0; font-size: 1.2rem; color: var(--muted); max-width: var(--measure); }
+
+/* ── prose ─────────────────────────────────────────── */
+.prose { max-width: var(--measure); }
+.prose section { padding-top: 8px; }
+.prose h2 {
+  font-size: 1.6rem;
+  margin: 36px 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.prose section:first-child h2 { border-top: 0; padding-top: 0; margin-top: 8px; }
+.prose h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+.prose p, .prose ul, .prose ol { margin: 0 0 14px; }
+.prose li { margin: 4px 0; }
+.prose li > ul, .prose li > ol { margin: 4px 0; }
+code {
+  font: 400 .88em var(--mono);
+  background: var(--accent-soft);
+  padding: .1em .35em;
+  border-radius: 4px;
+}
+kbd {
+  display: inline-block;
+  font: 600 .82em/1.5 var(--mono);
+  padding: 0 .45em;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--raised);
+  white-space: nowrap;
+}
+aside.note {
+  margin: 18px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+}
+aside.note p:last-child { margin-bottom: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 20px;
+  font-size: .97rem;
+}
+th, td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); }
+/* A path or a key name in a cell breaks rather than widening the page. */
+.prose td, .prose th { overflow-wrap: anywhere; }
+thead th {
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tbody th { font-weight: 600; }
+table.settings tbody th { width: 34%; }
+table.keys tbody th { font-weight: 400; }
+table.keys td { white-space: nowrap; width: 22%; }
+.detail { display: block; margin-top: 4px; color: var(--muted); font-size: .92rem; }
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font: 600 .68rem/1.6 var(--mono);
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  vertical-align: 2px;
+}
+.none { color: var(--muted); }
+.filter { display: flex; flex-direction: column; gap: 6px; max-width: 420px; }
+.filter label { font-weight: 600; }
+.filter input {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--raised);
+  color: var(--ink);
+}
+
+ul.cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+ul.cards li { margin: 0; }
+ul.cards a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--raised);
+  color: var(--ink);
+  text-decoration: none;
+}
+ul.cards a:hover { border-color: var(--accent); }
+ul.cards strong { font: 700 1.08rem/1.25 var(--display); }
+ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
+
+/* ── foot ──────────────────────────────────────────── */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--measure);
+  margin-top: 48px;
+}
+.pager a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+.pager a span { font: 600 .72rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.pager .next { margin-left: auto; text-align: right; }
+.foot {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  max-width: var(--measure);
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* ── narrower ──────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .shell { grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+  .toc { display: none; }
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .side {
+    position: static;
+    max-height: none;
+    padding: 14px 0 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .side summary {
+    display: block;
+    cursor: pointer;
+    padding: 6px 0 12px;
+    font-weight: 600;
+  }
+  main { padding-top: 24px; }
+  table.settings tbody th { width: auto; }
+  table.settings tr, table.settings th, table.settings td { display: block; padding-right: 0; }
+  table.settings th { border-bottom: 0; padding-bottom: 0; }
+  table.keys td { white-space: normal; }
+}
+
+</style>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<header class="top">
+  <a class="mark" href="../"><span class="glyph" aria-hidden="true">&gt;_</span>Kyon</a>
+  <nav class="links" aria-label="Site">
+    <a href="./" aria-current="false">Docs</a>
+    <a href="../#install">Download</a>
+  </nav>
+</header>
+<div class="shell">
+  <details class="side" open>
+    <summary>Contents</summary>
+    <nav aria-label="Documentation"><p class="group">Start</p><ul><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting started</a></li></ul><p class="group">Guide</p><ul><li><a href="workspace.html">Tabs, panes and windows</a></li><li><a href="terminal.html">The terminal</a></li><li><a href="coding-agents.html">Coding agents</a></li><li><a href="kyon-agent.html">Kyon&#x27;s agent, models and privacy</a></li><li><a href="code.html">Code, review and documents</a></li><li><a href="remote.html" aria-current="page">Working on a server</a></li><li><a href="troubleshooting.html">Updates and troubleshooting</a></li><li><a href="feedback.html">Feedback</a></li></ul><p class="group">Reference</p><ul><li><a href="settings.html">Every setting</a></li><li><a href="shortcuts.html">Commands and shortcuts</a></li></ul></nav>
+  </details>
+  <main id="main">
+    <header class="head">
+      <h1>Working on a server</h1>
+      <p class="summary">Add a host as a target, then open terminals, coding agents, files, search and review on it, with sessions that keep running there when you disconnect.</p>
+    </header>
+    <article class="prose">
+<section id="overview">
+<h2>Working on a server</h2>
+<p>Kyon works on another machine over SSH as it does on this Mac: terminals, coding agents, the explorer and editor, search and review all run against the host's files, with the host's tools. Shells and agents there keep running when the connection drops or you quit.</p>
+<p>Everything starts from a <strong>target</strong>: a host, the command that connects to it, and where to start. Saved targets appear beside this machine wherever Kyon asks where to run something.</p>
+</section>
+
+<section id="add-a-host">
+<h2>Add a host</h2>
+<p>A target uses your existing SSH setup, so your ports, keys and jump hosts work as in a terminal.</p>
+<ol>
+<li>Click the globe in the title bar, or choose <strong>Show remote connections</strong> from the File menu or the command palette (<kbd>⌘P</kbd>). The <strong>Connections</strong> dropdown opens.</li>
+<li>Click <strong>Add target</strong> and fill in the form:
+<ul>
+<li><strong>Name</strong>: what the target is called in menus and lists. It cannot contain a dot.</li>
+<li><strong>Host</strong>: what you would type after <code>ssh</code>, such as <code>user@host</code> or an alias from <code>~/.ssh/config</code>. An alias is the best choice, because it carries your port, key and jump host.</li>
+<li><strong>Before connecting</strong> (optional): a command to run on this Mac first, such as refreshing a certificate.</li>
+<li><strong>Connection command</strong> (optional): how to connect, with <code>{host}</code> where the host goes. Empty means <code>ssh {host}</code>. Use it for a wrapper or a provider's helper; without <code>{host}</code> in it, Host may stay empty.</li>
+<li><strong>Default working directory</strong> (optional): where terminals and agents start on the host, such as <code>/srv/app</code>.</li>
+<li><strong>Launch Claude Code with</strong>, and likewise for Codex, Gemini, OpenCode and pi (optional): a program that starts that agent on this host instead of its usual command.</li>
+</ul></li>
+<li>Click <strong>Save target</strong>.</li>
+</ol>
+<p>Authentication is left to SSH. Kyon refuses to save a private key, a password in an address, or a flag such as <code>--token</code> followed by the secret itself, and asks you to confirm anything that looks like a credential (<strong>Save anyway</strong>). Commands run as one program and its arguments; for anything with pipes or <code>;</code>, write a script and name it.</p>
+<p>Each target row has <strong>Edit</strong>, <strong>Duplicate</strong>, arrows to reorder, and <strong>Remove</strong>. Targets are kept in your settings file, under <strong>Settings › System › Kyonify</strong> in the <strong>Remote targets</strong> section, where <strong>Manage targets</strong> opens the same dropdown.</p>
+<h3>How Kyon signs in</h3>
+<p>The form's <strong>Kyon's own connection</strong> choice decides how the login happens:</p>
+<ul>
+<li><strong>Automatic</strong>: signs in from the connections panel, and every pane on the host shares that one login.</li>
+<li><strong>Share the connection</strong>: asks the connection command for a shared SSH connection and uses it. The command has to pass <code>-o</code> options on to <code>ssh</code>.</li>
+<li><strong>Take over the terminal's connection</strong>: takes over the connection a terminal made. It works with any command, but cannot confirm the host was reached, so a slow login can look finished.</li>
+</ul>
+<p>When a host asks for a password, a code or a browser sign-in, the dropdown shows its prompt in a small terminal to answer, with links you can click. A host you reach with a key asks nothing.</p>
+</section>
+
+<section id="host-helper">
+<h2>What gets installed on the host</h2>
+<p>Kyon talks to a host through a small helper program it brings with it, so you have nothing to install by hand.</p>
+<p>The first time you connect, Kyon copies the helper matching the host's system to <code>~/.cache/kyon/orb-…</code> on the host, named after the build. By default it asks first: a notice says <em>Kyon's host helper is not on this machine yet</em>, with an <strong>Install it</strong> button. Later connections reuse the copy; a newer Kyon brings its own and replaces an older one without asking, and copies no build has used for 14 days are cleared away.</p>
+<p>Also under <code>~/.cache/kyon/</code> on the host: <code>sessions</code>, where the host keeps track of your running shells, and <code>pasted</code>, which holds files you drop onto a terminal there.</p>
+<p>The <strong>Install SSH extension</strong> setting (<strong>Settings › System › Kyonify</strong>, SSH section) chooses <code>ask</code>, <code>always</code> or <code>never</code>. With <code>never</code>, Kyon uses an <code>orb</code> already on the host's path.</p>
+<h3>Supported hosts</h3>
+<p>Linux on x86-64 or ARM64 (the helper is a static build, so any distribution works) and macOS on Apple silicon or Intel. For any other system, connecting stops saying no helper is built for it.</p>
+</section>
+
+<section id="open-on-host">
+<h2>Open a terminal or an agent on the host</h2>
+<p>Every new session can run on this Mac or on any target, chosen as you open it.</p>
+<ol>
+<li>Open the <strong>New session menu</strong> with <kbd>⌃⌘T</kbd>, or the new-tab button.</li>
+<li>Choose <strong>Terminal</strong> or a coding agent (Claude Code, Codex, Gemini, OpenCode or pi). A panel beside it lists <strong>Local</strong>, each target, and <strong>Manage targets…</strong>. The place you used last is selected first.</li>
+<li>Pick the target. A terminal opens straight away. For an agent, Kyon asks which folder to start in, offering the target's default working directory, folders on the host as you type a path, and folders you used there before; choose <strong>Launch Claude Code in … on <em>name</em></strong> (or the agent you picked).</li>
+</ol>
+<p>If the host isn't connected yet, the pane says <em>Waiting for the login to …</em> and starts once connected; panes waiting on one host share one login.</p>
+<p>Opening a session on a host also points the window at it, so <kbd>⌘T</kbd> opens further terminals there. Agents on a host work as they do here, and Kyon offers its plugins for them once per host; see <a href="coding-agents.html">Coding agents</a>.</p>
+</section>
+
+<section id="files-search-review">
+<h2>Files, search and review on the host</h2>
+<p>The explorer, editor, search and review follow the session in front, so with a host's tab focused they all work on that host.</p>
+<ul>
+<li><strong>Browse files</strong> (<kbd>⌘E</kbd>) and <strong>Open a file</strong> (<kbd>⌘O</kbd>) list the host's tree. Files open in the editor and save back to the host. Language servers for those files run on the host.</li>
+<li><strong>Search the workspace</strong> (<kbd>⌘⇧F</kbd>) searches the host's files on the host.</li>
+<li><strong>Review changes</strong> (<kbd>⌘R</kbd>) shows the host repository's changes. Committing, pushing and opening a pull request run with the host's <code>git</code>.</li>
+</ul>
+<p>To point the window at a machine without opening a session, run <strong>Read from another machine</strong> from the File menu or the palette and pick a host, or <strong>this machine</strong> to come back.</p>
+<p>While a host is away, its open files say so and can't be edited; what you typed is kept, and a file changed on the host meanwhile is read again.</p>
+</section>
+
+<section id="in-the-terminal">
+<h2>Working in a host's terminal</h2>
+<p>A terminal on a target behaves like one on this Mac.</p>
+<ul>
+<li><strong>Blocks and the input</strong>: with <strong>Kyonify SSH Sessions</strong> on (the default), shells on hosts get Kyon's blocks and input. It applies to shells opened after you change it.</li>
+<li><strong>Completion</strong>: <kbd>Tab</kbd> completes paths and directories from the host's files.</li>
+<li><strong>The directory chip</strong> shows <code>~</code> for your home directory on the host.</li>
+<li><strong>Typing</strong> appears at once, before the host echoes it back.</li>
+<li><strong>Dropping files</strong>: drop a file from Finder onto the terminal and Kyon copies it to the host, showing <em>Sending <em>name</em> to the host</em> with the percentage done, then types the path it has on the host into the prompt, or into Rich Input if that is open. Any size works; folders can't be sent. Copies are kept in <code>~/.cache/kyon/pasted</code> for a day, at most 50 at a time.</li>
+</ul>
+<h3>A host Kyon serves, and ssh typed in a terminal</h3>
+<p>Running <code>ssh</code> yourself in a local terminal gives a plain shell at the far end. For blocks, host completion, kept sessions and file drops, add the machine as a target and open the terminal from the <strong>New session menu</strong>.</p>
+</section>
+
+<section id="sessions">
+<h2>Sessions that keep running</h2>
+<p>Shells and agents on a host keep running when your connection drops or you quit Kyon, so a long build or a working agent carries on without you.</p>
+<p>When you quit with tabs open, Kyon asks (unless you have told it not to): <strong>Quit</strong> ends the shells and the tabs come back with new ones, while <strong>Keep Shells and Quit</strong> leaves them running. With <strong>Restore the last session</strong> on, the next launch puts each terminal back on the host it was on, attached to the same shell, sized to its pane.</p>
+<p>The <strong>Connections</strong> dropdown lists the sessions kept on this Mac, then on each connected target, with each one's folder and state: <em>In tab "…"</em> (click to go there), <em>Open elsewhere</em> (attached in another window or another Kyon), <em>Left … ago</em> (running, nobody on it), or <em>Not running · starts again when opened</em>.</p>
+<p>Click <strong>End</strong>, then <strong>Confirm end</strong>, to stop one; closing its tab does the same. Unattached sessions end after the days set in <strong>End sessions left alone for</strong> (7 by default; 0 keeps them).</p>
+</section>
+
+<section id="reconnecting">
+<h2>When the connection drops</h2>
+<p>A dropped connection repairs itself, and nothing you type is lost.</p>
+<p>The target's row in the dropdown turns to <em>Reconnecting</em> and the terminal says it is reconnecting. Kyon retries with growing pauses for about two minutes; once through, the terminal shows <code>[reconnected]</code> in the same shell. What you typed meanwhile is held, the pane says <em>Not sent yet … it goes once the connection is back</em>, and it is sent once it can be. Keys typed into a terminal that has no shell yet are refused and the pane says they were not sent.</p>
+<p>If the host stays away, Kyon stops trying and the row offers <strong>Reconnect</strong>; panes waiting on it say <em>Not connected to …</em> with a <strong>Connect</strong> link. Turn off <strong>Reconnect dropped sessions</strong> to have terminals end instead.</p>
+<h3>When the host restarted</h3>
+<p>A host that restarts loses its shells and everything running in them. Once you are connected again, each terminal that was open on it comes back as a new shell in the same folder, taking what you type once that shell is at its prompt, and a coding agent that was running there goes on with its conversation, as it does when Kyon itself is restarted. <strong>Connect</strong> on a host Kyon gave up on reconnects the terminals already open there; it does not start them over.</p>
+<p>Where a terminal you signed in from carries the connection, that terminal ends with the restart. The terminals on the host wait, saying they are reconnecting, until you connect again; the new sign-in then carries them all.</p>
+</section>
+
+<section id="disconnect-remove">
+<h2>Disconnect or remove a host</h2>
+<p>You can close a connection or forget a target without touching the host itself.</p>
+<ul>
+<li><strong>Disconnect</strong>, then <strong>Confirm disconnect</strong>, closes the connection. Every shell and agent on it ends. The target stays saved.</li>
+<li><strong>Remove</strong>, then <strong>Confirm remove</strong>, deletes the target from your settings. It changes nothing in your SSH config, credentials or on the host, and stops nothing running there. A window reading from that host goes back to this machine.</li>
+</ul>
+</section>
+
+<section id="settings">
+<h2>Settings</h2>
+<table>
+<thead><tr><th>Setting</th><th>Where</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>How to reach a host</strong></td><td>Settings › System › Kyonify</td><td>The connection command for every target that doesn't set its own. Empty means <code>ssh</code>.</td></tr>
+<tr><td><strong>Remote hosts</strong></td><td>Settings › System › Kyonify</td><td>Your saved targets.</td></tr>
+<tr><td><strong>Kyonify SSH Sessions</strong></td><td>Settings › System › Kyonify</td><td>Blocks and the input in shells on hosts.</td></tr>
+<tr><td><strong>Install SSH extension</strong></td><td>Settings › System › Kyonify</td><td>Whether a host without the helper gets one: ask, always or never.</td></tr>
+<tr><td><strong>Ask connect commands for a ControlMaster</strong></td><td>Settings › System › Kyonify</td><td>Has a connection command other than <code>ssh</code> share one login across panes.</td></tr>
+<tr><td><strong>Reuse existing SSH ControlMaster</strong></td><td>Settings › System › Kyonify</td><td>Uses a shared connection from your SSH config.</td></tr>
+<tr><td><strong>Reconnect dropped sessions</strong></td><td>Settings › Terminal › General</td><td>Repairs a dropped connection instead of ending the terminal.</td></tr>
+<tr><td><strong>Keep shells running after quitting</strong></td><td>Settings › Terminal › General</td><td>What quitting does when Kyon doesn't ask.</td></tr>
+<tr><td><strong>End sessions left alone for</strong></td><td>Settings › Terminal › General</td><td>Days a kept shell may go unattached, here and on every host.</td></tr>
+<tr><td><strong>Private places</strong></td><td>Settings › Agent › Agent</td><td>Folders only a private model may read; <code>HOST:path</code> names one on a host, <code>HOST:</code> all of it.</td></tr>
+</tbody>
+</table>
+<p>See <a href="settings.html">the settings reference</a> for every setting.</p>
+</section>
+
+<section id="limits">
+<h2>Limits</h2>
+<aside class="note"><p><strong>Indexing and MCP servers are this machine's only.</strong> Codebase indexing and the MCP servers set up in Kyon work on this Mac, not on a host.</p></aside>
+<aside class="note"><p><strong>One person per session.</strong> When a second Kyon attaches to a session, the first is displaced.</p></aside>
+<aside class="note"><p><strong>Signing in from a terminal.</strong> A terminal that signs in to a host stays a plain shell at the far end. An agent launched on a host you sign in to in a terminal gets that sign-in in a tab of its own, and starts in a shell the host serves once the sign-in completes.</p></aside>
+<aside class="note"><p><strong>Search on a host.</strong> The docked search doesn't say a host is still connecting, shows a host's results all at once at the end (at most 20,000 lines), and searches one machine at a time.</p></aside>
+<aside class="note"><p><strong>The explorer on a host</strong> reaches the tree the host was started for, plus your home and temporary directories there, and nothing further.</p></aside>
+<aside class="note"><p><strong>Omnigent on a host</strong> has been tested only against a stand-in server, not a real one.</p></aside>
+</section>
+
+    </article>
+    <nav class="pager" aria-label="Chapters"><a class="prev" href="code.html"><span>Previous</span>Code, review and documents</a><a class="next" href="troubleshooting.html"><span>Next</span>Updates and troubleshooting</a></nav>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.0.82</span></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#overview">Working on a server</a></li><li><a href="#add-a-host">Add a host</a></li><li><a href="#host-helper">What gets installed on the host</a></li><li><a href="#open-on-host">Open a terminal or an agent on the host</a></li><li><a href="#files-search-review">Files, search and review on the host</a></li><li><a href="#in-the-terminal">Working in a host&#x27;s terminal</a></li><li><a href="#sessions">Sessions that keep running</a></li><li><a href="#reconnecting">When the connection drops</a></li><li><a href="#disconnect-remove">Disconnect or remove a host</a></li><li><a href="#settings">Settings</a></li><li><a href="#limits">Limits</a></li></ul></nav>
+</div>
+<script>
+// The contents start folded on a narrow screen, open on a wide one.
+const side = document.querySelector(".side");
+const narrow = window.matchMedia("(max-width: 900px)");
+const fold = () => { side.open = !narrow.matches; };
+fold();
+narrow.addEventListener("change", fold);
+</script>
+</body>
+</html>

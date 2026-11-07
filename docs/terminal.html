@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Work with commands as blocks, write them in a real editor, and let Kyon complete, correct, suggest and protect what you run.">
+<link rel="icon" href="../assets/kyon.png">
+<title>The terminal · Kyon docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* The docs: kyon.sh's colours and type, laid out for reading. A contents
+   column, the chapter at a readable measure, and the sections of the page
+   beside it on a wide screen. */
+:root {
+  --ground: #f3f5f7;
+  --raised: #ffffff;
+  --ink: #12161b;
+  --muted: #56606b;
+  --rule: #d9dee4;
+  --accent: #1f7fc4;
+  --accent-soft: rgba(31, 127, 196, .09);
+  --frame: #0b0d10;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  --measure: 70ch;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #08090b;
+    --raised: #111317;
+    --ink: #e8ecf0;
+    --muted: #8d97a3;
+    --rule: #22262c;
+    --accent: #47a6ea;
+    --accent-soft: rgba(71, 166, 234, .12);
+    --frame: #000000;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #08090b;
+  --raised: #111317;
+  --ink: #e8ecf0;
+  --muted: #8d97a3;
+  --rule: #22262c;
+  --accent: #47a6ea;
+  --accent-soft: rgba(71, 166, 234, .12);
+  --frame: #000000;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 16px; top: 12px; background: var(--raised); padding: 6px 10px; z-index: 2; }
+
+/* ── top ───────────────────────────────────────────── */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 1.3rem/1 var(--display);
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.glyph {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--frame);
+  border: 1px solid var(--rule);
+  display: grid;
+  place-items: center;
+  font: 600 .8rem/1 var(--mono);
+  color: #47a6ea;
+}
+.links { display: flex; gap: 20px; font-weight: 600; }
+.links a { color: var(--muted); text-decoration: none; }
+.links a:hover, .links a[aria-current="page"] { color: var(--ink); }
+
+/* ── columns ───────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 210px;
+  gap: 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.side, .toc {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 40px;
+  font-size: .95rem;
+}
+.side summary { display: none; }
+.side ul, .toc ul { list-style: none; margin: 0 0 18px; padding: 0; }
+.side li a, .toc li a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  line-height: 1.35;
+}
+.side li a:hover, .toc li a:hover { color: var(--ink); background: var(--accent-soft); }
+.side li a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); font-weight: 600; }
+.group {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.toc li a { padding: 3px 10px; font-size: .9rem; }
+
+main { min-width: 0; padding: 36px 0 64px; }
+.head { margin-bottom: 28px; }
+h1, h2, h3 {
+  font-family: var(--display);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin: 0 0 10px; }
+.summary { margin: 0; font-size: 1.2rem; color: var(--muted); max-width: var(--measure); }
+
+/* ── prose ─────────────────────────────────────────── */
+.prose { max-width: var(--measure); }
+.prose section { padding-top: 8px; }
+.prose h2 {
+  font-size: 1.6rem;
+  margin: 36px 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.prose section:first-child h2 { border-top: 0; padding-top: 0; margin-top: 8px; }
+.prose h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+.prose p, .prose ul, .prose ol { margin: 0 0 14px; }
+.prose li { margin: 4px 0; }
+.prose li > ul, .prose li > ol { margin: 4px 0; }
+code {
+  font: 400 .88em var(--mono);
+  background: var(--accent-soft);
+  padding: .1em .35em;
+  border-radius: 4px;
+}
+kbd {
+  display: inline-block;
+  font: 600 .82em/1.5 var(--mono);
+  padding: 0 .45em;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--raised);
+  white-space: nowrap;
+}
+aside.note {
+  margin: 18px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+}
+aside.note p:last-child { margin-bottom: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 20px;
+  font-size: .97rem;
+}
+th, td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); }
+/* A path or a key name in a cell breaks rather than widening the page. */
+.prose td, .prose th { overflow-wrap: anywhere; }
+thead th {
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tbody th { font-weight: 600; }
+table.settings tbody th { width: 34%; }
+table.keys tbody th { font-weight: 400; }
+table.keys td { white-space: nowrap; width: 22%; }
+.detail { display: block; margin-top: 4px; color: var(--muted); font-size: .92rem; }
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font: 600 .68rem/1.6 var(--mono);
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  vertical-align: 2px;
+}
+.none { color: var(--muted); }
+.filter { display: flex; flex-direction: column; gap: 6px; max-width: 420px; }
+.filter label { font-weight: 600; }
+.filter input {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--raised);
+  color: var(--ink);
+}
+
+ul.cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+ul.cards li { margin: 0; }
+ul.cards a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--raised);
+  color: var(--ink);
+  text-decoration: none;
+}
+ul.cards a:hover { border-color: var(--accent); }
+ul.cards strong { font: 700 1.08rem/1.25 var(--display); }
+ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
+
+/* ── foot ──────────────────────────────────────────── */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--measure);
+  margin-top: 48px;
+}
+.pager a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+.pager a span { font: 600 .72rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.pager .next { margin-left: auto; text-align: right; }
+.foot {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  max-width: var(--measure);
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* ── narrower ──────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .shell { grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+  .toc { display: none; }
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .side {
+    position: static;
+    max-height: none;
+    padding: 14px 0 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .side summary {
+    display: block;
+    cursor: pointer;
+    padding: 6px 0 12px;
+    font-weight: 600;
+  }
+  main { padding-top: 24px; }
+  table.settings tbody th { width: auto; }
+  table.settings tr, table.settings th, table.settings td { display: block; padding-right: 0; }
+  table.settings th { border-bottom: 0; padding-bottom: 0; }
+  table.keys td { white-space: normal; }
+}
+
+</style>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<header class="top">
+  <a class="mark" href="../"><span class="glyph" aria-hidden="true">&gt;_</span>Kyon</a>
+  <nav class="links" aria-label="Site">
+    <a href="./" aria-current="false">Docs</a>
+    <a href="../#install">Download</a>
+  </nav>
+</header>
+<div class="shell">
+  <details class="side" open>
+    <summary>Contents</summary>
+    <nav aria-label="Documentation"><p class="group">Start</p><ul><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting started</a></li></ul><p class="group">Guide</p><ul><li><a href="workspace.html">Tabs, panes and windows</a></li><li><a href="terminal.html" aria-current="page">The terminal</a></li><li><a href="coding-agents.html">Coding agents</a></li><li><a href="kyon-agent.html">Kyon&#x27;s agent, models and privacy</a></li><li><a href="code.html">Code, review and documents</a></li><li><a href="remote.html">Working on a server</a></li><li><a href="troubleshooting.html">Updates and troubleshooting</a></li><li><a href="feedback.html">Feedback</a></li></ul><p class="group">Reference</p><ul><li><a href="settings.html">Every setting</a></li><li><a href="shortcuts.html">Commands and shortcuts</a></li></ul></nav>
+  </details>
+  <main id="main">
+    <header class="head">
+      <h1>The terminal</h1>
+      <p class="summary">Work with commands as blocks, write them in a real editor, and let Kyon complete, correct, suggest and protect what you run.</p>
+    </header>
+    <article class="prose">
+<section id="overview">
+<h2>How the terminal is laid out</h2>
+<p>Kyon's terminal keeps each command with its output and gives you a proper editor for the next one. At the prompt, you type into an input at the bottom of the pane, and <kbd>↩</kbd> hands the finished command to your shell. Each command you ran sits above it in its own <strong>block</strong>, headed by where it ran and how long it took. A full-screen program such as an editor gets the whole pane, as in any terminal.</p>
+</section>
+
+<section id="blocks">
+<h2>Blocks: commands and their output</h2>
+<p>Blocks let you pick out, copy and hand on whole commands instead of dragging across lines.</p>
+<ul>
+<li><strong>Choose</strong> a block with a click. <kbd>⌘</kbd>-click adds or removes one, and <kbd>⇧</kbd>-click chooses everything between. <strong>Select the previous command</strong> (<kbd>⌘↑</kbd>) and <strong>Select the next command</strong> (<kbd>⌘↓</kbd>) do it from the keyboard.</li>
+<li>While a block is chosen, <kbd>↑</kbd>/<kbd>↓</kbd> move between blocks and <kbd>⇧↑</kbd>/<kbd>⇧↓</kbd> extend the choice. <kbd>Esc</kbd> lets go, and typing a character lets go and writes it in the input. <strong>Preserve input focus on block selection</strong> keeps the keyboard in the input instead.</li>
+<li><strong>Copy</strong> with <kbd>⌘C</kbd>: each chosen command is copied followed by its output. Right-click a block for <strong>Copy</strong>, <strong>Copy output</strong>, <strong>Copy command</strong>, <strong>Send to agent</strong>, <strong>Copy working directory</strong> and <strong>Clear Blocks</strong>. Right-click selected text for <strong>Copy</strong>, <strong>Insert into input</strong> and <strong>Send to agent</strong>.</li>
+<li><strong>Share with an agent</strong>: <strong>Send to agent: the selection, the file or the commands chosen</strong> (<kbd>⌘⌥↩</kbd>) puts the chosen commands and their output, or the selected text, into the prompt of the coding agent working in that folder. You add your question and send it yourself. See <a href="coding-agents.html">Coding agents</a>.</li>
+<li><strong>Run a command again</strong> by pressing <kbd>↑</kbd> in the input (see <a href="#history">History</a>) and then <kbd>↩</kbd>.</li>
+</ul>
+<p>Scrolled into a long block, its command stays pinned at the top of the pane. Click it to go back to where the command was typed. A button at the bottom right jumps to the end of that block's output. <strong>Clear the scrollback</strong> (<kbd>⌘K</kbd>) removes every block.</p>
+</section>
+
+<section id="input">
+<h2>The input editor</h2>
+<p>The input works like a text editor, so you can select, edit the middle of a long command, or write one over several lines.</p>
+<ul>
+<li><kbd>↩</kbd> runs the command. <kbd>⇧↩</kbd> starts a new line.</li>
+<li><kbd>⌥←</kbd>/<kbd>⌥→</kbd> move by word and <kbd>⌘←</kbd>/<kbd>⌘→</kbd> to the ends of the line. <kbd>⌃A</kbd>, <kbd>⌃E</kbd>, <kbd>⌃U</kbd> and <kbd>⌃K</kbd> work as in a shell, and <kbd>⌃C</kbd> clears the input.</li>
+<li><kbd>⌃R</kbd>, <kbd>⌃S</kbd> and <kbd>⌃T</kbd> hand what you wrote to your shell's own searches, including a fuzzy finder bound to those keys.</li>
+<li>Commands are coloured as you type, and a command name that will not run is underlined.</li>
+<li>With <strong>Expand aliases as you type</strong> on, an alias becomes what it stands for when you type a space after it.</li>
+<li>Dropping a file on the pane types its path, quoted for your shell.</li>
+</ul>
+<p><strong>Input position</strong> puts the input where you want it: <em>Pin to the bottom</em> (the default), <em>Start at the top</em>, or <em>Pin to the top</em>, which lists the newest blocks first under it.</p>
+
+<h3 id="completions">Completions</h3>
+<p>Press <kbd>⇥</kbd> to finish the word at the caret. The first word of a command completes from the commands on your path, a word with a slash as a path, a word starting with <code>$</code> from the environment, and anything after <code>cd</code> as a directory. With several matches, Kyon puts in what they share and opens a menu. <kbd>⇥</kbd> or <kbd>↑</kbd>/<kbd>↓</kbd> move through it, writing each choice in place, and typing narrows it. <strong>Open completions menu as you type</strong> shows the menu without <kbd>⇥</kbd>. In a terminal on another machine, paths complete from that machine's files.</p>
+
+<h3 id="history">History</h3>
+<ul>
+<li><strong>As you type</strong>, the rest of a matching earlier command appears greyed after the caret. Take it with <kbd>→</kbd> or <kbd>End</kbd>. Lines that look like they carry a password or token are never suggested.</li>
+<li><strong>Press <kbd>↑</kbd></strong> on the input's first line to list earlier commands, newest at the bottom and already written in. If you had typed something, only commands containing it are listed. <kbd>↑</kbd>/<kbd>↓</kbd> move through the list, <kbd>↩</kbd> runs the chosen command, and <kbd>Esc</kbd> puts back what you had written.</li>
+<li>Set <strong>Tab key behavior</strong> to <em>Accept suggestion</em> if you want <kbd>⇥</kbd> to take suggestions. Completions then open with <kbd>⌃Space</kbd>.</li>
+</ul>
+
+<h3 id="menus">The <code>@</code> and <code>/</code> menus</h3>
+<ul>
+<li>Type <code>@</code> at the start of a word to pick a file or folder, whose path replaces the <code>@</code>. In a repository you can also pick <em>Code</em>, which lists what the code defines. The menu stays out of the way in package installs such as <code>npm i @scope/pkg</code> and in words like <code>user@host</code>.</li>
+<li>Type <code>/</code> at the start of the input for Kyon's own commands: <code>/rename-tab</code>, <code>/set-tab-color</code>, <code>/open-file</code>, <code>/open-settings-file</code>, <code>/open-code-review</code>, <code>/agent</code>, <code>/index</code> and <code>/conversations</code>.</li>
+</ul>
+<p>Both menus work while <strong>AI features</strong> is on, and each has its own switch on Settings › Terminal › Input.</p>
+
+<h3 id="vim">Vim keys</h3>
+<p>Turn on <strong>Edit code and commands with Vim keybindings</strong> for modal editing in the input. The mode shows in the input's corner, and <strong>Set unnamed register as system clipboard</strong> makes yanks and puts use the clipboard. In Normal mode, <code>l</code> at the end of the line takes a history suggestion.</p>
+</section>
+
+<section id="shell-integration">
+<h2>Shell integration</h2>
+<p>Blocks, the input, the directory chip, corrections and suggestions depend on your shell reporting where each prompt and command begins and ends. Kyon sets this up for <strong>zsh</strong>, <strong>bash</strong> and <strong>fish</strong>, reading your own startup files first, so you get your usual shell with hooks added. Other shells start as configured and show their output as a plain terminal. The <strong>Shell</strong> setting picks the program; leave it empty for your login shell.</p>
+<h3>Subshells</h3>
+<p>A shell started inside another, such as <code>bash</code> at the prompt, a shell started with <code>docker run</code> or <code>docker exec</code>, or <code>poetry shell</code>, has no integration of its own. If it is still running a second later, a strip offers <strong>Kyonify subshell</strong>, which types the hooks into it so it gets blocks too. <strong>Do not show again</strong> adds the command to <strong>Denylisted commands</strong>. To treat more commands as subshells, add regular expressions under <strong>Added commands</strong>. Both lists are on Settings › System › Kyonify.</p>
+</section>
+
+<section id="plain-words">
+<h2>Turning plain words into a command</h2>
+<p>When you know what you want but not the command, write it in plain words.</p>
+<ol>
+<li>Type what you want, for example <code>how big is this folder</code>.</li>
+<li>Press <kbd>⌘↩</kbd> (<strong>Ask an agent about what is written</strong>). Kyon shows “Finding the command…”.</li>
+<li>The command replaces your words in the input. Read it, edit it if needed, and press <kbd>↩</kbd> to run it.</li>
+</ol>
+<p>A chip beside the input offers <strong>Ask the agent instead</strong>. Press <kbd>⌃↩</kbd> or click it to send your original words to the agent. If no command answers your request, Kyon hands it to the agent directly, and the conversation opens in the pane. <kbd>Esc</kbd> returns to the shell.</p>
+<p>When the line is already a command, <kbd>⌘↩</kbd> asks the agent about it. With the input empty, it opens a conversation. <strong>Ask with</strong>, on Settings › Agent › Agent, chooses which model or coding agent answers. See <a href="kyon-agent.html">Kyon's agent</a>.</p>
+<p>To have plain <kbd>↩</kbd> send requests to the agent, turn on <strong>Autodetect agent prompts in terminal input</strong>. <kbd>⌘I</kbd> then switches a line between request and command, and <strong>Natural language denylist</strong> names commands that never count as requests.</p>
+</section>
+
+<section id="active-ai">
+<h2>Next-command and prompt suggestions</h2>
+<p>Active AI suggests what to do after each command finishes, so a routine sequence takes a keypress per step.</p>
+<ul>
+<li><strong>Next Command</strong> shows a likely next command, greyed, in the empty input. It comes from what usually followed in your history, and from the model only when history cannot say. Take it with <kbd>→</kbd> or <kbd>End</kbd>.</li>
+<li><strong>Prompt Suggestions</strong> shows a question about the finished command as a chip beside the input. <kbd>⌃↩</kbd> or a click asks the agent, and <kbd>↩</kbd> sets it aside.</li>
+</ul>
+<p>Both are on Settings › Agent › Suggestions, under the <strong>Active AI</strong> switch, and need <strong>AI features</strong> on.</p>
+</section>
+
+<section id="corrections">
+<h2>Fixing the last command</h2>
+<p>When a command fails on a typo or a wrong flag, Kyon suggests what you meant.</p>
+<ul>
+<li>With <strong>Suggest corrected commands</strong> on, the best correction appears in the empty input after the failure. Take it with <kbd>→</kbd> or <kbd>End</kbd>.</li>
+<li>Run <strong>Fix the last command</strong> from the command palette (<kbd>⌘P</kbd>) or the Session menu to see every correction. The one you choose is typed in but not run.</li>
+</ul>
+<p>Corrections use the commands on your path and your history. A failed <code>ssh</code> is left alone, since that is usually the network, not a typo.</p>
+</section>
+
+<section id="saved-commands">
+<h2>Saved commands</h2>
+<p>Save a command you got right once, with blanks for the parts that change.</p>
+<p>Run <strong>Saved commands</strong> from the File menu or the palette, and search by name, description or tag. The command you choose is typed into the terminal with its defaults filled in. Blanks without a default stay visible as <code>{{name}}</code>, and Kyon says how many are left. Nothing runs until you press <kbd>↩</kbd>.</p>
+<p>Saved commands come from your own <code>workflows</code> folder in Kyon's settings folder (<strong>Show the settings folder</strong> finds it), then from <code>.kyon/workflows</code> in the project, then from a library of several hundred that ships with Kyon. When names clash, yours win. Each is a <code>.toml</code> file:</p>
+<ul>
+<li><code>command</code>, the only required key, with <code>{{name}}</code> for each blank, such as <code>"./deploy.sh {{service}} --env {{env}}"</code>;</li>
+<li><code>name</code> (the file name if left out), <code>description</code> and <code>tags</code>;</li>
+<li>a <code>[[arguments]]</code> table per blank, with <code>name</code>, and optionally <code>description</code> and <code>default</code>.</li>
+</ul>
+<p>A file that cannot be read appears in the list with the reason.</p>
+</section>
+
+<section id="links">
+<h2>Links and file paths in output</h2>
+<p>Addresses and paths in output open with a click, so an error message takes you straight to the line it names.</p>
+<ul>
+<li>Kyon recognizes links that programs mark, web addresses, and paths to files that exist, including a trailing <code>:line:column</code>. A link wrapped onto the next row still works.</li>
+<li><kbd>⌘</kbd>-click or middle-click opens a link. A plain click shows <strong>Open link</strong>, or for a file <strong>Open file</strong>, <strong>Open in Kyon</strong> and <strong>Show in Finder</strong>. <strong>Show tooltip on click on links</strong> turns that menu off.</li>
+<li><strong>Choose an editor to open file links</strong> (Settings › Code › Editor and Code Review) sets where files open. <em>Kyon</em> opens them at the line named.</li>
+</ul>
+</section>
+
+<section id="pictures">
+<h2>Pictures</h2>
+<p>Programs that draw plots and image previews in the terminal work in Kyon. It supports the kitty graphics protocol, including animation and pictures side by side, plus Sixel and OSC 1337 inline images, for PNG and JPEG. Pictures move with the text as it scrolls.</p>
+</section>
+
+<section id="secrets">
+<h2>Hiding secrets</h2>
+<p>Secret redaction keeps tokens and keys out of sight when you share your screen or hand output to an agent.</p>
+<ol>
+<li>On Settings › General › Privacy, turn on <strong>Secret redaction</strong>.</li>
+<li>Under <strong>Custom secret redaction</strong>, click <strong>Add recommended</strong> for common API keys, GitHub tokens, AWS IDs, JWTs and addresses. Add your own regular expressions in the settings file.</li>
+<li>Pick a <strong>Secret visual redaction mode</strong>: <em>Strikethrough</em> (the default), <em>Asterisks</em> (hidden until revealed) or <em>Show</em>.</li>
+</ol>
+<p>Click a secret for <strong>Copy secret</strong> and, with asterisks, <strong>Reveal secret</strong>. In asterisks mode, copying keeps hidden secrets hidden. Secrets passed with <strong>Send to agent</strong> always go as asterisks.</p>
+</section>
+
+<section id="clipboard">
+<h2>Clipboard and pasting safeguards</h2>
+<p>Kyon asks before a paste or a program does something you did not expect.</p>
+<ul>
+<li><strong>Ask before pasting commands:</strong> when a multi-line paste would run straight away in a program that cannot tell pasting from typing, a strip says “Pasting this would run N lines as commands”, with <strong>Paste</strong> and <strong>Cancel</strong>. A paste into the input waits for your <kbd>↩</kbd>. One paste can be up to 1 MiB.</li>
+<li><strong>Clipboard access</strong> (<em>Ask</em>, <em>Deny</em>, <em>Write</em> or <em>Read write</em>) governs programs using the clipboard. With <em>Ask</em>, a read shows what the program would see, with <strong>Allow</strong>, <strong>Always allow</strong> and <strong>Don't allow</strong>. A program's first write asks too.</li>
+<li><strong>Copy on select</strong> is on by default. <strong>Double-click smart selection</strong> takes a whole path or address.</li>
+</ul>
+</section>
+
+<section id="directory-chip">
+<h2>The directory chip</h2>
+<p>Chips above the input show where your shell is: the active <code>conda</code> or <code>venv</code>, the <strong>directory</strong> (home as <code>~</code>, the host's home on another machine), the Git branch, and the changed files with lines added and removed. <strong>Keep the shell's own prompt</strong> shows your shell's prompt instead. Right-click a block and choose <strong>Copy working directory</strong> to copy the directory.</p>
+<p>A long directory keeps its end, and a chip that does not fit beside the others is shortened to what room there is, with … where it was cut. Rest the pointer on a shortened chip to read all of it.</p>
+</section>
+
+<section id="find">
+<h2>Find in the terminal</h2>
+<p><strong>Find in this file</strong> (<kbd>⌘F</kbd>) searches everything the terminal keeps, starting from the most recent match. It starts with your selection if you have one. <strong>Find next</strong> (<kbd>⌘G</kbd>) and <strong>Find previous</strong> (<kbd>⌘⇧G</kbd>) step between matches. Case is ignored unless you type a capital.</p>
+</section>
+
+<section id="settings">
+<h2>Terminal settings</h2>
+<p>Open Settings with <kbd>⌘,</kbd>. All settings are listed in <a href="settings.html">the settings reference</a>.</p>
+<table>
+<thead><tr><th>Page</th><th>What it covers</th></tr></thead>
+<tbody>
+<tr><td>Settings › Terminal › Input</td><td>Input position and prompt, editing and Vim, suggestions, completions, corrections, the <code>@</code> and <code>/</code> menus, <strong>Tab key behavior</strong>, Option as Meta, and agent input detection.</td></tr>
+<tr><td>Settings › Terminal › General</td><td>Session restore, kept shells, <strong>Scrollback</strong>, <strong>Shell</strong>, <strong>New terminals start in</strong>, the sticky header and link menus.</td></tr>
+<tr><td>Settings › Terminal › Behavior</td><td>Mouse and focus reporting, bell, selection, <strong>Copy on select</strong>, <strong>Ask before pasting commands</strong>, <strong>Clipboard access</strong> and <strong>Ask before closing a running command</strong>.</td></tr>
+</tbody>
+</table>
+<p>Related: Settings › Appearance › Layout (blocks), Settings › Agent › Suggestions, Settings › General › Privacy and Settings › System › Kyonify.</p>
+</section>
+
+<section id="limits">
+<h2>Limits</h2>
+<aside class="note"><p><strong>Signing in to a host from a terminal</strong>, for example by running <code>ssh</code>, leaves a plain shell at the far end, without blocks or the input. An agent launched on such a host opens in its own tab, which waits for the sign-in. For blocks on a host, open the terminal on the host; see <a href="remote.html">Remote</a>.</p></aside>
+<aside class="note"><p><strong>On another machine</strong>, <kbd>⇥</kbd> completes paths, directories and shell builtins, but not the host's commands or environment, and corrections do not know the host's commands.</p></aside>
+<aside class="note"><p><strong>Prompt suggestions</strong> follow a finished command, not a finished agent reply. <strong>Vim's search keys</strong> do nothing in the input yet; use <kbd>⌃R</kbd> or <kbd>↑</kbd>.</p></aside>
+</section>
+
+    </article>
+    <nav class="pager" aria-label="Chapters"><a class="prev" href="workspace.html"><span>Previous</span>Tabs, panes and windows</a><a class="next" href="coding-agents.html"><span>Next</span>Coding agents</a></nav>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.0.82</span></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#overview">How the terminal is laid out</a></li><li><a href="#blocks">Blocks: commands and their output</a></li><li><a href="#input">The input editor</a></li><li><a href="#shell-integration">Shell integration</a></li><li><a href="#plain-words">Turning plain words into a command</a></li><li><a href="#active-ai">Next-command and prompt suggestions</a></li><li><a href="#corrections">Fixing the last command</a></li><li><a href="#saved-commands">Saved commands</a></li><li><a href="#links">Links and file paths in output</a></li><li><a href="#pictures">Pictures</a></li><li><a href="#secrets">Hiding secrets</a></li><li><a href="#clipboard">Clipboard and pasting safeguards</a></li><li><a href="#directory-chip">The directory chip</a></li><li><a href="#find">Find in the terminal</a></li><li><a href="#settings">Terminal settings</a></li><li><a href="#limits">Limits</a></li></ul></nav>
+</div>
+<script>
+// The contents start folded on a narrow screen, open on a wide one.
+const side = document.querySelector(".side");
+const narrow = window.matchMedia("(max-width: 900px)");
+const fold = () => { side.open = !narrow.matches; };
+fold();
+narrow.addEventListener("change", fold);
+</script>
+</body>
+</html>

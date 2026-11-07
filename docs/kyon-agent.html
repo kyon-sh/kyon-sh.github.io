@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Talk to Kyon&#x27;s own agent in a pane or the terminal, choose what answers it, keep private folders private, and give it rules, MCP servers and an indexed codebase.">
+<link rel="icon" href="../assets/kyon.png">
+<title>Kyon&#x27;s agent, models and privacy · Kyon docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* The docs: kyon.sh's colours and type, laid out for reading. A contents
+   column, the chapter at a readable measure, and the sections of the page
+   beside it on a wide screen. */
+:root {
+  --ground: #f3f5f7;
+  --raised: #ffffff;
+  --ink: #12161b;
+  --muted: #56606b;
+  --rule: #d9dee4;
+  --accent: #1f7fc4;
+  --accent-soft: rgba(31, 127, 196, .09);
+  --frame: #0b0d10;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  --measure: 70ch;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #08090b;
+    --raised: #111317;
+    --ink: #e8ecf0;
+    --muted: #8d97a3;
+    --rule: #22262c;
+    --accent: #47a6ea;
+    --accent-soft: rgba(71, 166, 234, .12);
+    --frame: #000000;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #08090b;
+  --raised: #111317;
+  --ink: #e8ecf0;
+  --muted: #8d97a3;
+  --rule: #22262c;
+  --accent: #47a6ea;
+  --accent-soft: rgba(71, 166, 234, .12);
+  --frame: #000000;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 16px; top: 12px; background: var(--raised); padding: 6px 10px; z-index: 2; }
+
+/* ── top ───────────────────────────────────────────── */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 1.3rem/1 var(--display);
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.glyph {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--frame);
+  border: 1px solid var(--rule);
+  display: grid;
+  place-items: center;
+  font: 600 .8rem/1 var(--mono);
+  color: #47a6ea;
+}
+.links { display: flex; gap: 20px; font-weight: 600; }
+.links a { color: var(--muted); text-decoration: none; }
+.links a:hover, .links a[aria-current="page"] { color: var(--ink); }
+
+/* ── columns ───────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 210px;
+  gap: 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.side, .toc {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 40px;
+  font-size: .95rem;
+}
+.side summary { display: none; }
+.side ul, .toc ul { list-style: none; margin: 0 0 18px; padding: 0; }
+.side li a, .toc li a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  line-height: 1.35;
+}
+.side li a:hover, .toc li a:hover { color: var(--ink); background: var(--accent-soft); }
+.side li a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); font-weight: 600; }
+.group {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.toc li a { padding: 3px 10px; font-size: .9rem; }
+
+main { min-width: 0; padding: 36px 0 64px; }
+.head { margin-bottom: 28px; }
+h1, h2, h3 {
+  font-family: var(--display);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin: 0 0 10px; }
+.summary { margin: 0; font-size: 1.2rem; color: var(--muted); max-width: var(--measure); }
+
+/* ── prose ─────────────────────────────────────────── */
+.prose { max-width: var(--measure); }
+.prose section { padding-top: 8px; }
+.prose h2 {
+  font-size: 1.6rem;
+  margin: 36px 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.prose section:first-child h2 { border-top: 0; padding-top: 0; margin-top: 8px; }
+.prose h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+.prose p, .prose ul, .prose ol { margin: 0 0 14px; }
+.prose li { margin: 4px 0; }
+.prose li > ul, .prose li > ol { margin: 4px 0; }
+code {
+  font: 400 .88em var(--mono);
+  background: var(--accent-soft);
+  padding: .1em .35em;
+  border-radius: 4px;
+}
+kbd {
+  display: inline-block;
+  font: 600 .82em/1.5 var(--mono);
+  padding: 0 .45em;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--raised);
+  white-space: nowrap;
+}
+aside.note {
+  margin: 18px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+}
+aside.note p:last-child { margin-bottom: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 20px;
+  font-size: .97rem;
+}
+th, td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); }
+/* A path or a key name in a cell breaks rather than widening the page. */
+.prose td, .prose th { overflow-wrap: anywhere; }
+thead th {
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tbody th { font-weight: 600; }
+table.settings tbody th { width: 34%; }
+table.keys tbody th { font-weight: 400; }
+table.keys td { white-space: nowrap; width: 22%; }
+.detail { display: block; margin-top: 4px; color: var(--muted); font-size: .92rem; }
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font: 600 .68rem/1.6 var(--mono);
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  vertical-align: 2px;
+}
+.none { color: var(--muted); }
+.filter { display: flex; flex-direction: column; gap: 6px; max-width: 420px; }
+.filter label { font-weight: 600; }
+.filter input {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--raised);
+  color: var(--ink);
+}
+
+ul.cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+ul.cards li { margin: 0; }
+ul.cards a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--raised);
+  color: var(--ink);
+  text-decoration: none;
+}
+ul.cards a:hover { border-color: var(--accent); }
+ul.cards strong { font: 700 1.08rem/1.25 var(--display); }
+ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
+
+/* ── foot ──────────────────────────────────────────── */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--measure);
+  margin-top: 48px;
+}
+.pager a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+.pager a span { font: 600 .72rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.pager .next { margin-left: auto; text-align: right; }
+.foot {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  max-width: var(--measure);
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* ── narrower ──────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .shell { grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+  .toc { display: none; }
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .side {
+    position: static;
+    max-height: none;
+    padding: 14px 0 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .side summary {
+    display: block;
+    cursor: pointer;
+    padding: 6px 0 12px;
+    font-weight: 600;
+  }
+  main { padding-top: 24px; }
+  table.settings tbody th { width: auto; }
+  table.settings tr, table.settings th, table.settings td { display: block; padding-right: 0; }
+  table.settings th { border-bottom: 0; padding-bottom: 0; }
+  table.keys td { white-space: normal; }
+}
+
+</style>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<header class="top">
+  <a class="mark" href="../"><span class="glyph" aria-hidden="true">&gt;_</span>Kyon</a>
+  <nav class="links" aria-label="Site">
+    <a href="./" aria-current="false">Docs</a>
+    <a href="../#install">Download</a>
+  </nav>
+</header>
+<div class="shell">
+  <details class="side" open>
+    <summary>Contents</summary>
+    <nav aria-label="Documentation"><p class="group">Start</p><ul><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting started</a></li></ul><p class="group">Guide</p><ul><li><a href="workspace.html">Tabs, panes and windows</a></li><li><a href="terminal.html">The terminal</a></li><li><a href="coding-agents.html">Coding agents</a></li><li><a href="kyon-agent.html" aria-current="page">Kyon&#x27;s agent, models and privacy</a></li><li><a href="code.html">Code, review and documents</a></li><li><a href="remote.html">Working on a server</a></li><li><a href="troubleshooting.html">Updates and troubleshooting</a></li><li><a href="feedback.html">Feedback</a></li></ul><p class="group">Reference</p><ul><li><a href="settings.html">Every setting</a></li><li><a href="shortcuts.html">Commands and shortcuts</a></li></ul></nav>
+  </details>
+  <main id="main">
+    <header class="head">
+      <h1>Kyon&#x27;s agent, models and privacy</h1>
+      <p class="summary">Talk to Kyon&#x27;s own agent in a pane or the terminal, choose what answers it, keep private folders private, and give it rules, MCP servers and an indexed codebase.</p>
+    </header>
+    <article class="prose">
+<section id="ai-switch">
+<h2>Turning AI on and off</h2>
+<p>One switch controls every AI feature, so you can turn them all off at once.</p>
+<p>Turn <strong>AI features</strong> on or off in Settings (<kbd>⌘,</kbd>) › Agent › Agent, or run <strong>Disable AI</strong> or <strong>Enable AI</strong> from the command palette (<kbd>⌘P</kbd>). While AI is off, Kyon's agent commands tell you they need AI enabled, and the settings that depend on it are greyed out, keeping their values. Coding agents you run in a terminal keep working, with their toolbar and notifications; see <a href="coding-agents.html">Coding agents</a>.</p>
+</section>
+
+<section id="conversations">
+<h2>Talking to Kyon's agent</h2>
+<p>Kyon's agent reads your project, edits files and runs commands, in a pane of its own or in the terminal you are already using.</p>
+<h3>In a pane</h3>
+<ul>
+<li><strong>New agent conversation</strong> (<kbd>⌘I</kbd>) opens one in a new tab. <strong>Agent beside this pane</strong> and <strong>Agent below this pane</strong> (Session › Agent Pane) open one next to your work.</li>
+<li>The line under the prompt shows the model, whether it is working (<kbd>esc</kbd> stops it) and the tokens used.</li>
+<li>Session › Conversation has <strong>Change the model for this conversation</strong>, <strong>Show what tools returned</strong> and <strong>Clear this conversation</strong> (<kbd>⌘⇧K</kbd>).</li>
+</ul>
+<h3>In the terminal</h3>
+<p>Write in the terminal's input and press <kbd>⌘↩</kbd> (<strong>Ask an agent about what is written</strong>):</p>
+<ul>
+<li>A request in plain words is turned into the command that does it, placed in the input for you to read and run. Press <kbd>⌘↩</kbd> again on that command to give your original request to the agent instead.</li>
+<li>A command is asked about.</li>
+<li>An empty input starts a conversation.</li>
+</ul>
+<p>The conversation takes over the pane; <kbd>esc</kbd> goes back to the shell, stopping the agent first if it is working.</p>
+<p>Under a command that is still running, <kbd>⌘⇧↩</kbd> brings the agent in: it can read what the program shows and type into it, asking first. Turn on <strong>Show "Use Agent" footer</strong> in Settings › Agent › Agent to have this offered under every running command.</p>
+<p><strong>Ask on the side, beside the coding agent in front</strong> (<kbd>⌥⌘I</kbd>) opens a conversation next to a coding agent; Kyon's agent is told what that agent is doing and leaves the work to it.</p>
+</section>
+
+<section id="tools">
+<h2>What the agent can do, and how much it asks</h2>
+<p>The agent works through a set of tools, and you decide which it may use without asking.</p>
+<ul>
+<li>Read files, list directories and write files in the workspace.</li>
+<li>Run a command in your terminal, where you see it run.</li>
+<li>Read a terminal and type into the program running there, when the conversation is in that terminal or was brought in under a running command.</li>
+<li>Search the codebase, once it is <a href="#indexing">indexed</a>.</li>
+<li>Use tools from <a href="#mcp">MCP servers</a>.</li>
+<li>List the coding agents running in every Kyon window, read what one was asked and answered, give one a prompt, and wait for it to finish.</li>
+</ul>
+<p>File tools stay inside the workspace, whatever you allow.</p>
+<p>Set how much it asks with <strong>What the assistant may do on its own</strong> in Settings › Agent › Profiles:</p>
+<table>
+<thead><tr><th>Choice</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>Ask changes</strong> (default)</td><td>Reads freely; asks before writing a file, running a command, typing into a terminal, prompting a coding agent or calling an MCP tool.</td></tr>
+<tr><td><strong>Ask everything</strong></td><td>Asks before every tool call, reading included.</td></tr>
+<tr><td><strong>Freely</strong></td><td>Asks about nothing: a decision to trust it with this machine.</td></tr>
+</tbody>
+</table>
+<p>When it asks, it shows the call exactly as it will run. In a pane, press <kbd>y</kbd> to allow or <kbd>n</kbd> to refuse; a refusal goes back to the agent so it can try another way.</p>
+</section>
+
+<section id="answering">
+<h2>Answering with a coding agent or a model</h2>
+<p>Kyon's agent can answer with a coding agent you already use, with nothing to set up, or with a model you configure.</p>
+<p>Choose under Settings › Agent › Agent › <strong>Ask with</strong>.</p>
+<ul>
+<li><strong>Claude Code</strong>, <strong>Codex</strong>, <strong>Gemini</strong> or <strong>OpenCode</strong>: that agent's command line runs once per question, in your working directory on this Mac, signed in as you already are. It uses its own tools rather than Kyon's. Reviews you hand to an agent go to the one chosen here.</li>
+<li><strong>Models</strong>: a model set up under Settings › Agent › Models answers, using Kyon's tools and permission setting.</li>
+</ul>
+<h3>Setting up a model</h3>
+<p>Settings › Agent › Models takes any endpoint speaking the OpenAI-compatible or Anthropic Messages protocol, on this Mac, your network or a provider.</p>
+<ol>
+<li>Click <strong>+ Add custom model</strong>, or one of <strong>Ollama</strong>, <strong>llama.cpp</strong>, <strong>LM Studio</strong> and <strong>vLLM</strong> beside <strong>Local model server:</strong> to start with its usual address filled in.</li>
+<li>Fill in <strong>Endpoint name</strong> and <strong>Endpoint URL</strong>. An address beyond this Mac and your local network must use HTTPS.</li>
+<li>Enter an <strong>API key</strong> if needed; a local server usually needs none.</li>
+<li>Choose the <strong>API shape</strong>: <strong>OpenAI compatible</strong> or <strong>Anthropic Messages</strong>.</li>
+<li>Under <strong>Who sees what is sent</strong>, choose <strong>Only me: private</strong> or <strong>A model provider</strong>. The address suggests one: this Mac and private network addresses count as private.</li>
+<li>Add models by <strong>Model name</strong>, with an optional <strong>Model alias</strong> for the picker, or click <strong>Fetch models</strong> to ask the endpoint. Then click <strong>Add endpoint</strong>.</li>
+</ol>
+<p><strong>Auth token command</strong> runs a command that prints the key, such as <code>op read op://Private/OpenAI/key</code>, and <strong>Token TTL in seconds</strong> sets how long its output is reused (0: never). <strong>Extra header name</strong> and <strong>Extra header value</strong> add a header a gateway needs. Keys are kept in the macOS keychain, not the settings file, and go only to their own endpoint.</p>
+<p>Set the model new conversations use with <strong>Model</strong> in Settings › Agent › Profiles, written <code>endpoint/model</code>; switch one conversation with <strong>Change the model for this conversation</strong>.</p>
+</section>
+
+<section id="private">
+<h2>Private models and private folders</h2>
+<p>Mark folders whose contents only a model of your own may read, and Kyon's agent keeps to such a model whenever it works there.</p>
+<p>Run <strong>Mark this folder private, or not: Kyon's agent there uses only a private model</strong> (Session › Every Agent) for the folder in front, or edit <strong>Private places</strong> in Settings › Agent › Agent: a path, <code>HOST:path</code> on a remote host, or <code>HOST:</code> for all of one.</p>
+<p>In a private place, Kyon's agent:</p>
+<ul>
+<li>uses only a model marked private, never a coding agent, whatever <strong>Ask with</strong> says;</li>
+<li>shows <strong>· private</strong> after the model's name;</li>
+<li>does not answer when no model is marked private, and tells you to mark one in Settings › Agent › Models.</li>
+</ul>
+<h3>When a coding agent needs private data</h3>
+<p>A coding agent on a provider's model can get answers about private data without reading it. Once it is connected to Kyon, through Kyon's plugin or <strong>Connect the agent in front to Kyon: its status, and Kyon's tools</strong>, it can ask Kyon's private agent. That agent reads what it needs where the coding agent works, changes nothing, and answers in words, told to give only what the question needs.</p>
+<p>Before the answer goes back, Kyon shows it to you: send it, allow that agent for the rest of its session, or don't. Turn off <strong>Ask before a private answer goes to a coding agent</strong> to send every answer as it comes.</p>
+<aside class="note"><p>With Settings › General › Privacy › <strong>Secret redaction</strong> on, likely secrets are replaced with asterisks in everything Kyon's agent sends to a model.</p></aside>
+</section>
+
+<section id="rules">
+<h2>Rules files</h2>
+<p>Rules let the agent follow your conventions without you repeating them.</p>
+<p>A new conversation reads <code>~/.agents/AGENTS.md</code> on this Mac, then the <code>KYON.md</code> or <code>AGENTS.md</code> of each folder from the repository's root down to where it works, <code>KYON.md</code> first where a folder has both.</p>
+<p>Settings › Agent › Knowledge has the <strong>Rules</strong> switch, and <strong>Manage rules</strong>, which opens <code>~/.agents/AGENTS.md</code>, creating it if needed.</p>
+</section>
+
+<section id="mcp">
+<h2>MCP servers</h2>
+<p>Kyon finds the MCP servers you set up for other coding agents and lends their tools to its own agent.</p>
+<p>Settings › Agent › MCP servers lists them. <strong>My MCPs</strong> shows those running, with their tools and <strong>Stop</strong> (plus <strong>View logs</strong> and <strong>Start</strong> after a failure). <strong>Detected from Kyon</strong>, <strong>Claude</strong>, <strong>Codex</strong> and <strong>Other Agents</strong> show the rest, each with <strong>Start</strong>.</p>
+<table>
+<thead><tr><th>Agent</th><th>Home folder</th><th>Repository</th></tr></thead>
+<tbody>
+<tr><td>Kyon</td><td><code>~/.kyon/.mcp.json</code></td><td><code>.kyon/.mcp.json</code></td></tr>
+<tr><td>Claude</td><td><code>~/.claude.json</code></td><td><code>.mcp.json</code></td></tr>
+<tr><td>Codex</td><td><code>~/.codex/config.toml</code></td><td><code>.codex/config.toml</code></td></tr>
+<tr><td>Other agents</td><td><code>~/.agents/.mcp.json</code></td><td><code>.agents/.mcp.json</code></td></tr>
+</tbody>
+</table>
+<ul>
+<li>Servers in <code>~/.kyon/.mcp.json</code> always start.</li>
+<li>Those in other agents' home files start while <strong>Auto-spawn servers from third-party agents</strong> is on (off by default).</li>
+<li>Those in a repository are listed once a terminal has been there, and start only from their card: cloning a repository is not agreeing to run what it names.</li>
+</ul>
+<p>To add your own, list it in <code>~/.kyon/.mcp.json</code> under <code>mcpServers</code>, with a <code>command</code> (and optional <code>args</code>, <code>env</code>, <code>cwd</code>) or a <code>url</code> (and optional <code>headers</code>). <code>${NAME}</code> reads an environment variable; if one is unset, none of that file's servers start.</p>
+<p>A conversation gets the tools of your home folder's servers and of its own repository's. An MCP call counts as running a command, so by default the agent asks first.</p>
+</section>
+
+<section id="indexing">
+<h2>Indexing a codebase</h2>
+<p>An indexed codebase lets the agent go straight to the code a question is about.</p>
+<p>Type <code>/index</code> in a terminal inside a repository, run <strong>Index This Codebase</strong> from the palette, or click <strong>Index new folder</strong> in Settings › Code › Indexing and projects. Turn on <strong>Index new folders by default</strong> to index each repository a terminal moves into.</p>
+<p>That page lists each folder as <strong>Syncing</strong>, <strong>Synced</strong> with its chunk count, <strong>Codebase too large</strong> (over 5,000 files) or <strong>Failed</strong>, with <strong>Resync</strong> and <strong>Delete</strong>. Indexes follow your changes; turning <strong>Codebase indexing</strong> off removes them all.</p>
+<p>Indexes are built and kept on this Mac. What <code>.gitignore</code> excludes is left out, and so is what a <code>.kyonindexingignore</code> at the repository's root names, written the same way; the agent can still read those files with its other tools.</p>
+</section>
+
+<section id="history">
+<h2>Past conversations</h2>
+<p>Conversations are kept as each turn ends, so you can pick one up later.</p>
+<p>Open one from Session › <strong>Past agent conversations</strong>, or from <strong>Left Panel: Agent conversations</strong> (<kbd>⌃2</kbd>), which lists open and past ones beside your panes. <strong>Preferred layout when opening existing agent conversations</strong> chooses a new tab or a split pane; <strong>Show conversation history in tools panel</strong> hides or shows the list. Both are in Settings › Agent › Agent.</p>
+</section>
+
+<section id="active-ai">
+<h2>Active AI suggestions</h2>
+<p>Active AI suggests things as you work in the terminal; turn it, or each kind, on or off in Settings › Agent › Suggestions.</p>
+<ul>
+<li><strong>Next Command</strong> offers the next command in the empty input once one finishes, from what usually followed it in your history, or, where that is unclear, from the model, shown your recent commands and output.</li>
+<li><strong>Prompt Suggestions</strong> offers something to ask the agent about a finished command, beside the input. <kbd>⌃↩</kbd> asks it; <kbd>↩</kbd> sets it aside.</li>
+</ul>
+</section>
+
+<section id="omnigent">
+<h2>Omnigent agents</h2>
+<p>If you run an omnigent server, which runs harnesses such as Claude Code and Codex in sessions, its agents can be a conversation's model.</p>
+<ul>
+<li>Set <strong>Omnigent server</strong> in Settings › Agent › Models › Omnigent backend; empty uses <code>KYON_OMNIGENT_URL</code>, else <code>http://localhost:6767</code>. <strong>Test connection</strong> checks it. Nothing is sent until you test it or ask one of its agents something.</li>
+<li>Pick <strong>Omnigent · Claude</strong>, <strong>Omnigent · Codex</strong> or your own with <strong>Change the model for this conversation</strong>.</li>
+<li>Make your own with <strong>New agent</strong> in Settings › Agent › Profiles › Custom agents: a persona on a harness the server runs, or a folder holding a whole agent package.</li>
+<li><strong>Start an omnigent agent</strong> (Session menu) runs <strong>Omnigent command</strong> (empty: <code>omnigent</code>) in <strong>Omnigent works in</strong>, or the current tab's folder.</li>
+</ul>
+</section>
+
+<section id="limits">
+<h2>Limits</h2>
+<aside class="note"><p><strong>MCP servers that need sign-in</strong>, and servers using the older SSE transport, are not supported.</p></aside>
+<aside class="note"><p><strong>Indexing and MCP servers are this Mac's only.</strong> Work on a remote host gets neither codebase search nor MCP tools.</p></aside>
+<aside class="note"><p><strong>Prompt suggestions</strong> follow a finished command, not a finished agent reply.</p></aside>
+<aside class="note"><p><strong>Omnigent on a remote host</strong> is tested against a stand-in server, not a real one.</p></aside>
+<aside class="note"><p><strong>Commit messages and pull requests are not written by a model.</strong> The commit dialog starts empty and a pull request is filled from its commits.</p></aside>
+<aside class="note"><p><strong>Handing a review to a sub-agent</strong> runs the coding agent chosen under <strong>Ask with</strong>, or Claude Code, on the machine the repository is on, not a configured omnigent server.</p></aside>
+</section>
+
+    </article>
+    <nav class="pager" aria-label="Chapters"><a class="prev" href="coding-agents.html"><span>Previous</span>Coding agents</a><a class="next" href="code.html"><span>Next</span>Code, review and documents</a></nav>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.0.82</span></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#ai-switch">Turning AI on and off</a></li><li><a href="#conversations">Talking to Kyon&#x27;s agent</a></li><li><a href="#tools">What the agent can do, and how much it asks</a></li><li><a href="#answering">Answering with a coding agent or a model</a></li><li><a href="#private">Private models and private folders</a></li><li><a href="#rules">Rules files</a></li><li><a href="#mcp">MCP servers</a></li><li><a href="#indexing">Indexing a codebase</a></li><li><a href="#history">Past conversations</a></li><li><a href="#active-ai">Active AI suggestions</a></li><li><a href="#omnigent">Omnigent agents</a></li><li><a href="#limits">Limits</a></li></ul></nav>
+</div>
+<script>
+// The contents start folded on a narrow screen, open on a wide one.
+const side = document.querySelector(".side");
+const narrow = window.matchMedia("(max-width: 900px)");
+const fold = () => { side.open = !narrow.matches; };
+fold();
+narrow.addEventListener("change", fold);
+</script>
+</body>
+</html>

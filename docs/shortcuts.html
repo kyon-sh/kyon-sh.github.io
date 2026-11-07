@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Every command in Kyon, by area, with its keyboard shortcut on macOS and on Linux and Windows.">
+<link rel="icon" href="../assets/kyon.png">
+<title>Commands and shortcuts · Kyon docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* The docs: kyon.sh's colours and type, laid out for reading. A contents
+   column, the chapter at a readable measure, and the sections of the page
+   beside it on a wide screen. */
+:root {
+  --ground: #f3f5f7;
+  --raised: #ffffff;
+  --ink: #12161b;
+  --muted: #56606b;
+  --rule: #d9dee4;
+  --accent: #1f7fc4;
+  --accent-soft: rgba(31, 127, 196, .09);
+  --frame: #0b0d10;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  --measure: 70ch;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #08090b;
+    --raised: #111317;
+    --ink: #e8ecf0;
+    --muted: #8d97a3;
+    --rule: #22262c;
+    --accent: #47a6ea;
+    --accent-soft: rgba(71, 166, 234, .12);
+    --frame: #000000;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #08090b;
+  --raised: #111317;
+  --ink: #e8ecf0;
+  --muted: #8d97a3;
+  --rule: #22262c;
+  --accent: #47a6ea;
+  --accent-soft: rgba(71, 166, 234, .12);
+  --frame: #000000;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 16px; top: 12px; background: var(--raised); padding: 6px 10px; z-index: 2; }
+
+/* ── top ───────────────────────────────────────────── */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 1.3rem/1 var(--display);
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.glyph {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--frame);
+  border: 1px solid var(--rule);
+  display: grid;
+  place-items: center;
+  font: 600 .8rem/1 var(--mono);
+  color: #47a6ea;
+}
+.links { display: flex; gap: 20px; font-weight: 600; }
+.links a { color: var(--muted); text-decoration: none; }
+.links a:hover, .links a[aria-current="page"] { color: var(--ink); }
+
+/* ── columns ───────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 210px;
+  gap: 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.side, .toc {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 40px;
+  font-size: .95rem;
+}
+.side summary { display: none; }
+.side ul, .toc ul { list-style: none; margin: 0 0 18px; padding: 0; }
+.side li a, .toc li a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  line-height: 1.35;
+}
+.side li a:hover, .toc li a:hover { color: var(--ink); background: var(--accent-soft); }
+.side li a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); font-weight: 600; }
+.group {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.toc li a { padding: 3px 10px; font-size: .9rem; }
+
+main { min-width: 0; padding: 36px 0 64px; }
+.head { margin-bottom: 28px; }
+h1, h2, h3 {
+  font-family: var(--display);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin: 0 0 10px; }
+.summary { margin: 0; font-size: 1.2rem; color: var(--muted); max-width: var(--measure); }
+
+/* ── prose ─────────────────────────────────────────── */
+.prose { max-width: var(--measure); }
+.prose section { padding-top: 8px; }
+.prose h2 {
+  font-size: 1.6rem;
+  margin: 36px 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.prose section:first-child h2 { border-top: 0; padding-top: 0; margin-top: 8px; }
+.prose h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+.prose p, .prose ul, .prose ol { margin: 0 0 14px; }
+.prose li { margin: 4px 0; }
+.prose li > ul, .prose li > ol { margin: 4px 0; }
+code {
+  font: 400 .88em var(--mono);
+  background: var(--accent-soft);
+  padding: .1em .35em;
+  border-radius: 4px;
+}
+kbd {
+  display: inline-block;
+  font: 600 .82em/1.5 var(--mono);
+  padding: 0 .45em;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--raised);
+  white-space: nowrap;
+}
+aside.note {
+  margin: 18px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+}
+aside.note p:last-child { margin-bottom: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 20px;
+  font-size: .97rem;
+}
+th, td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); }
+/* A path or a key name in a cell breaks rather than widening the page. */
+.prose td, .prose th { overflow-wrap: anywhere; }
+thead th {
+  font: 600 .72rem/1.4 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tbody th { font-weight: 600; }
+table.settings tbody th { width: 34%; }
+table.keys tbody th { font-weight: 400; }
+table.keys td { white-space: nowrap; width: 22%; }
+.detail { display: block; margin-top: 4px; color: var(--muted); font-size: .92rem; }
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font: 600 .68rem/1.6 var(--mono);
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  vertical-align: 2px;
+}
+.none { color: var(--muted); }
+.filter { display: flex; flex-direction: column; gap: 6px; max-width: 420px; }
+.filter label { font-weight: 600; }
+.filter input {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--raised);
+  color: var(--ink);
+}
+
+ul.cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+ul.cards li { margin: 0; }
+ul.cards a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--raised);
+  color: var(--ink);
+  text-decoration: none;
+}
+ul.cards a:hover { border-color: var(--accent); }
+ul.cards strong { font: 700 1.08rem/1.25 var(--display); }
+ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
+
+/* ── foot ──────────────────────────────────────────── */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--measure);
+  margin-top: 48px;
+}
+.pager a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+.pager a span { font: 600 .72rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.pager .next { margin-left: auto; text-align: right; }
+.foot {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  max-width: var(--measure);
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* ── narrower ──────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .shell { grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+  .toc { display: none; }
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .side {
+    position: static;
+    max-height: none;
+    padding: 14px 0 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .side summary {
+    display: block;
+    cursor: pointer;
+    padding: 6px 0 12px;
+    font-weight: 600;
+  }
+  main { padding-top: 24px; }
+  table.settings tbody th { width: auto; }
+  table.settings tr, table.settings th, table.settings td { display: block; padding-right: 0; }
+  table.settings th { border-bottom: 0; padding-bottom: 0; }
+  table.keys td { white-space: normal; }
+}
+
+</style>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<header class="top">
+  <a class="mark" href="../"><span class="glyph" aria-hidden="true">&gt;_</span>Kyon</a>
+  <nav class="links" aria-label="Site">
+    <a href="./" aria-current="false">Docs</a>
+    <a href="../#install">Download</a>
+  </nav>
+</header>
+<div class="shell">
+  <details class="side" open>
+    <summary>Contents</summary>
+    <nav aria-label="Documentation"><p class="group">Start</p><ul><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting started</a></li></ul><p class="group">Guide</p><ul><li><a href="workspace.html">Tabs, panes and windows</a></li><li><a href="terminal.html">The terminal</a></li><li><a href="coding-agents.html">Coding agents</a></li><li><a href="kyon-agent.html">Kyon&#x27;s agent, models and privacy</a></li><li><a href="code.html">Code, review and documents</a></li><li><a href="remote.html">Working on a server</a></li><li><a href="troubleshooting.html">Updates and troubleshooting</a></li><li><a href="feedback.html">Feedback</a></li></ul><p class="group">Reference</p><ul><li><a href="settings.html">Every setting</a></li><li><a href="shortcuts.html" aria-current="page">Commands and shortcuts</a></li></ul></nav>
+  </details>
+  <main id="main">
+    <header class="head">
+      <h1>Commands and shortcuts</h1>
+      <p class="summary">Every command in Kyon, by area, with its keyboard shortcut on macOS and on Linux and Windows.</p>
+    </header>
+    <article class="prose">
+<section id="how">
+<h2>Finding a command</h2>
+<p>Everything Kyon can do is a command, and every command is in the command palette: press <kbd>⌘P</kbd> and type a few letters of what you want. A command's shortcut is shown beside it.</p>
+<p>To change a shortcut, run <strong>Keyboard shortcuts</strong> from the palette (it is also in Settings), find the command, press its row and then the keys you want. The same bindings are kept in a keybindings file, which <strong>Open keybindings file</strong> opens.</p>
+<p>The filter below narrows this list as you type.</p>
+<p class="filter"><label for="filter">Filter commands</label><input id="filter" type="search" placeholder="e.g. split, agent, review" autocomplete="off"></p>
+</section>
+<section id="application" class="commands"><h2>Application</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">About Kyon</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Check for updates</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Command palette</th><td><kbd>⌘P</kbd></td><td><kbd>Ctrl+Shift+P</kbd></td></tr><tr><th scope="row">Documentation</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Feedback</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Go to session</th><td><kbd>⇧⌘O</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Keyboard shortcuts</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Open keybindings file</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Open settings</th><td><kbd>⌘,</kbd></td><td><kbd>Ctrl+,</kbd></td></tr><tr><th scope="row">Open settings file</th><td><kbd>⌥⌘,</kbd></td><td><kbd>Ctrl+Alt+,</kbd></td></tr><tr><th scope="row">Open the menu of what Kyon itself offers</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Re-read the settings file</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Show the hints again</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Show the introduction again</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Show the settings folder</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">View Kyon logs</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">What this window has said</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr></tbody></table></section>
+<section id="agent" class="commands"><h2>Agent</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Agent below this pane</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Agent beside this pane</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Apply the proposed change</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Ask an agent about what is written</th><td><kbd>⌘↩</kbd></td><td><kbd>Ctrl+Shift+↩</kbd></td></tr><tr><th scope="row">Ask on the side, beside the coding agent in front</th><td><kbd>⌥⌘I</kbd></td><td><kbd>Ctrl+Alt+Shift+I</kbd></td></tr><tr><th scope="row">Change the model for this conversation</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Claude: Start session</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Clear this conversation</th><td><kbd>⇧⌘K</kbd></td><td><kbd>Ctrl+Alt+Shift+K</kbd></td></tr><tr><th scope="row">Connect the agent in front to Kyon: its status, and Kyon&#x27;s tools</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Disable AI</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Enable agent notifications</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Enable AI</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Give what is here to an assistant</th><td><kbd>⇧⌘A</kbd></td><td><kbd>Ctrl+Shift+Space</kbd></td></tr><tr><th scope="row">Go to the next agent waiting for you</th><td><kbd>⌘J</kbd></td><td><kbd>Ctrl+Alt+J</kbd></td></tr><tr><th scope="row">Mark this folder private, or not: Kyon&#x27;s agent there uses only a private model</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">New agent conversation</th><td><kbd>⌘I</kbd></td><td><kbd>Ctrl+Shift+I</kbd></td></tr><tr><th scope="row">Offer this window to the Claude CLI</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Open rules file</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Past agent conversations</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Refuse the proposed change</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Resume a Claude session</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Review the agent&#x27;s last turn</th><td><kbd>⌥⇧⌘J</kbd></td><td><kbd>Ctrl+Alt+Shift+J</kbd></td></tr><tr><th scope="row">Send to agent: the selection, the file or the commands chosen</th><td><kbd>⌥⌘↩</kbd></td><td><kbd>Ctrl+Alt+Shift+↩</kbd></td></tr><tr><th scope="row">Show every agent, the ones waiting for you first</th><td><kbd>⌥⌘A</kbd></td><td><kbd>Ctrl+Alt+Shift+A</kbd></td></tr><tr><th scope="row">Show what tools returned</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Start an omnigent agent</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr></tbody></table></section>
+<section id="code" class="commands"><h2>Code</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Find references to the symbol at the caret</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Finish this word</th><td><kbd>⌃Space</kbd></td><td><kbd>Ctrl+Space</kbd></td></tr><tr><th scope="row">Fold this block, or open it</th><td><kbd>⌥⌘-</kbd></td><td><kbd>Ctrl+Alt+[</kbd></td></tr><tr><th scope="row">Format this file</th><td><kbd>⌥⌘F</kbd></td><td><kbd>Ctrl+Alt+Shift+F</kbd></td></tr><tr><th scope="row">Go to definition</th><td><kbd>⇧⌘J</kbd></td><td><kbd>Ctrl+Shift+J</kbd></td></tr><tr><th scope="row">Go to line</th><td><kbd>⌘L</kbd></td><td><kbd>Ctrl+Shift+L</kbd></td></tr><tr><th scope="row">Index This Codebase</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Open every fold</th><td><kbd>⌥⇧⌘-</kbd></td><td><kbd>Ctrl+Alt+]</kbd></td></tr><tr><th scope="row">Rename this symbol everywhere</th><td><kbd>F2</kbd></td><td><kbd>F2</kbd></td></tr><tr><th scope="row">Toggle code review</th><td><kbd>⇧⌘=</kbd></td><td><kbd>Ctrl+Shift+=</kbd></td></tr><tr><th scope="row">What is this?</th><td><kbd>⇧⌘H</kbd></td><td><kbd>Ctrl+Shift+H</kbd></td></tr><tr><th scope="row">What this file declares</th><td><kbd>⇧⌘S</kbd></td><td><kbd>Ctrl+Shift+S</kbd></td></tr><tr><th scope="row">Wrap long lines, or stop</th><td><kbd>⌥⌘Z</kbd></td><td><kbd>Ctrl+Alt+Shift+Z</kbd></td></tr></tbody></table></section>
+<section id="edit" class="commands"><h2>Edit</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Add a caret on the line above</th><td><kbd>⌃⌥↑</kbd></td><td><kbd>Ctrl+Alt+Shift+↑</kbd></td></tr><tr><th scope="row">Add a caret on the line below</th><td><kbd>⌃⌥↓</kbd></td><td><kbd>Ctrl+Alt+Shift+↓</kbd></td></tr><tr><th scope="row">Comment or uncomment these lines</th><td><kbd>⌘/</kbd></td><td><kbd>Ctrl+/</kbd></td></tr><tr><th scope="row">Copy</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Cut</th><td><kbd>⌘X</kbd></td><td><kbd>Ctrl+X</kbd></td></tr><tr><th scope="row">Find in this file</th><td><kbd>⌘F</kbd></td><td><kbd>Ctrl+Shift+F</kbd></td></tr><tr><th scope="row">Find next</th><td><kbd>⌘G</kbd></td><td><kbd>F3</kbd></td></tr><tr><th scope="row">Find previous</th><td><kbd>⇧⌘G</kbd></td><td><kbd>Shift+F3</kbd></td></tr><tr><th scope="row">Paste</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Redo</th><td><kbd>⇧⌘Z</kbd></td><td><kbd>Ctrl+Shift+Z</kbd></td></tr><tr><th scope="row">Select all</th><td><kbd>⌘A</kbd></td><td><kbd>Ctrl+A</kbd></td></tr><tr><th scope="row">Select this, then the next one like it</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Undo</th><td><kbd>⌘Z</kbd></td><td><kbd>Ctrl+Z</kbd></td></tr></tbody></table></section>
+<section id="files" class="commands"><h2>Files</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Browse files</th><td><kbd>⌘E</kbd></td><td><kbd>Ctrl+Alt+E</kbd></td></tr><tr><th scope="row">Hand the notes to the assistant</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Leave a note on this line</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Notes on this tree</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Open a file</th><td><kbd>⌘O</kbd></td><td><kbd>Ctrl+Shift+O</kbd></td></tr><tr><th scope="row">Save</th><td><kbd>⌘S</kbd></td><td><kbd>Ctrl+S</kbd></td></tr><tr><th scope="row">Saved commands</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Search the workspace</th><td><kbd>⇧⌘F</kbd></td><td><kbd>Alt+Shift+F</kbd></td></tr></tbody></table></section>
+<section id="help" class="commands"><h2>Help</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">View latest changelog</th><td><kbd>⌥⇧⌘O</kbd></td><td><kbd>Ctrl+Alt+Shift+O</kbd></td></tr></tbody></table></section>
+<section id="input" class="commands"><h2>Input</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Stop synchronising input</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Synchronise input across this window</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Synchronise input in this tab</th><td><kbd>⇧⌘I</kbd></td><td><kbd>Ctrl+Alt+I</kbd></td></tr></tbody></table></section>
+<section id="markdown" class="commands"><h2>Markdown</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Markdown: bold</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: bulleted list</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: code</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: insert a link</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: insert a picture</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: insert a table</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: italic</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: make a heading</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: numbered list</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: quote</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: show it rendered</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: show the source</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Markdown: switch between rendered and source</th><td><kbd>⇧⌘E</kbd></td><td><kbd>Ctrl+Shift+M</kbd></td></tr><tr><th scope="row">Markdown: task list</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">View Markdown preview</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr></tbody></table></section>
+<section id="panes" class="commands"><h2>Panes</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Close pane</th><td><kbd>⌘W</kbd></td><td><kbd>Ctrl+Shift+W</kbd></td></tr><tr><th scope="row">Copy pane title</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Copy working directory</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Focus next pane</th><td><kbd>⌘]</kbd></td><td><kbd>Ctrl+Shift+]</kbd></td></tr><tr><th scope="row">Focus pane down</th><td><kbd>⌥⌘↓</kbd></td><td><kbd>Ctrl+Alt+↓</kbd></td></tr><tr><th scope="row">Focus pane left</th><td><kbd>⌥⌘←</kbd></td><td><kbd>Ctrl+Alt+←</kbd></td></tr><tr><th scope="row">Focus pane right</th><td><kbd>⌥⌘→</kbd></td><td><kbd>Ctrl+Alt+→</kbd></td></tr><tr><th scope="row">Focus pane up</th><td><kbd>⌥⌘↑</kbd></td><td><kbd>Ctrl+Alt+↑</kbd></td></tr><tr><th scope="row">Focus previous pane</th><td><kbd>⌘[</kbd></td><td><kbd>Ctrl+Shift+[</kbd></td></tr><tr><th scope="row">Make pane narrower</th><td><kbd>⌥⇧⌘←</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Make pane shorter</th><td><kbd>⌥⇧⌘↑</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Make pane taller</th><td><kbd>⌥⇧⌘↓</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Make pane wider</th><td><kbd>⌥⇧⌘→</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Move pane to a new tab</th><td><kbd>⌥⌘T</kbd></td><td><kbd>Ctrl+Alt+Shift+T</kbd></td></tr><tr><th scope="row">Move pane to the next tab</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Rename pane</th><td><kbd>⌥⌘R</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Reset pane name</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Split pane down</th><td><kbd>⇧⌘D</kbd></td><td><kbd>Ctrl+Shift+E</kbd></td></tr><tr><th scope="row">Split pane left</th><td><kbd>⌥⌘D</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Split pane right</th><td><kbd>⌘D</kbd></td><td><kbd>Ctrl+Shift+D</kbd></td></tr><tr><th scope="row">Split pane up</th><td><kbd>⌥⇧⌘D</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Toggle maximise pane</th><td><kbd>⇧⌘↩</kbd></td><td><span class="none">—</span></td></tr></tbody></table></section>
+<section id="review" class="commands"><h2>Review</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Discard the changes to the file being reviewed</th><td><kbd>⌥⌘⌫</kbd></td><td><kbd>Ctrl+Alt+Shift+⌫</kbd></td></tr><tr><th scope="row">Read from another machine</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Review a branch, a commit or a pull request</th><td><kbd>⌥⇧⌘R</kbd></td><td><kbd>Ctrl+Alt+Shift+R</kbd></td></tr><tr><th scope="row">Review changes</th><td><kbd>⌘R</kbd></td><td><kbd>Ctrl+Shift+R</kbd></td></tr><tr><th scope="row">Review what is staged, or what is not</th><td><kbd>⌥⌘S</kbd></td><td><kbd>Ctrl+Alt+Shift+S</kbd></td></tr><tr><th scope="row">Review: Commit</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Review: Create a pull request</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Review: Delegate fixes to agent</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Review: Do what the header&#x27;s button offers</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Review: Push or publish the branch</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Review: Review with agent</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Show more of what is above this change</th><td><kbd>⌥⌘E</kbd></td><td><kbd>Ctrl+Alt+Shift+E</kbd></td></tr><tr><th scope="row">Show remote connections</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr></tbody></table></section>
+<section id="tabs" class="commands"><h2>Tabs</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Close other tabs</th><td><kbd>⌥⌘W</kbd></td><td><kbd>Ctrl+Alt+Shift+W</kbd></td></tr><tr><th scope="row">Close tab</th><td><kbd>⇧⌘W</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Close tabs to the right</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Copy branch</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Copy this tab as a link</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Cycle tab colour</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Go to last tab</th><td><kbd>⌘9</kbd></td><td><kbd>Ctrl+9</kbd></td></tr><tr><th scope="row">Go to tab 1</th><td><kbd>⌘1</kbd></td><td><kbd>Ctrl+1</kbd></td></tr><tr><th scope="row">Go to tab 2</th><td><kbd>⌘2</kbd></td><td><kbd>Ctrl+2</kbd></td></tr><tr><th scope="row">Go to tab 3</th><td><kbd>⌘3</kbd></td><td><kbd>Ctrl+3</kbd></td></tr><tr><th scope="row">Go to tab 4</th><td><kbd>⌘4</kbd></td><td><kbd>Ctrl+4</kbd></td></tr><tr><th scope="row">Go to tab 5</th><td><kbd>⌘5</kbd></td><td><kbd>Ctrl+5</kbd></td></tr><tr><th scope="row">Go to tab 6</th><td><kbd>⌘6</kbd></td><td><kbd>Ctrl+6</kbd></td></tr><tr><th scope="row">Go to tab 7</th><td><kbd>⌘7</kbd></td><td><kbd>Ctrl+7</kbd></td></tr><tr><th scope="row">Go to tab 8</th><td><kbd>⌘8</kbd></td><td><kbd>Ctrl+8</kbd></td></tr><tr><th scope="row">Group selected tabs</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Move tab left</th><td><kbd>⇧⌘,</kbd></td><td><kbd>Ctrl+Shift+Page Up</kbd></td></tr><tr><th scope="row">Move tab right</th><td><kbd>⇧⌘.</kbd></td><td><kbd>Ctrl+Shift+Page Down</kbd></td></tr><tr><th scope="row">New session menu</th><td><kbd>⌃⌘T</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">New tab</th><td><kbd>⌘T</kbd></td><td><kbd>Ctrl+Shift+T</kbd></td></tr><tr><th scope="row">Next tab</th><td><kbd>⇧⌘]</kbd></td><td><kbd>Ctrl+Page Down</kbd></td></tr><tr><th scope="row">Open a kyon:// link</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Open tab configuration</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Pin or unpin tab</th><td><kbd>⇧⌘P</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Previous tab</th><td><kbd>⇧⌘[</kbd></td><td><kbd>Ctrl+Page Up</kbd></td></tr><tr><th scope="row">Remove tab from its group</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Rename tab</th><td><kbd>⇧⌘R</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Reset tab name</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Save this tab as a configuration</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr></tbody></table></section>
+<section id="terminal" class="commands"><h2>Terminal</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Clear the scrollback</th><td><kbd>⌘K</kbd></td><td><kbd>Ctrl+Shift+K</kbd></td></tr><tr><th scope="row">Fix the last command</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Pin Input to the Bottom</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Pin Input to the Top</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Select the next command</th><td><kbd>⌘↓</kbd></td><td><kbd>Ctrl+↓</kbd></td></tr><tr><th scope="row">Select the previous command</th><td><kbd>⌘↑</kbd></td><td><kbd>Ctrl+↑</kbd></td></tr><tr><th scope="row">Start Input at the Top</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr></tbody></table></section>
+<section id="view" class="commands"><h2>View</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Choose theme</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Dock the agents beside the panes</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Dock the file tree beside the panes</th><td><kbd>⇧⌘B</kbd></td><td><kbd>Ctrl+Shift+B</kbd></td></tr><tr><th scope="row">Dock the outline beside the panes</th><td><kbd>⌥⌘B</kbd></td><td><kbd>Ctrl+Alt+Shift+B</kbd></td></tr><tr><th scope="row">Left Panel: Agent conversations</th><td><kbd>⌃2</kbd></td><td><kbd>Alt+2</kbd></td></tr><tr><th scope="row">Left Panel: Global search</th><td><kbd>⌃3</kbd></td><td><kbd>Alt+3</kbd></td></tr><tr><th scope="row">Left Panel: Project explorer</th><td><kbd>⌃1</kbd></td><td><kbd>Alt+1</kbd></td></tr><tr><th scope="row">Reload themes</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Reset zoom</th><td><kbd>⌘0</kbd></td><td><kbd>Ctrl+0</kbd></td></tr><tr><th scope="row">Toggle vertical tabs</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Zoom in</th><td><kbd>⌘=</kbd></td><td><kbd>Ctrl+=</kbd></td></tr><tr><th scope="row">Zoom out</th><td><kbd>⌘-</kbd></td><td><kbd>Ctrl+-</kbd></td></tr></tbody></table></section>
+<section id="windows" class="commands"><h2>Windows</h2><table class="keys"><thead><tr><th scope="col">Command</th><th scope="col">macOS</th><th scope="col">Linux and Windows</th></tr></thead><tbody><tr><th scope="row">Close window</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Fill the screen</th><td><kbd>⌃⌘F</kbd></td><td><kbd>F11</kbd></td></tr><tr><th scope="row">Hide all windows</th><td><kbd>⌘H</kbd></td><td><span class="none">—</span></td></tr><tr><th scope="row">Move tab to the next window</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">New window</th><td><kbd>⌘N</kbd></td><td><kbd>Ctrl+Shift+N</kbd></td></tr><tr><th scope="row">Open launch configuration</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Quit Kyon</th><td><kbd>⌘Q</kbd></td><td><kbd>Ctrl+Shift+Q</kbd></td></tr><tr><th scope="row">Reopen closed tab</th><td><kbd>⇧⌘T</kbd></td><td><kbd>Ctrl+Alt+T</kbd></td></tr><tr><th scope="row">Save this window as a launch configuration</th><td><span class="none">—</span></td><td><span class="none">—</span></td></tr><tr><th scope="row">Show all windows</th><td><kbd>⇧⌘N</kbd></td><td><span class="none">—</span></td></tr></tbody></table></section>
+<script>
+const field = document.getElementById("filter");
+field.addEventListener("input", () => {
+  const words = field.value.toLowerCase().split(/\s+/).filter(Boolean);
+  for (const section of document.querySelectorAll("section.commands")) {
+    let any = false;
+    for (const row of section.querySelectorAll("tbody tr")) {
+      const text = row.textContent.toLowerCase();
+      const hit = words.every((w) => text.includes(w));
+      row.hidden = !hit;
+      any ||= hit;
+    }
+    section.hidden = !any;
+  }
+});
+</script>
+    </article>
+    <nav class="pager" aria-label="Chapters"><a class="prev" href="settings.html"><span>Previous</span>Every setting</a></nav>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.0.82</span></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#how">Finding a command</a></li><li><a href="#application">Application</a></li><li><a href="#agent">Agent</a></li><li><a href="#code">Code</a></li><li><a href="#edit">Edit</a></li><li><a href="#files">Files</a></li><li><a href="#help">Help</a></li><li><a href="#input">Input</a></li><li><a href="#markdown">Markdown</a></li><li><a href="#panes">Panes</a></li><li><a href="#review">Review</a></li><li><a href="#tabs">Tabs</a></li><li><a href="#terminal">Terminal</a></li><li><a href="#view">View</a></li><li><a href="#windows">Windows</a></li></ul></nav>
+</div>
+<script>
+// The contents start folded on a narrow screen, open on a wide one.
+const side = document.querySelector(".side");
+const narrow = window.matchMedia("(max-width: 900px)");
+const fold = () => { side.open = !narrow.matches; };
+fold();
+narrow.addEventListener("change", fold);
+</script>
+</body>
+</html>
