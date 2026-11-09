@@ -433,7 +433,7 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 <p>If the host stays away, Kyon stops trying and the row offers <strong>Reconnect</strong>; panes waiting on it say <em>Not connected to …</em> with a <strong>Connect</strong> link. Turn off <strong>Reconnect dropped sessions</strong> to have terminals end instead.</p>
 <h3>When the host restarted</h3>
 <p>A host that restarts loses its shells and everything running in them. Once you are connected again, each terminal that was open on it comes back as a new shell in the same folder, taking what you type once that shell is at its prompt, and a coding agent that was running there goes on with its conversation, as it does when Kyon itself is restarted. <strong>Connect</strong> on a host Kyon gave up on reconnects the terminals already open there; it does not start them over.</p>
-<p>Where a terminal you signed in from carries the connection, that terminal ends with the restart. The terminals on the host wait, saying they are reconnecting, until you connect again; the new sign-in then carries them all.</p>
+<p>Where a terminal you signed in from carries the connection, that terminal ends when the connection drops. Kyon signs in again by itself, with the same pauses as above: the dropdown opens only if the host asks you something, such as a password or a code. The new sign-in then carries every terminal on the host. If it still cannot get through, the row offers <strong>Reconnect</strong>.</p>
 </section>
 
 <section id="disconnect-remove">
@@ -477,7 +477,7 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 
     </article>
     <nav class="pager" aria-label="Chapters"><a class="prev" href="code.html"><span>Previous</span>Code, review and documents</a><a class="next" href="troubleshooting.html"><span>Next</span>Updates and troubleshooting</a></nav>
-    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.0.87</span></footer>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.0.88</span></footer>
   </main>
   <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#overview">Working on a server</a></li><li><a href="#add-a-host">Add a host</a></li><li><a href="#host-helper">What gets installed on the host</a></li><li><a href="#open-on-host">Open a terminal or an agent on the host</a></li><li><a href="#files-search-review">Files, search and review on the host</a></li><li><a href="#in-the-terminal">Working in a host&#x27;s terminal</a></li><li><a href="#sessions">Sessions that keep running</a></li><li><a href="#reconnecting">When the connection drops</a></li><li><a href="#disconnect-remove">Disconnect or remove a host</a></li><li><a href="#settings">Settings</a></li><li><a href="#limits">Limits</a></li></ul></nav>
 </div>
