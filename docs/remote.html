@@ -373,7 +373,7 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 <section id="host-helper">
 <h2>What gets installed on the host</h2>
 <p>Kyon talks to a host through a small helper program it brings with it, so you have nothing to install by hand.</p>
-<p>The first time you connect, Kyon copies the helper matching the host's system to <code>~/.cache/kyon/orb-…</code> on the host, named after the build. By default it asks first: a notice says <em>Kyon's host helper is not on this machine yet</em>, with an <strong>Install it</strong> button. Later connections reuse the copy; a newer Kyon brings its own and replaces an older one without asking, and copies no build has used for 14 days are cleared away.</p>
+<p>The first time you connect, Kyon copies the helper matching the host's system to <code>~/.cache/kyon/orb-…</code> on the host, named after the build. By default it asks first: a notice says <em>Kyon's host helper is not on this machine yet</em>, with an <strong>Install it</strong> button. Later connections reuse the copy; a newer Kyon brings its own and replaces an older one without asking, and copies no build has used for 14 days are cleared away. If the copy has gone from the host, or will not start, Kyon copies it over again when it reconnects or when you press <strong>Connect</strong>, without you disconnecting first.</p>
 <p>Also under <code>~/.cache/kyon/</code> on the host: <code>sessions</code>, where the host keeps track of your running shells, and <code>pasted</code>, which holds files you drop onto a terminal there.</p>
 <p>The <strong>Install SSH extension</strong> setting (<strong>Settings › System › Kyonify</strong>, SSH section) chooses <code>ask</code>, <code>always</code> or <code>never</code>. With <code>never</code>, Kyon uses an <code>orb</code> already on the host's path.</p>
 <h3>Supported hosts</h3>
@@ -388,7 +388,7 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 <li>Choose <strong>Terminal</strong> or a coding agent (Claude Code, Codex, Gemini, OpenCode or pi). A panel beside it lists <strong>Local</strong>, each target, and <strong>Manage targets…</strong>. The place you used last is selected first.</li>
 <li>Pick the target. A terminal opens straight away. For an agent, Kyon asks which folder to start in, offering the target's default working directory, folders on the host as you type a path, and folders you used there before; choose <strong>Launch Claude Code in … on <em>name</em></strong> (or the agent you picked).</li>
 </ol>
-<p>If the host isn't connected yet, the pane says <em>Waiting for the login to …</em> and starts once connected; panes waiting on one host share one login.</p>
+<p>If the host isn't connected yet, the pane says <em>Waiting for the login to …</em> and starts once connected; panes waiting on one host share one login. Once signed in, while Kyon reaches the host and copies its helper over, the pane says <em>Connecting to …</em> and the target's row says <em>Connecting</em>; the rest of the window keeps working meanwhile.</p>
 <p>Opening a session on a host also points the window at it, so <kbd>⌘T</kbd> opens further terminals there. Agents on a host work as they do here, and Kyon offers its plugins for them once per host; see <a href="coding-agents.html">Coding agents</a>.</p>
 </section>
 
@@ -441,7 +441,7 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 <h2>Disconnect or remove a host</h2>
 <p>You can close a connection or forget a target without touching the host itself.</p>
 <ul>
-<li><strong>Disconnect</strong>, then <strong>Confirm disconnect</strong>, closes the connection. Every shell and agent on it ends. The target stays saved.</li>
+<li><strong>Disconnect</strong>, then <strong>Confirm disconnect</strong>, closes the connection. Every shell and agent on it ends, and its pane says it was disconnected from the host; Kyon does not reconnect it by itself, even when you type in it. The shared SSH connection Kyon made to the host closes too, so the next terminal you open there signs in again; a shared connection of your own that Kyon was using is left open. The target stays saved.</li>
 <li><strong>Remove</strong>, then <strong>Confirm remove</strong>, deletes the target from your settings. It changes nothing in your SSH config, credentials or on the host, and stops nothing running there. A window reading from that host goes back to this machine.</li>
 </ul>
 </section>
@@ -478,7 +478,7 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 
     </article>
     <nav class="pager" aria-label="Chapters"><a class="prev" href="code.html"><span>Previous</span>Code, review and documents</a><a class="next" href="troubleshooting.html"><span>Next</span>Updates and troubleshooting</a></nav>
-    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.1.10</span></footer>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.1.11</span></footer>
   </main>
   <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#overview">Working on a server</a></li><li><a href="#add-a-host">Add a host</a></li><li><a href="#host-helper">What gets installed on the host</a></li><li><a href="#open-on-host">Open a terminal or an agent on the host</a></li><li><a href="#files-search-review">Files, search and review on the host</a></li><li><a href="#in-the-terminal">Working in a host&#x27;s terminal</a></li><li><a href="#sessions">Sessions that keep running</a></li><li><a href="#reconnecting">When the connection drops</a></li><li><a href="#disconnect-remove">Disconnect or remove a host</a></li><li><a href="#settings">Settings</a></li><li><a href="#limits">Limits</a></li></ul></nav>
 </div>
