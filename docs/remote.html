@@ -446,6 +446,44 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 </ul>
 </section>
 
+<section id="connection-plugins">
+<h2>Connection plugins</h2>
+<p>A target is one machine reached one way. Where a tool of your own reaches machines, such as a wrapper that connects to one big server or one that makes small instances by name, a <strong>connection plugin</strong> tells Kyon how to use it. Its machines then appear beside your saved targets in the <strong>Connections</strong> dropdown and wherever Kyon asks where to run something, and you open terminals and agents on them as on any target.</p>
+<p>A plugin is a short script, in the Rhai language, kept in your settings file under <code>[remote.plugins.<em>name</em>]</code> as its <code>script</code>. The <strong>Connection plugins</strong> row in <strong>Settings › System › Kyonify</strong>, in the <strong>Remote targets</strong> section, opens the file. The ⓘ beside it shows what to give a coding agent so it writes the plugin for your tool: paste it, with your tool's command in place of <code>TOOL</code>, into an agent on the Mac where the tool is installed, and it reads the tool's help, tries the commands that only read, and answers with the block for your settings file. <strong>Copy</strong> puts it on the clipboard. A plugin for a tool that makes machines by name:</p>
+<pre><code>[remote.plugins.small]
+script = """
+fn title() { "Small instances" }
+fn list() {
+    let ran = run(["fleet", "list", "--json"]);
+    if !ran.ok { throw ran.err; }
+    json(ran.out).map(|m| #{ name: m.name, state: m.status })
+}
+fn connect(name)   { ["fleet", "ssh", name] }
+fn reconnect(name) { ["fleet", "ssh", "--resume", name] }
+fn online(name)    { run(["fleet", "status", name]).ok }
+fn create_form()   { [#{ key: "name", label: "Name" }] }
+fn create(form)    { ["fleet", "create", form.name] }
+fn remove(name)    { ["fleet", "rm", name] }
+"""
+</code></pre>
+<p>What each function does:</p>
+<ul>
+<li><code>connect</code> (the only one a plugin needs): the command that connects, as a list of words.</li>
+<li><code>reconnect</code>: the command used when Kyon connects again, after a connection dropped or when it comes back to sessions kept on the machine. Without it, <code>connect</code> is used.</li>
+<li><code>list</code>: the machines there are, each a name or a map with <code>name</code>, and optionally <code>state</code> (such as <code>running</code> or <code>stopped</code>), <code>online</code> (true or false) and <code>detail</code>.</li>
+<li><code>online</code>: whether a machine can be reached now. Kyon does not sign in to a machine its plugin says is offline; a pane waiting for it waits, and connects once the plugin says it is there.</li>
+<li><code>create_form</code>, <code>create</code> and <code>remove</code>: what to ask before making a machine, and the commands that make and remove one.</li>
+<li><code>title</code>: what the plugin is called in the dropdown. Without it, the name it is kept under.</li>
+</ul>
+<p>A plugin without <code>list</code> is one machine. Its functions take nothing, such as <code>fn connect() { ["big", "ssh"] }</code>, and it can only connect, reconnect and say whether it is online. One that also has <code>create</code> or <code>remove</code> is refused, with a notice saying why.</p>
+<p>A plugin's machines are called <em>plugin</em>:<em>machine</em>, such as <code>small:alpha</code>, and a plugin that is one machine by its own name. Terminals, with the agents running in them, and files and reviews opened on a machine remember that name. After a restart they come back on that machine, even when the plugin cannot list its machines at that moment, and Kyon signs in to it with the plugin's <code>reconnect</code>, or <code>connect</code> where it has none. A machine that is missing from a list the plugin did return is treated as offline: its panes wait and are not signed in for until it is listed again. In the dropdown a machine's row shows its plugin, whether it is online, and its command; it has no <strong>Edit</strong>, <strong>Duplicate</strong> or arrows, since the plugin lists it.</p>
+<p>Kyon asks the plugins for their machines when it starts, when you open the dropdown, every five minutes, and every 30 seconds while a pane waits for a machine that was offline; never while the screen is locked. A script can run programs and read their output, and nothing else: it cannot read files or reach the network itself. A call that takes longer than 30 seconds is stopped. A plugin with a mistake in it, or one whose list fails, says so in a notice, and the rest carry on.</p>
+<h3 id="plugin-machines">Make or remove a plugin's machine</h3>
+<p>A plugin with <code>create</code> adds a button beside <strong>Add target</strong> at the foot of the <strong>Connections</strong> dropdown, named after it, such as <strong>New Small machine</strong>. It opens a form with what the plugin's <code>create_form</code> asks: a text box for each field, or a button for each answer where the field has <code>choices</code>. <kbd>⇥</kbd> moves between the text boxes, <strong>Make machine</strong> or <kbd>↩</kbd> asks the plugin, and <kbd>Esc</kbd> leaves the form. Each field is a map with a <code>key</code>, and may have a <code>label</code>, a starting <code>value</code> and <code>choices</code>; <code>create</code> is given the answers under their keys.</p>
+<p>On a machine of a plugin with <code>remove</code>, <strong>Remove</strong>, then <strong>Confirm remove</strong>, has the plugin remove the machine itself, not only its row: whatever runs on it ends.</p>
+<p><code>create</code> and <code>remove</code> each return one command, or a list of commands run one after another. Kyon runs them on this Mac without a terminal, so a command that stops to ask a question waits until it is given up on, after 15 minutes. A notice says the work has started and another how it went; if a command fails, the notice gives the last line it printed. Kyon then asks the plugin for its machines again, so one just made appears in the dropdown without waiting.</p>
+</section>
+
 <section id="settings">
 <h2>Settings</h2>
 <table>
@@ -453,6 +491,7 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 <tbody>
 <tr><td><strong>How to reach a host</strong></td><td>Settings › System › Kyonify</td><td>The connection command for every target that doesn't set its own. Empty means <code>ssh</code>.</td></tr>
 <tr><td><strong>Remote hosts</strong></td><td>Settings › System › Kyonify</td><td>Your saved targets.</td></tr>
+<tr><td><strong>Connection plugins</strong></td><td>Settings › System › Kyonify</td><td>Scripts for tools of your own that reach one machine or many.</td></tr>
 <tr><td><strong>Kyonify SSH Sessions</strong></td><td>Settings › System › Kyonify</td><td>Blocks and the input in shells on hosts.</td></tr>
 <tr><td><strong>Install SSH extension</strong></td><td>Settings › System › Kyonify</td><td>Whether a host without the helper gets one: ask, always or never.</td></tr>
 <tr><td><strong>Ask connect commands for a ControlMaster</strong></td><td>Settings › System › Kyonify</td><td>Has a connection command other than <code>ssh</code> share one login across panes.</td></tr>
@@ -478,9 +517,9 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 
     </article>
     <nav class="pager" aria-label="Chapters"><a class="prev" href="code.html"><span>Previous</span>Code, review and documents</a><a class="next" href="troubleshooting.html"><span>Next</span>Updates and troubleshooting</a></nav>
-    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.1.15</span></footer>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.1.16</span></footer>
   </main>
-  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#overview">Working on a server</a></li><li><a href="#add-a-host">Add a host</a></li><li><a href="#host-helper">What gets installed on the host</a></li><li><a href="#open-on-host">Open a terminal or an agent on the host</a></li><li><a href="#files-search-review">Files, search and review on the host</a></li><li><a href="#in-the-terminal">Working in a host&#x27;s terminal</a></li><li><a href="#sessions">Sessions that keep running</a></li><li><a href="#reconnecting">When the connection drops</a></li><li><a href="#disconnect-remove">Disconnect or remove a host</a></li><li><a href="#settings">Settings</a></li><li><a href="#limits">Limits</a></li></ul></nav>
+  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#overview">Working on a server</a></li><li><a href="#add-a-host">Add a host</a></li><li><a href="#host-helper">What gets installed on the host</a></li><li><a href="#open-on-host">Open a terminal or an agent on the host</a></li><li><a href="#files-search-review">Files, search and review on the host</a></li><li><a href="#in-the-terminal">Working in a host&#x27;s terminal</a></li><li><a href="#sessions">Sessions that keep running</a></li><li><a href="#reconnecting">When the connection drops</a></li><li><a href="#disconnect-remove">Disconnect or remove a host</a></li><li><a href="#connection-plugins">Connection plugins</a></li><li><a href="#settings">Settings</a></li><li><a href="#limits">Limits</a></li></ul></nav>
 </div>
 <script>
 // The contents start folded on a narrow screen, open on a wide one.
