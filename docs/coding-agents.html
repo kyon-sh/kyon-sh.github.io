@@ -425,7 +425,7 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 <h2>Connecting an agent to Kyon</h2>
 <p>Connecting lets Kyon see what an agent is doing and gives it Kyon's tools. Status, notifications, the overview's ordering and turn reviews depend on it.</p>
 <ul>
-<li><strong>Claude Code, Codex and pi</strong> use Kyon's plugins, published together in one public repository and installed by each agent's own command line. Where your setup copies Claude Code's plugins into Codex, the copy reports for Codex too.</li>
+<li><strong>Claude Code, Codex and pi</strong> use Kyon's plugins, published together in one public repository and installed by each agent's own command line. Where your setup copies Claude Code's plugins into Codex, the copy reports for Codex too. Where a command called <code>claude</code> earlier on your path wraps Claude Code with plugins of its own, Kyon passes over it and installs with Claude Code's own command line: the first <code>claude</code> on your path, or in <code>~/.claude/local</code>, that can list its plugin marketplaces.</li>
 <li><strong>Gemini and OpenCode</strong> use hooks Kyon writes beside their own settings.</li>
 </ul>
 <p>When an unconnected agent runs, Kyon offers once per machine and run, here or on a host, where the agent keeps its settings: <strong>Enable notifications</strong> for Claude Code, <strong>Connect</strong> for the others, and <strong>Update</strong> (<strong>Update Kyon plugin</strong> for Claude Code) when what is installed is older than this build needs. A plugin on this machine that is out of date is offered as an update when Kyon starts, whether or not its agent is running, since one too old to report leaves its agent's tabs looking like plain terminals. Later, use <strong>Session › Every Agent › Connect the agent in front to Kyon: its status, and Kyon's tools</strong>.</p>
@@ -500,7 +500,7 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 
     </article>
     <nav class="pager" aria-label="Chapters"><a class="prev" href="terminal.html"><span>Previous</span>The terminal</a><a class="next" href="kyon-agent.html"><span>Next</span>Kyon&#x27;s agent, models and privacy</a></nav>
-    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.1.16</span></footer>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.1.17</span></footer>
   </main>
   <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#overview">Coding agents in Kyon</a></li><li><a href="#starting">Starting an agent</a></li><li><a href="#recognising">How Kyon recognises an agent</a></li><li><a href="#toolbar">The agent toolbar and Rich Input</a></li><li><a href="#attention">Knowing when an agent needs you</a></li><li><a href="#sending">Sending context to an agent</a></li><li><a href="#connecting">Connecting an agent to Kyon</a></li><li><a href="#tools">Kyon&#x27;s tools for agents</a></li><li><a href="#reviewing-turns">Reviewing what a turn changed</a></li><li><a href="#use-agent">Use agent and asking on the side</a></li><li><a href="#persistence">Agents that keep running</a></li><li><a href="#settings">The Third party CLI agents page</a></li><li><a href="#limits">Limits</a></li></ul></nav>
 </div>
