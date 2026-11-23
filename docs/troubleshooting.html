@@ -384,6 +384,13 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 <li><strong>Kyon quit unexpectedly.</strong> Start it again: your tabs, splits and sessions come back as they were.</li>
 </ul>
 </section>
+<section id="saved-session">
+<h2>When the saved session will not open</h2>
+<p>If Kyon fails to start twice in a row while bringing your last session back, the third start opens an empty window instead, so you are never locked out. Your session is not lost: Kyon sets it aside before anything can be saved over it, and the window says so until you dismiss it. Shells you kept running are still running and are listed in the <strong>Connections</strong> dropdown, where you can open each one again.</p>
+<p>To open the set-aside session again, quit Kyon and start it from a terminal with <code>--restore-kept set-aside</code>. On macOS:</p>
+<pre><code>/Applications/Kyon.app/Contents/MacOS/kyon --restore-kept set-aside</code></pre>
+<p>Kyon also keeps a copy of the saved session from each of the last 10 starts. <code>--kept-sessions</code> lists every copy with why it was kept, and <code>--restore-kept</code> followed by a copy's path puts that one back. Whatever was in place is kept in turn, so putting a copy back never loses anything either. The copies are in the <code>recovery/sessions</code> folder beside the restored sessions (see <a href="#files">Where Kyon keeps your files</a>).</p>
+</section>
 <section id="feedback">
 <h2>Telling us about it</h2>
 <p>Run <strong>Feedback</strong> from the palette or the menu behind the button at the right of the title bar; <a href="feedback.html">Feedback</a> says where reports go and what makes one easy to act on. The version on the About page (its copy button copies it) and the log from <strong>View Kyon logs</strong> help most.</p>
@@ -395,9 +402,9 @@ ul.cards span { color: var(--muted); font-size: .95rem; line-height: 1.45; }
 
     </article>
     <nav class="pager" aria-label="Chapters"><a class="prev" href="remote.html"><span>Previous</span>Working on a server</a><a class="next" href="feedback.html"><span>Next</span>Feedback</a></nav>
-    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.2.11</span></footer>
+    <footer class="foot"><span>© Ryowave</span><span class="version">for Kyon 0.2.12</span></footer>
   </main>
-  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#updates">Keeping Kyon up to date</a></li><li><a href="#files">Where Kyon keeps your files</a></li><li><a href="#settings-file">When the settings file has a mistake</a></li><li><a href="#something-wrong">When something looks wrong</a></li><li><a href="#feedback">Telling us about it</a></li><li><a href="#uninstall">Removing Kyon</a></li></ul></nav>
+  <nav class="toc" aria-label="On this page"><p class="group">On this page</p><ul><li><a href="#updates">Keeping Kyon up to date</a></li><li><a href="#files">Where Kyon keeps your files</a></li><li><a href="#settings-file">When the settings file has a mistake</a></li><li><a href="#something-wrong">When something looks wrong</a></li><li><a href="#saved-session">When the saved session will not open</a></li><li><a href="#feedback">Telling us about it</a></li><li><a href="#uninstall">Removing Kyon</a></li></ul></nav>
 </div>
 <script>
 // The contents start folded on a narrow screen, open on a wide one.
